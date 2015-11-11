@@ -15,6 +15,7 @@
 		0BF9E65E1BF2356A0055C0D8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E65C1BF2356A0055C0D8 /* Main.storyboard */; };
 		0BF9E6741BF2363B0055C0D8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E66E1BF2363B0055C0D8 /* InfoPlist.strings */; };
 		0BF9E6751BF2363B0055C0D8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E6701BF2363B0055C0D8 /* Localizable.strings */; };
+		0BF9E6781BF237300055C0D8 /* Localizations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF9E6771BF237300055C0D8 /* Localizations.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		0BF9E6711BF2363B0055C0D8 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BF9E6721BF2363B0055C0D8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0BF9E6731BF2363B0055C0D8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0BF9E6771BF237300055C0D8 /* Localizations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localizations.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 		0BF9E6441BF234F80055C0D8 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				0BF9E6761BF237300055C0D8 /* Generated */,
 				0BF9E6451BF234F80055C0D8 /* Controllers */,
 				0BF9E6471BF234F80055C0D8 /* Launcher */,
 			);
@@ -121,6 +124,14 @@
 			path = Localizations;
 			sourceTree = "<group>";
 		};
+		0BF9E6761BF237300055C0D8 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				0BF9E6771BF237300055C0D8 /* Localizations.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -131,6 +142,7 @@
 				0BF9E6241BF2333D0055C0D8 /* Sources */,
 				0BF9E6251BF2333D0055C0D8 /* Frameworks */,
 				0BF9E6261BF2333D0055C0D8 /* Resources */,
+				0BF9E6791BF2375E0055C0D8 /* Laurine Generator */,
 			);
 			buildRules = (
 			);
@@ -191,6 +203,23 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0BF9E6791BF2375E0055C0D8 /* Laurine Generator */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Laurine Generator";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "// Define base path to project\nBASE_PATH=\"$PROJECT_DIR/$PROJECT_NAME\"\n\n// Declare where to find generator, where to find main localization file, and where to write output\nLAURINE_PATH=\"$BASE_PATH/Generators/LaurineGenerator.swift\"\nSOURCE_PATH=\"$BASE_PATH/Resources/Localizations/en.lproj/Localizable.strings\"\nOUTPUT_PATH=\"$BASE_PATH/Classes/Generated/Localizations.swift\"\nDELIMITER=\"-\"\n\n// Generate output with laurine\n/usr/bin/chflags nouchg \"$OUTPUT_PATH\"\n\"$LAURINE_PATH\" - -i \"$SOURCE_PATH\" -d \"$DELIMITER\" > \"$OUTPUT_PATH\"\n/usr/bin/chflags uchg \"$OUTPUT_PATH\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		0BF9E6241BF2333D0055C0D8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -198,6 +227,7 @@
 			files = (
 				0BF9E6551BF234F80055C0D8 /* AppDelegate.swift in Sources */,
 				0BF9E6541BF234F80055C0D8 /* MainVC.swift in Sources */,
+				0BF9E6781BF237300055C0D8 /* Localizations.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

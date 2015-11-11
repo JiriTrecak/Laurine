@@ -8,3 +8,6 @@
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - Translations
+
+"TEST_STRING" = "Some translation file";
+"TEST_STRING_2" = "Some other translation file";
