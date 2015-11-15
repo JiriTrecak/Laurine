@@ -854,6 +854,13 @@ private extension String {
 }
 
 
+private enum SpecialCharacter : String {
+    case String = "String"
+    case Float = "Float"
+    case Int = "Int"
+}
+
+
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - Localization Class implementation
 
@@ -937,7 +944,14 @@ class Localization {
             
             if value is String {
                 let comment = (self.flatStructure.objectForKey(value as! String) as! String).nolineString
-                let staticString = self.localizationStaticVarFromLocalizationKey(value as! String, variableName: key as! String, baseTranslation: comment, contentLevel: contentLevel)
+                let methodParams = self.methodParamsForString(comment)
+                let staticString : String
+                
+                if methodParams.count > 0 {
+                    staticString = self.localizationFuncFromLocalizationKey(value as! String, variableName: key as! String, baseTranslation: comment, methodSpecification: methodParams, contentLevel: contentLevel)
+                } else {
+                    staticString = self.localizationStaticVarFromLocalizationKey(value as! String, variableName: key as! String, baseTranslation: comment, contentLevel: contentLevel)
+                }
                 outputStructure.append(staticString)
             }
         }
@@ -955,6 +969,51 @@ class Localization {
     }
     
     
+    private func methodParamsForString(string : String) -> [SpecialCharacter] {
+        
+        // Split the string into pieces by %
+        let matches = self.matchesForRegexInText("%([0-9]*.[0-9]*(d|f|ld)|@|d)", text: string)
+        var characters : [SpecialCharacter] = []
+        
+        // If there is just one component, no special characters are found
+        if matches.count == 0 {
+            return []
+        } else {
+            for match in matches {
+                characters.append(self.propertyTypeForMatch(match))
+            }
+            return characters
+        }
+    }
+    
+    
+    private func propertyTypeForMatch(string : String) -> SpecialCharacter {
+        
+        if string.containsString("d") {
+            return .Int
+        } else if string.containsString("f") {
+            return .Float
+        } else {
+            return .String
+        }
+    }
+    
+    
+    func matchesForRegexInText(regex: String!, text: String!) -> [String] {
+        
+        do {
+            let regex = try NSRegularExpression(pattern: regex, options: [])
+            let nsString = text as NSString
+            let results = regex.matchesInString(text,
+                options: [], range: NSMakeRange(0, nsString.length))
+            return results.map { nsString.substringWithRange($0.range)}
+        } catch let error as NSError {
+            print("invalid regex: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    
     private func structWithContent(content : String, name : String, contentLevel : Int = 0) -> String {
         
         return LocalizationPrinter.templateForStructWithName(name.camelCasedString, content: content, contentLevel: contentLevel)
@@ -964,6 +1023,25 @@ class Localization {
     private func localizationStaticVarFromLocalizationKey(key : String, variableName : String, baseTranslation : String, contentLevel : Int = 0) -> String {
         
         return LocalizationPrinter.templateForStaticVarWithName(variableName.camelCasedString, key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
+    }
+    
+    
+    private func localizationFuncFromLocalizationKey(key : String, variableName : String, baseTranslation : String, methodSpecification : [SpecialCharacter], contentLevel : Int = 0) -> String {
+        
+        var counter = 0
+        var methodHeaderParams = methodSpecification.reduce("") { (string, character) -> String in
+            counter++
+            return "\(string), _ value\(counter) : \(character.rawValue)"
+        }
+        
+        var methodParams : [String] = []
+        for (index, _) in methodSpecification.enumerate() {
+            methodParams.append("value\(index + 1)")
+        }
+        let methodParamsString = methodParams.joinWithSeparator(", ")
+        
+        methodHeaderParams = methodHeaderParams.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", _"))
+        return LocalizationPrinter.templateForFuncWithName(variableName.camelCasedString, key: key, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
     }
 }
 
@@ -1126,7 +1204,16 @@ class LocalizationPrinter {
     class func templateForStaticVarWithName(name : String, key : String, baseTranslation : String, contentLevel : Int) -> String {
         
         return self.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-               + self.contentIndentForLevel(contentLevel) + "static var \(name) : String = \"\(key)\".localized\n"
+            + self.contentIndentForLevel(contentLevel) + "static var \(name) : String = \"\(key)\".localized\n"
+    }
+    
+    
+    class func templateForFuncWithName(name : String, key : String, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
+        
+        return self.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
+            + self.contentIndentForLevel(contentLevel) + "static func \(name)(\(methodHeader)) -> String {\n"
+            + self.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
+            + self.contentIndentForLevel(contentLevel) + "}\n"
     }
     
     
@@ -1147,7 +1234,13 @@ class LocalizationPrinter {
 let runtime = Runtime()
 runtime.run()
 
-
+class Test {
+    func test() {
+        
+        Localizations.te
+        // let _ = Localizations.Deeplinks.Diagnostics.FailedAlertMessage
+    }
+}
 
 
 
