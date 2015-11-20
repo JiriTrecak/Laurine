@@ -1234,13 +1234,6 @@ class LocalizationPrinter {
 let runtime = Runtime()
 runtime.run()
 
-class Test {
-    func test() {
-        
-        Localizations.te
-        // let _ = Localizations.Deeplinks.Diagnostics.FailedAlertMessage
-    }
-}
 
 
 
