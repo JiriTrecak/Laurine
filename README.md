@@ -69,7 +69,7 @@ This way, you can easily traverse through thousands of strings without even thin
 
 You can use `-d "delimiter"` option to specify which character you would like to use for nesting, defaults to `-` (slash). 
 
-Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesomeKey`.
+Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesomeKey`).
 
 
 ## Usage
@@ -114,7 +114,9 @@ $ brew install jiritrecak/laurine/laurine
 ```
 Now you can just run it from everywhere:
 
-`$ LaurineGenerator.swift ...`
+```
+$ LaurineGenerator.swift ...
+```
 
 **GIT**
 
