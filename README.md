@@ -7,7 +7,7 @@
 
 Laurine is clever Swift script that scans your localization file and generates actual structured code out of it, therefore making the usage of localization strings much easier. 
 
-What is so good about it is that by removing magical strings from your code, compiler can actually tell you that you forgot to make changes (and where), if your localization file changes. It also introduces type checks for strings that contain runtime parameters (%@, %d etc.).
+What is so good about it is that by removing magical strings from your code, compiler can actually tell you that you forgot to make changes (and where), if your localization file changes. It also introduces type checks for strings that contain runtime parameters (`%@`, `%d` etc.).
 
 Laurine requires Swift to run and can be used from command line as well as build script (recommended). Laurine uses [CommandLine](https://github.com/jatoben/CommandLine "CommandLine Swift Tool") to get configuration options from you, and due to current limitations of Swift, its code is embedded within Laurine itself.
 
@@ -42,21 +42,58 @@ If your localization string contains runtime variables, it is generated as metho
 can be then used like this:
 
 ```swift
-self.labelToLocalize.text = Localizations.ProfilePhoneNumber
+self.labelToLocalize.text = Localizations.ProfileInfo("Jiri", 25, 1.75)
 ```
-in XCode, autocomplete is actually, for once, really helpful! Madness.
+Once again, Xcode autocomplete for the win! Insanity.
 
 ![Image : XCode help for methods](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-2.png?raw=true "Xcode autocomplete")
 
 
-## Nested structures
-TBD - IMPORTANT!
+## Nested Structures
+
+There is one more problem when it comes strings - especially with larger projects, and that is their length and sheer amount (projects with 1000+ localization strings are not really that uncommon). 
+
+It is good practice to write keys so they are as descriptive as possible. Laurine takes advantage of that and instead of super-lengthy name of the property, it generates nested structures. Following:
+
+```swift
+"PROFILE-NAVIGATION_BAR-ITEMS-DONE" = "Done"
+```
+
+Is actually converted to:
+
+```swift
+self.labelToLocalize.text = Localizations.Profile.NavigationBar.Items.Done
+```
+
+This way, you can easily traverse through thousands of strings without even thinking about it (obviously, how you actually group your strings is up to you).
+
+You can use `-d "delimiter"` option to specify which character you would like to use for nesting, defaults to `-` (slash). 
+
+Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesomeKey`.
+
 
 ## Usage
 TBD 
 
 ## Installation
 TBD
+
+## Supported Features
+
+While the Laurine is still very young project, it should cover most of regular usage. That being said, there are features that are still missing to have full coverage of everything, that localizations offer. Here is full list of features that will Laurine contain once it is complete.
+
+- [x] Basic localization strings to variables
+- [x] Complex localization strings to methods
+- [x] Multilevel structures (nesting)
+- [ ] Localization Tables
+- [ ] Plural support
+- [ ] Gender support
+- [ ] More options [disable nesting etc.]
+
+Optional features that I am considering, but have major problems and has to be thought out first, are following:
+
+- [ ] Generate Swift OR Obj-C version of the code
+- [ ] Seamless integration with [Localize-Swift](https://github.com/marmelroy/Localize-Swift)
 
 ## Contribute
 I will gladly accept Pull Requests that you do, (and I encourage you to do so). If you have any bug or enhnacement that I could do, please open issue and describe it.
