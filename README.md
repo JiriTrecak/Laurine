@@ -30,7 +30,7 @@ self.labelToLocalize.text = Localizations.ProfilePhoneNumber
 ```
 in XCode, autocomplete is actually, for once, really helpful! Madness.
 
-![Image : XCode help for variables](help-1.png "Xcode autocomplete")
+![Image : XCode help for variables](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-1.png?raw=true "Xcode autocomplete")
 
 **Methods**
 
@@ -46,7 +46,7 @@ self.labelToLocalize.text = Localizations.ProfilePhoneNumber
 ```
 in XCode, autocomplete is actually, for once, really helpful! Madness.
 
-![Image : XCode help for methods](help-2.png "Xcode autocomplete")
+![Image : XCode help for methods](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-2.png?raw=true "Xcode autocomplete")
 
 
 ## Nested structures
