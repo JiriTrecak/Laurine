@@ -73,7 +73,34 @@ Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesome
 
 
 ## Usage
-TBD 
+
+Laurine uses script parameters to change the way how output is generated. Currently, following is supported:
+
+```
+  -i, --input:    
+      Required | Path to the main localization file (usually, english version)
+  -d, --delimiter:
+      Optional | String delimiter to separate segments of each string | Defaults to [-]
+```
+Laurine is smart enough to let you know if you are missing anything, so watch for that. There is more options to come in near future.
+
+**Command line**
+
+If you wish to just generate the code once, run following from terminal:
+
+```
+$ swift laurine.swift -i "Localizable.strings" -d "-" > "Localizations.swift"
+```
+
+or, if you are using brew:
+
+```
+$ LaurineGenerator.swift -i "Localizable.strings" -d "-" > "Localizations.swift"
+```
+
+**Build script**
+
+I am working on generic build script for everyone, stay tuned!
 
 ## Installation
 
@@ -109,6 +136,7 @@ While the Laurine is still very young project, it should cover most of regular u
 - [x] Basic localization strings to variables
 - [x] Complex localization strings to methods
 - [x] Multilevel structures (nesting)
+- [ ] Generate Swift OR Obj-C version of the code
 - [ ] Localization Tables
 - [ ] Plural support
 - [ ] Gender support
@@ -116,13 +144,13 @@ While the Laurine is still very young project, it should cover most of regular u
 
 Optional features that I am considering, but have major problems and has to be thought out first, are following:
 
-- [ ] Generate Swift OR Obj-C version of the code
+- [ ] Naming for methods
 - [ ] Seamless integration with [Localize-Swift](https://github.com/marmelroy/Localize-Swift)
 
 ## Contribute
 I will gladly accept Pull Requests that you do, (and I encourage you to do so). If you have any bug or enhnacement that I could do, please open issue and describe it.
 
-I'd also like to thank you to Marcin Krzyżanowski for his [Natalie Generator](https://github.com/krzyzanowskim/Natalie), which heavily inspired this project.
+I'd also like to round of applause to Marcin Krzyżanowski for his [Natalie Generator](https://github.com/krzyzanowskim/Natalie), which heavily inspired this project by his approach. Here, have a beer!
 
 ## Contact Me!
 
