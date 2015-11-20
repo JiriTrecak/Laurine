@@ -76,7 +76,31 @@ Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesome
 TBD 
 
 ## Installation
-TBD
+
+**Brew**
+
+Laurine does not require installation. For your convenience, you can make it easily accessible from /usr/local/bin by installing Laurine through brew:
+
+```
+$ brew tap jiritrecak/laurine
+$ brew install jiritrecak/laurine/laurine
+```
+Now you can just run it from everywhere:
+
+`$ LaurineGenerator.swift ...`
+
+**GIT**
+
+You can also just clone it wherever you desire:
+
+```
+$ git clone https://github.com/JiriTrecak/Laurine.git
+$ sudo cp laurine.swift /usr/local/bin/laurine.swift
+```
+
+**Download!**
+
+Yes, you can just download the script itself from this repository, it does not need anything else.
 
 ## Supported Features
 
