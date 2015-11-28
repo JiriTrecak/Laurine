@@ -111,7 +111,41 @@ $ LaurineGenerator.swift -i "Localizable.strings" -c -o "Localizations.swift"
 
 **Build script**
 
-I am working on generic build script for everyone, stay tuned!
+Recommended way how to use Laurine is to create Build Phase Run script (Xcode > Project > Targets > Your build target > Build Phases > New Run Script Phase). This way, Laurine will be executed before each build and will ensure integrity of your translations. Be sure to move script before "Compile Sources" phase, as it has to generate the code first, before it can be used anywhere else. For convenience, you can just copy following, and change configuration appropriately.
+
+```
+set -x
+echo "Laurine Generator : Configuration"
+
+# CONFIGURATION
+# Get base path to project
+BASE_PATH="$PROJECT_DIR/$PROJECT_NAME"
+
+# Configure path to Laurine Generator script
+LAURINE_PATH="$BASE_PATH/Generators/LaurineGenerator.swift"
+
+# Configure path to main localization file (usually english).
+SOURCE_PATH="$BASE_PATH/Resources/Localizations/en.lproj/Localizable.strings"
+
+# Configure path to output. If you use ObjC version of output, set implementation file (.m), as header will be generated automatically at the same location.
+OUTPUT_PATH="$BASE_PATH/Classes/Generated/Localizations.swift"
+
+echo "Laurine Generator : Write"
+
+# Unlock output file for write
+/usr/bin/chflags nouchg "$OUTPUT_PATH"
+
+# Add permission to generator for script execution
+chmod 777 $LAURINE_PATH
+
+# Actually generate output. Customize parameters to your needs (see documentation)
+$LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH
+
+# Lock output file for write
+/usr/bin/chflags uchg "$OUTPUT_PATH"
+
+echo "Laurine Generator : Finished"
+```
 
 ## Installation
 

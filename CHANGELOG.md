@@ -11,6 +11,7 @@ Features added:
 Bugfixes:
 
 - Properties and methods that start with numbers [0-9] or any other character that qualifies will now get prefixed with "_" instead of completely breaking output :)
+- Fixed all problems that prevented scripts from build phase to actually work
 
 ## 0.1.0 (2015-11-18)
 
