@@ -7,7 +7,16 @@
 //
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-// MARK: - Translations
+// MARK: - Welcome screen
 
-"TEST_STRING" = "Some translation file";
-"TEST_STRING_2" = "Some other translation file";
+"WelcomeScreen.NavigationBar.Title" = "Welcome!";
+"WelcomeScreen.NavigationBar.Subtitle" = "This is example of Laurine Generator";
+
+
+// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+// MARK: - Detail screen
+
+"DetailScreen.NavigationBar.Title" = "Detail Screen!";
+"DetailScreen.Content.Header" = "This will be generated as %d method";
+"DetailScreen.Content.Bulletin.FirstPoint" = "This is first bulletin point";
+"DetailScreen.Content.Bulletin.SecondPoint" = "This is second bulletin point";

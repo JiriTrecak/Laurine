@@ -216,7 +216,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -x\n\nBASE_PATH=\"$PROJECT_DIR/$PROJECT_NAME\"\n\nLAURINE_PATH=\"$BASE_PATH/Generators/LaurineGenerator.swift\"\nSOURCE_PATH=\"$BASE_PATH/Resources/Localizations/en.lproj/Localizable.strings\"\nOUTPUT_PATH=\"$BASE_PATH/Classes/Generated/Localizations.swift\"\nDELIMITER=\"-\"\n\necho \"Laurine path : $LAURINE_PATH\"\necho \"Source path : $SOURCE_PATH\"\necho \"Output path : $OUTPUT_PATH\"\n\n/usr/bin/chflags nouchg \"$OUTPUT_PATH\"\n$LAURINE_PATH -i $SOURCE_PATH -d $DELIMITER\n/usr/bin/chflags uchg \"$OUTPUT_PATH\"\n\necho \"Finished\"\n";
+			shellScript = "set -x\necho \"Laurine Generator : Configuration\"\n\n# CONFIGURATION\n# Get base path to project\nBASE_PATH=\"$PROJECT_DIR/$PROJECT_NAME\"\n\n# Get path to Laurine Generator script\nLAURINE_PATH=\"$BASE_PATH/Generators/LaurineGenerator.swift\"\n\n# Get path to main localization file (usually english).\nSOURCE_PATH=\"$BASE_PATH/Resources/Localizations/en.lproj/Localizable.strings\"\n\n# Get path to output. If you use ObjC version of output, set implementation file (.m), as header will be generated automatically\nOUTPUT_PATH=\"$BASE_PATH/Classes/Generated/Localizations.swift\"\n\necho \"Laurine Generator : Write\"\n\n# Unlock output file for write\n/usr/bin/chflags nouchg \"$OUTPUT_PATH\"\n\n# Add permission to generator for script execution\nchmod 777 $LAURINE_PATH\n\n# Actually generate output. Customize parameters to your needs (see documentation)\n$LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH\n\n# Lock output file for write\n/usr/bin/chflags uchg \"$OUTPUT_PATH\"\n\necho \"Laurine Generator : Finished\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
