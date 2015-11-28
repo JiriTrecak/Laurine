@@ -69,7 +69,7 @@ This way, you can easily traverse through thousands of strings without even thin
 
 You can use `-d "delimiter"` option to specify which character you would like to use for nesting, defaults to `-` (slash). 
 
-Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesomeKey`).
+Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesomeKey`), or omit "c" option to disable this feature.
 
 
 ## Usage
@@ -77,25 +77,36 @@ Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesome
 Laurine uses script parameters to change the way how output is generated. Currently, following is supported:
 
 ```
-  -i, --input:    
-      Required | Path to the main localization file (usually, english version)
-  -d, --delimiter:
-      Optional | String delimiter to separate segments of each string | Defaults to [-]
+  -i, --input:     
+      Required | String | Path to the localization file
+  -o, --output:    
+      Optional | String | Path to output file (.swift or .m, depending on your configuration. If you are using ObjC, header will be created on that location. If ommited, output will be sent to stdout instead.
+  -l, --language:  
+      Optional | String | [swift | objc] | Specifies language of generated output files | Defaults to [swift]
+  -d, --delimiter: 
+      Optional | String | String delimiter to separate segments of each string | Defaults to [.]
+  -c, --capitalize:
+      Optional | Bool | When enabled, name of all structures / methods / properties are automatically CamelCased | Defaults to false
 ```
-Laurine is smart enough to let you know if you are missing anything, so watch for that. There is more options to come in near future.
+
 
 **Command line**
 
 If you wish to just generate the code once, run following from terminal:
 
 ```
-$ swift laurine.swift -i "Localizable.strings" -d "-" > "Localizations.swift"
+$ swift laurine.swift -i "Localizable.strings" -c > "Localizations.swift"
+or 
+$ swift laurine.swift -i "Localizable.strings" -c -o "Localizations.swift"
+
 ```
 
 or, if you are using brew:
 
 ```
-$ LaurineGenerator.swift -i "Localizable.strings" -d "-" > "Localizations.swift"
+$ LaurineGenerator.swift -i "Localizable.strings" -c > "Localizations.swift"
+or 
+$ LaurineGenerator.swift -i "Localizable.strings" -c -o "Localizations.swift"
 ```
 
 **Build script**
