@@ -851,6 +851,18 @@ private extension String {
         
         return self.stringByReplacingOccurrencesOfString("\n", withString: "")
     }
+    
+    
+    func isFirstLetterDigit() -> Bool {
+        
+        let c : Character = self.characters.first!
+        
+        let s = String(c).unicodeScalars
+        let uni = s[s.startIndex]
+        
+        let digits = NSCharacterSet.decimalDigitCharacterSet()
+        return digits.longCharacterIsMember(uni.value)
+    }
 }
 
 
@@ -871,57 +883,92 @@ class Localization {
     
     var flatStructure = NSDictionary()
     var objectStructure = NSMutableDictionary()
+    var autocapitalize : Bool = true
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Setup
     
-    convenience init(runtime : Runtime) {
+    convenience init(inputFile : NSURL, delimiter : String, autocapitalize : Bool) {
         
         self.init()
         
         // Load localization file
-        self.processInputFromRuntime(runtime)
+        self.processInputFromFile(inputFile, delimiter: delimiter, autocapitalize: autocapitalize)
     }
     
     
-    func processInputFromRuntime(runtime : Runtime) {
+    func processInputFromFile(file : NSURL, delimiter : String, autocapitalize : Bool) {
         
-        if let dictionary = NSDictionary(contentsOfFile: runtime.localizationFilePathToRead.path!) {
+        if let dictionary = NSDictionary(contentsOfFile: file.path!) {
             self.flatStructure = dictionary
-            self.expandFlatStructure(dictionary, delimiter: runtime.localizationDelimiter)
+            self.autocapitalize = autocapitalize
+            self.expandFlatStructure(dictionary, delimiter: delimiter)
         } else {
+            // TODO: Better error handling
             print("Bad format of input file")
             exit(EX_IOERR)
         }
     }
-    
+
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Public
     
-    func writeOutput() {
+    func writerWithSwiftImplementation() -> StreamWriter {
+        
+        let writer = StreamWriter()
         
         // Generate header
-        LocalizationPrinter.printHeader()
+        writer.writeHeader()
         
         // Imports
-        LocalizationPrinter.printMarkWithName("Imports")
-        LocalizationPrinter.printImports()
+        writer.writeMarkWithName("Imports")
+        writer.writeImports()
         
         // Extensions
-        LocalizationPrinter.printMarkWithName("Extensions")
-        LocalizationPrinter.printRequiredExtensions()
+        writer.writeMarkWithName("Extensions")
+        writer.writeRequiredExtensions()
         
         // Generate actual localization structures
-        LocalizationPrinter.printMarkWithName("Localizations")
-        LocalizationPrinter.printCodeStructure(self.structWithContent(self.codifyExpandedStructure(self.objectStructure), name: "Localizations", contentLevel: 0))
+        writer.writeMarkWithName("Localizations")
+        writer.writeCodeStructure(self.structWithContent(self.codifySwiftImplementation(self.objectStructure), structName: "Localizations", contentLevel: 0))
+        
+        return writer
+    }
+    
+    
+    func writerWithObjCImplementation() -> StreamWriter {
+        
+        let writer = StreamWriter()
+        
+        // Generate header
+        writer.writeHeader()
+        
+        // Imports
+        writer.writeMarkWithName("ObjC implementation")
+        
+        return writer
+    }
+    
+    
+    func writerWithObjCHeader() -> StreamWriter {
+        
+        let writer = StreamWriter()
+        
+        // Generate header
+        writer.writeHeader()
+        
+        // Imports
+        writer.writeMarkWithName("ObjC header")
+        
+        return writer
     }
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Private
- 
+    
     private func expandFlatStructure(flatStructure : NSDictionary, delimiter: String) {
     
         // Writes values to dictionary and also
@@ -931,7 +978,7 @@ class Localization {
     }
     
     
-    private func codifyExpandedStructure(expandedStructure : NSDictionary, var contentLevel : Int = 0) -> String {
+    private func codifySwiftImplementation(expandedStructure : NSDictionary, var contentLevel : Int = 0) -> String {
         
         // Increase content level
         contentLevel++
@@ -948,7 +995,7 @@ class Localization {
                 let staticString : String
                 
                 if methodParams.count > 0 {
-                    staticString = self.localizationFuncFromLocalizationKey(value as! String, variableName: key as! String, baseTranslation: comment, methodSpecification: methodParams, contentLevel: contentLevel)
+                    staticString = self.localizationFuncFromLocalizationKey(value as! String, methodName: key as! String, baseTranslation: comment, methodSpecification: methodParams, contentLevel: contentLevel)
                 } else {
                     staticString = self.localizationStaticVarFromLocalizationKey(value as! String, variableName: key as! String, baseTranslation: comment, contentLevel: contentLevel)
                 }
@@ -960,12 +1007,28 @@ class Localization {
         for (key, value) in expandedStructure {
             
             if value is NSDictionary {
-                outputStructure.append(self.structWithContent(self.codifyExpandedStructure(value as! NSDictionary, contentLevel: contentLevel), name: key as! String, contentLevel: contentLevel))
+                outputStructure.append(self.structWithContent(self.codifySwiftImplementation(value as! NSDictionary, contentLevel: contentLevel), structName: key as! String, contentLevel: contentLevel))
             }
         }
         
         // At the end, return everything merged together
         return outputStructure.joinWithSeparator("\n")
+    }
+    
+    
+    private func codifyObjcImplementation(expandedStructure : NSDictionary) -> String {
+        
+        // TODO: Objc Implementation
+        // var outputStructure : [String] = []
+        
+        return ""
+    }
+    
+    
+    private func codifyObjcHeader(expandedStructure : NSDictionary) -> String {
+        
+        // TODO: Objc Header
+        return ""
     }
     
     
@@ -999,7 +1062,17 @@ class Localization {
     }
     
     
-    func matchesForRegexInText(regex: String!, text: String!) -> [String] {
+    private func variableName(string : String) -> String {
+        
+        if self.autocapitalize {
+            return (string.isFirstLetterDigit() ? "_" + string.camelCasedString : string.camelCasedString)
+        } else {
+            return (string.isFirstLetterDigit() ? "_" + string : string)
+        }
+    }
+    
+    
+    private func matchesForRegexInText(regex: String!, text: String!) -> [String] {
         
         do {
             let regex = try NSRegularExpression(pattern: regex, options: [])
@@ -1014,19 +1087,19 @@ class Localization {
     }
     
     
-    private func structWithContent(content : String, name : String, contentLevel : Int = 0) -> String {
+    private func structWithContent(content : String, structName : String, contentLevel : Int = 0) -> String {
         
-        return LocalizationPrinter.templateForStructWithName(name.camelCasedString, content: content, contentLevel: contentLevel)
+        return TemplateFactory.templateForStructWithName(self.variableName(structName), content: content, contentLevel: contentLevel)
     }
     
     
     private func localizationStaticVarFromLocalizationKey(key : String, variableName : String, baseTranslation : String, contentLevel : Int = 0) -> String {
         
-        return LocalizationPrinter.templateForStaticVarWithName(variableName.camelCasedString, key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
+        return TemplateFactory.templateForStaticVarWithName(self.variableName(variableName), key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
     }
     
     
-    private func localizationFuncFromLocalizationKey(key : String, variableName : String, baseTranslation : String, methodSpecification : [SpecialCharacter], contentLevel : Int = 0) -> String {
+    private func localizationFuncFromLocalizationKey(key : String, methodName : String, baseTranslation : String, methodSpecification : [SpecialCharacter], contentLevel : Int = 0) -> String {
         
         var counter = 0
         var methodHeaderParams = methodSpecification.reduce("") { (string, character) -> String in
@@ -1041,7 +1114,7 @@ class Localization {
         let methodParamsString = methodParams.joinWithSeparator(", ")
         
         methodHeaderParams = methodHeaderParams.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", _"))
-        return LocalizationPrinter.templateForFuncWithName(variableName.camelCasedString, key: key, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
+        return TemplateFactory.templateForFuncWithName(self.variableName(methodName), key: key, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
     }
 }
 
@@ -1054,10 +1127,30 @@ class Runtime {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
+    enum ExportLanguage : String {
+        case Swift = "swift"
+        case ObjC = "objc"
+    }
+    
+    
+    enum ExportStream : String {
+        case Standard = "stdout"
+        case File = "file"
+    }
+    
+    
+    // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+    // MARK: - Properties
+    
     var localizationFilePathToRead : NSURL!
+    var localizationFilePathToWriteTo : NSURL!
+    var localizationFileHeaderPathToWriteTo : NSURL?
     var localizationDelimiter : String! = "."
     var localizationDebug : Bool = false
     var localizationCore : Localization!
+    var localizationExportLanguage : ExportLanguage = .Swift
+    var localizationExportStream : ExportStream = .File
+    var localizationAutocapitalize : Bool = false
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -1066,13 +1159,14 @@ class Runtime {
     func run() {
         
         // Initialize command line tool
-        if self.processInput() {
+        if self.checkCLI() {
         
             // Process files
-            self.processFiles()
+            if self.checkIO() {
             
-            // Generate output
-            self.processOutput()
+                // Generate input -> output based on user configuration
+                self.processOutput()
+            }
         }
     }
     
@@ -1080,25 +1174,42 @@ class Runtime {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Private
     
-    private func processInput() -> Bool {
+    private func checkCLI() -> Bool {
+        
+        // Define CLI options
+        let inputFilePath = StringOption(shortFlag: "i", longFlag: "input", required: true,
+            helpMessage: "Required | String | Path to the localization file")
+        let outputFilePath = StringOption(shortFlag: "o", longFlag: "output", required: false,
+            helpMessage: "Optional | String | Path to output file (.swift or .m, depending on your configuration. If you are using ObjC, header will be created on that location. If ommited, output will be sent to stdout instead.")
+        let outputLanguage = StringOption(shortFlag: "l", longFlag: "language", required: false,
+            helpMessage: "Optional | String | [swift | objc] | Specifies language of generated output files | Defaults to [swift]")
+        let delimiter = StringOption(shortFlag: "d", longFlag: "delimiter", required: false,
+            helpMessage: "Optional | String | String delimiter to separate segments of each string | Defaults to [.]")
+        let autocapitalize = BoolOption(shortFlag: "c", longFlag: "capitalize", required: false,
+            helpMessage: "Optional | Bool | When enabled, name of all structures / methods / properties are automatically CamelCased | Defaults to false")
+
         
         let cli = CommandLine()
+        cli.addOptions(inputFilePath, outputFilePath, outputLanguage, delimiter, autocapitalize)    
         
-        let inputFilePath = StringOption(shortFlag: "i", longFlag: "input", required: true,
-            helpMessage: "Required | Path to the localization file")
-        let delimiter = StringOption(shortFlag: "d", longFlag: "delimiter", required: false,
-            helpMessage: "Optional | String delimiter to separate segments of each string | Defaults to [.]")
-        
-        cli.addOptions(inputFilePath, delimiter)
-        
+        // TODO: make output file path NOT optional when print output stream is selected
         do {
             
             // Parse user input
             try cli.parse()
             
             // It passed, now process input
-            self.localizationFilePathToRead = NSURL(fileURLWithPath: NSFileManager.defaultManager().currentDirectoryPath).URLByAppendingPathComponent(inputFilePath.value!)
+            self.localizationFilePathToRead = NSURL(fileURLWithPath: inputFilePath.value!)
+            
             if let value = delimiter.value { self.localizationDelimiter = value }
+            self.localizationAutocapitalize = autocapitalize.wasSet ? true : false
+            if let value = outputLanguage.value, type = ExportLanguage(rawValue: value) { self.localizationExportLanguage = type }
+            if let value = outputFilePath.value {
+                self.localizationFilePathToWriteTo = NSURL(fileURLWithPath: value)
+                self.localizationExportStream = .File
+            } else {
+                self.localizationExportStream = .Standard
+            }
             
             return true
         } catch {
@@ -1110,22 +1221,75 @@ class Runtime {
     }
     
     
-    private func processFiles() {
+    private func checkIO() -> Bool {
         
         // Check if we have input file
         if !NSFileManager.defaultManager().fileExistsAtPath(self.localizationFilePathToRead.path!) {
-           exit(EX_IOERR)
+            
+            // TODO: Better error handling
+            exit(EX_IOERR)
         }
         
-        // Create translation core
-        self.localizationCore = Localization(runtime: self)
+        // Handle output file checks only if we are writing to file
+        if self.localizationExportStream == .File {
+            
+            // Remove output file first
+            _ = try? NSFileManager.defaultManager().removeItemAtPath(self.localizationFilePathToWriteTo.path!)
+            if !NSFileManager.defaultManager().createFileAtPath(self.localizationFilePathToWriteTo.path!, contents: NSData(), attributes: nil) {
+                
+                // TODO: Better error handling
+                exit(EX_IOERR)
+            }
+            
+            // ObjC - we also need header file for ObjC code
+            if self.localizationExportLanguage == .ObjC {
+                
+                // Create header file name
+                self.localizationFileHeaderPathToWriteTo = self.localizationFilePathToWriteTo.URLByDeletingPathExtension!.URLByAppendingPathExtension("h")
+                
+                // Remove file at path and replace it with new one
+                _ = try? NSFileManager.defaultManager().removeItemAtPath(self.localizationFileHeaderPathToWriteTo!.path!)
+                if !NSFileManager.defaultManager().createFileAtPath(self.localizationFileHeaderPathToWriteTo!.path!, contents: NSData(), attributes: nil) {
+                    
+                    // TODO: Better error handling
+                    exit(EX_IOERR)
+                }
+            }
+        }
+        return true
     }
     
     
     private func processOutput() {
         
-        // Generate output from
-        self.localizationCore.writeOutput()
+        // Create translation core which will process all required data
+        self.localizationCore = Localization(inputFile: self.localizationFilePathToRead, delimiter: self.localizationDelimiter, autocapitalize: self.localizationAutocapitalize)
+        
+        // Write output for swift
+        if self.localizationExportLanguage == .Swift {
+            let implementation = self.localizationCore.writerWithSwiftImplementation()
+            
+            // Write swift file
+            if self.localizationExportStream == .Standard {
+                implementation.writeToSTD(true)
+            } else if self.localizationExportStream == .File {
+                implementation.writeToOutputFileAtPath(self.localizationFilePathToWriteTo)
+            }
+            
+        // or write output for objc, based on user configuration
+        } else if self.localizationExportLanguage == .ObjC {
+            let implementation = self.localizationCore.writerWithObjCImplementation()
+            let header = self.localizationCore.writerWithObjCHeader()
+            
+            // Write .h and .m file
+            if self.localizationExportStream == .Standard {
+                header.writeToSTD(true)
+                implementation.writeToSTD(true)
+            } else if self.localizationExportStream == .File {
+                implementation.writeToOutputFileAtPath(self.localizationFilePathToWriteTo)
+                header.writeToOutputFileAtPath(self.localizationFileHeaderPathToWriteTo!)
+            }
+        }
     }
 }
 
@@ -1133,87 +1297,131 @@ class Runtime {
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - LocalizationPrinter Class implementation
 
-class LocalizationPrinter {
+class StreamWriter {
+    
+    var outputBuffer : String = ""
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Public
     
-    class func printHeader() {
+    func writeHeader() {
         
         let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy-MM-dd 'at' h:mm a"
         
-        print("//")
-        print("// Autogenerated by Laurine - by Jiri Trecak ( http://jiritrecak.com, @jiritrecak )")
-        print("// Do not change this file manually!")
-        print("//")
-        print("//", formatter.stringFromDate(NSDate()))
-        print("//")
+        self.store("//\n")
+        self.store("// Autogenerated by Laurine - by Jiri Trecak ( http://jiritrecak.com, @jiritrecak )\n")
+        self.store("// Do not change this file manually!\n")
+        self.store("//\n")
+        self.store("// \(formatter.stringFromDate(NSDate()))\n")
+        self.store("//\n")
     }
     
     
-    class func printRequiredExtensions() {
+    func writeRequiredExtensions() {
         
-        print("extension String {")
-        print("")
-        print("    var localized: String {")
-        print("")
-        print("        return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\")")
-        print("    }")
-        print("")
-        print("    func localizedWithComment(comment:String) -> String {")
-        print("")
-        print("        return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: comment)")
-        print("    }")
-        print("}")
+        self.store("extension String {\n")
+        self.store("\n")
+        self.store("    var localized: String {\n")
+        self.store("\n")
+        self.store("        return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\")\n")
+        self.store("    }\n")
+        self.store("\n")
+        self.store("    func localizedWithComment(comment:String) -> String {\n")
+        self.store("\n")
+        self.store("        return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: comment)\n")
+        self.store("    }\n")
+        self.store("}\n")
     }
     
     
-    class func printMarkWithName(name : String, contentLevel : Int = 0) {
+    func writeMarkWithName(name : String, contentLevel : Int = 0) {
         
-        print(self.contentIndentForLevel(contentLevel) + "")
-        print(self.contentIndentForLevel(contentLevel) + "")
-        print(self.contentIndentForLevel(contentLevel) + "// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---")
-        print(self.contentIndentForLevel(contentLevel) + "// MARK: - \(name)")
-        print(self.contentIndentForLevel(contentLevel) + "")
+        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "\n")
+        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "\n")
+        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---\n")
+        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "// MARK: - \(name)\n")
+        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "\n")
     }
     
     
-    class func printImports() {
+    func writeImports() {
         
-        print("import Foundation")
+        self.store("import Foundation\n")
     }
     
     
-    class func printCodeStructure(structure : String) {
+    func writeCodeStructure(structure : String) {
         
-        print(structure)
+        self.store(structure)
     }
     
+    
+    func writeToOutputFileAtPath(path : NSURL, clearBuffer : Bool = true) {
+        
+        _ = try? self.outputBuffer.writeToFile(path.path!, atomically: true, encoding: NSUTF8StringEncoding)
+        
+        if clearBuffer {
+            self.outputBuffer = ""
+        }
+    }
+    
+    
+    func writeToSTD(clearBuffer : Bool = true) {
+        
+        print(self.outputBuffer)
+        
+        if clearBuffer {
+            self.outputBuffer = ""
+        }
+    }
+    
+    
+    // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+    // MARK: - Private
+    
+    private func store(string : String) {
+        
+        self.outputBuffer += string
+    }
+}
+
+
+
+
+
+// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+// MARK: - TemplateFactory Class implementation
+
+class TemplateFactory {
+    
+    
+    // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+    // MARK: - Public
     
     class func templateForStructWithName(name : String, content : String, contentLevel : Int) -> String {
         
         return "\n"
-               + self.contentIndentForLevel(contentLevel) + "struct \(name) {\n"
-               + "\n"
-               + self.contentIndentForLevel(contentLevel) + "\(content)\n"
-               + self.contentIndentForLevel(contentLevel) + "}"
+            + TemplateFactory.contentIndentForLevel(contentLevel) + "struct \(name) {\n"
+            + "\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel) + "\(content)\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel) + "}"
     }
     
     
     class func templateForStaticVarWithName(name : String, key : String, baseTranslation : String, contentLevel : Int) -> String {
         
-        return self.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-            + self.contentIndentForLevel(contentLevel) + "static var \(name) : String = \"\(key)\".localized\n"
+        return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel) + "static var \(name) : String = \"\(key)\".localized\n"
     }
     
     
     class func templateForFuncWithName(name : String, key : String, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
         
-        return self.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-            + self.contentIndentForLevel(contentLevel) + "static func \(name)(\(methodHeader)) -> String {\n"
-            + self.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
-            + self.contentIndentForLevel(contentLevel) + "}\n"
+        return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel) + "static func \(name)(\(methodHeader)) -> String {\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel) + "}\n"
     }
     
     
@@ -1233,10 +1441,15 @@ class LocalizationPrinter {
 
 let runtime = Runtime()
 runtime.run()
-
-
-
-
-
-
+//
+//
+//// Test class for this project, remove before compiling
+//class Test {
+//    
+//    // Test method
+//    func test() {
+//        
+//        let _ = Localizations.Deprecatedversion.Button.UpdateApp.Title
+//    }
+//}
 
