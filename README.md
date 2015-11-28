@@ -113,7 +113,7 @@ $ LaurineGenerator.swift -i "Localizable.strings" -c -o "Localizations.swift"
 
 Recommended way how to use Laurine is to create Build Phase Run script (Xcode > Project > Targets > Your build target > Build Phases > New Run Script Phase). This way, Laurine will be executed before each build and will ensure integrity of your translations. Be sure to move script before "Compile Sources" phase, as it has to generate the code first, before it can be used anywhere else. For convenience, you can just copy following, and change configuration appropriately.
 
-```
+```sh
 set -x
 echo "Laurine Generator : Configuration"
 
