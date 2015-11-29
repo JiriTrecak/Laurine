@@ -100,14 +100,21 @@ Laurine uses script parameters to change the way how output is generated. Curren
 
 **Command line**
 
-If you wish to generate the code just once, run following from terminal:
+If you wish to generate output just once, run following from terminal in the directory where you have the script downloaded:
 
 ```
-$ swift laurine.swift -i Localizable.strings -c -o Localizations.swift
+$ swift LaurineGenerator.swift -i Localizable.strings -c -o Localizations.swift
 or for ObjC
-$ swift laurine.swift -i Localizable.strings -c -o Localizations.m -l objc
+$ swift LaurineGenerator.swift -i Localizable.strings -c -o Localizations.m -l objc
 ```
 
+or, alternatively, if you downloaded it through Brew:
+
+```
+$ LaurineGenerator.swift -i Localizable.strings -c -o Localizations.swift
+or for ObjC
+$ LaurineGenerator.swift -i Localizable.strings -c -o Localizations.m -l objc
+```
 
 
 **Build script**
