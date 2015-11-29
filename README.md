@@ -140,9 +140,9 @@ echo "Laurine Generator : Write"
 chmod 777 $LAURINE_PATH
 
 # Actually generate output. Customize parameters to your needs (see documentation)
-$LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH
+$LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH -c
 # ! Use this for ObjC code generator instead 
-# $LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH -l objc 
+# $LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH -c -l objc 
 
 # Lock output file for write
 /usr/bin/chflags uchg "$OUTPUT_PATH"
