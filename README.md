@@ -95,19 +95,12 @@ Laurine uses script parameters to change the way how output is generated. Curren
 If you wish to just generate the code once, run following from terminal:
 
 ```
-$ swift laurine.swift -i "Localizable.strings" -c > "Localizations.swift"
-or 
-$ swift laurine.swift -i "Localizable.strings" -c -o "Localizations.swift"
-
+$ swift laurine.swift -i Localizable.strings -c -o Localizations.swift
+or for ObjC
+$ swift laurine.swift -i Localizable.strings -c -o Localizations.m -l objc
 ```
 
-or, if you are using brew:
 
-```
-$ LaurineGenerator.swift -i "Localizable.strings" -c > "Localizations.swift"
-or 
-$ LaurineGenerator.swift -i "Localizable.strings" -c -o "Localizations.swift"
-```
 
 **Build script**
 
@@ -140,6 +133,8 @@ chmod 777 $LAURINE_PATH
 
 # Actually generate output. Customize parameters to your needs (see documentation)
 $LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH
+# ! Use this for ObjC code generator instead 
+# $LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH -l objc 
 
 # Lock output file for write
 /usr/bin/chflags uchg "$OUTPUT_PATH"
@@ -183,11 +178,13 @@ While the Laurine is still very young project, it should cover most of regular u
 - [x] Basic localization strings to variables
 - [x] Complex localization strings to methods
 - [x] Multilevel structures (nesting)
-- [ ] Generate Swift OR Obj-C version of the code
+- [x] Generate Swift output
+- [x] Generate ObjC output
+- [ ] Support for all special localization characters
 - [ ] Localization Tables
 - [ ] Plural support
 - [ ] Gender support
-- [ ] More options [disable nesting etc.]
+- [ ] Tool for automatic replacement of NSLocalizationString in project (thanks [@Vaberer](https://github.com/Vaberer) )
 
 Optional features that I am considering, but have major problems and has to be thought out first, are following:
 

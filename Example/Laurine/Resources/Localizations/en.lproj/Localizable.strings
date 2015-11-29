@@ -20,3 +20,5 @@
 "DetailScreen.Content.Header" = "This will be generated as %d method";
 "DetailScreen.Content.Bulletin.FirstPoint" = "This is first bulletin point";
 "DetailScreen.Content.Bulletin.SecondPoint" = "This is second bulletin point";
+
+"MainScreen.Myabel" = "Hello, I am label";

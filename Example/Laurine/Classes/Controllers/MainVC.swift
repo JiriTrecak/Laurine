@@ -29,6 +29,7 @@ class MainVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
+    @IBOutlet private weak var textLb : UILabel!
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Setup
@@ -68,6 +69,7 @@ class MainVC : UIViewController {
     
         self.showAlert()
     }
+
 }
 
 

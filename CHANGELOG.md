@@ -1,10 +1,22 @@
-## 0.2.0 [WIP]
+## 0.2.1 [In development]
 
-Features added:
+Enhancements:
 
-- ObjC code generation [WIP]
+- Support for all special symbols [WIP]
+- Code documentation [WIP]
+- New version of CommandLine [WIP]
+
+Bugfixes:
+
+- When last-level-string is also substring of longer string, generate special property in deeper levels instead of throwing it out (fe. profile.text & profile.text.title)
+
+## 0.2.0 (2015-11-29)
+
+Enhancements:
+
+- ObjC code generation
 - New option -c --capitalize - enables autocapitalization of the property / method names
-- New option -l --language [objc|swift] - decides which language should be generated [WIP]
+- New option -l --language [objc|swift] - decides which language should be generated
 - New option -v --verbose - when selected, creates generator.log file in the place of the generator, for debugging purposes and statistics
 - New option -o - when set, will write output to file (or 2 files if objc is enabled). If ommited, will send output to stdout instead
 
@@ -17,7 +29,7 @@ Bugfixes:
 
 Initial release
 
-Features added:
+Enhancements:
 
 - input parameter processing
 - translation file processing
