@@ -5,20 +5,20 @@
 
 ## Do I need it? (yes you do)
 
-Laurine is clever Swift script that scans your localization file and generates actual structured code out of it, therefore making the usage of localization strings much easier. 
+Laurine is clever Swift script that scans your localization file and generates actual structured code out of it (in both ObjC or Swift, your call), therefore making the usage of localization strings much easier. 
 
-What is so good about it is that by removing magical strings from your code, compiler can actually tell you that you forgot to make changes (and where), if your localization file changes. It also introduces type checks for strings that contain runtime parameters (`%@`, `%d` etc.).
+The great thing is that by removing magical strings from your code, compiler can actually tell you that you forgot to make changes (and where), if your localization file changes. It also introduces type checking for strings that contain runtime parameters (`%@`, `%d` etc.).
 
-Laurine requires Swift to run and can be used from command line as well as build script (recommended). Laurine uses [CommandLine](https://github.com/jatoben/CommandLine "CommandLine Swift Tool") to get configuration options from you, and due to current limitations of Swift, its code is embedded within Laurine itself.
+Laurine requires Swift to run and can be used from command line as well as build script (recommended). Laurine uses [CommandLine](https://github.com/jatoben/CommandLine "CommandLine Swift Tool") to get settings directly from command line, no extra configuration needed.
 
 
 ## Generated Structures
 
-Once you run Laurine, the output will be one .swift file containing `Localizations` structure. From this single structure, you will get access to all the sweetness:
+Once you run Laurine, the output will be one .swift or .m file containing `Localizations` structure / object. From this single access point, you will get access to all the sweetness:
 
 **Variables**
 
-For each string that does not contain any special characters, static var is generated, containing CamelCase name, actual localization code and base comment that contains base translation, for better orientation. Following:
+For each string that does not contain any special characters, property is generated. Following:
 
 ```swift
 "PROFILE_PHONE_NUMBER" = "Your phone number!"
@@ -34,7 +34,7 @@ in XCode, autocomplete is actually, for once, really helpful! Madness.
 
 **Methods**
 
-If your localization string contains runtime variables, it is generated as method instead. Laurine detects its data type and generates proper method header from that definition. There is no limit to how many of them you have. Following:
+If your localization string contains characters to be replaced in runtime, it is generated as method instead. Laurine detects its data type and generates proper method header from that definition. There is no limit to how many of them you have. Following:
 
 ```swift
 "PROFILE_INFO" = "I am %@, I am %d years old and %.2fm in height!"
@@ -48,15 +48,23 @@ Once again, Xcode autocomplete for the win! Insanity.
 
 ![Image : XCode help for methods](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-2.png?raw=true "Xcode autocomplete")
 
+**Obj-C support**
+
+In recent version, ObjC support was added. Because of the way how the code is generated, it is actually possible to write completely same code as you would in Swift (use dot notation to access next element). Following:
+
+```objective-c
+NSString *text = Localizations.ProfileInfo("Jiri", 25, 1.75)
+```
+
+Produces completely same result as you would get in Swift and is recommended. 
 
 ## Nested Structures
-
-There is one more problem when it comes strings - especially with larger projects, and that is their length and sheer amount (projects with 1000+ localization strings are not really that uncommon). 
 
 It is good practice to write keys so they are as descriptive as possible. Laurine takes advantage of that and instead of super-lengthy name of the property, it generates nested structures. Following:
 
 ```swift
-"PROFILE-NAVIGATION_BAR-ITEMS-DONE" = "Done"
+"PROFILE-NAVIGATION_BAR-ITEMS-DONE" = "Done" // -c -d -
+"PROFILE.NAVIGATION_BAR.ITEMS.DONE" = "Done" // -c -d .
 ```
 
 Is actually converted to:
@@ -92,7 +100,7 @@ Laurine uses script parameters to change the way how output is generated. Curren
 
 **Command line**
 
-If you wish to just generate the code once, run following from terminal:
+If you wish to generate the code just once, run following from terminal:
 
 ```
 $ swift laurine.swift -i Localizable.strings -c -o Localizations.swift
@@ -173,7 +181,7 @@ Yes, you can just download the script itself from this repository, it does not n
 
 ## Supported Features
 
-While the Laurine is still very young project, it should cover most of regular usage. That being said, there are features that are still missing to have full coverage of everything, that localizations offer. Here is full list of features that will Laurine contain once it is complete.
+Laurine should suit most of developers, because it covers all the basic stuff. That being said, there are still things missing to have full coverage of what localizations have to offer. Here is the full list of features that will Laurine contain once it is complete:
 
 - [x] Basic localization strings to variables
 - [x] Complex localization strings to methods
@@ -186,15 +194,11 @@ While the Laurine is still very young project, it should cover most of regular u
 - [ ] Gender support
 - [ ] Tool for automatic replacement of NSLocalizationString in project (thanks [@Vaberer](https://github.com/Vaberer) )
 
-Optional features that I am considering, but have major problems and has to be thought out first, are following:
-
-- [ ] Naming for methods
-- [ ] Seamless integration with [Localize-Swift](https://github.com/marmelroy/Localize-Swift)
 
 ## Contribute
-I will gladly accept Pull Requests that you do, (and I encourage you to do so). If you have any bug or enhnacement that I could do, please open issue and describe it.
+I will gladly accept Pull Requests (and I encourage you to do so). If you encounter any bug or you have enhancement that you would like to see, please open an issue.
 
-I'd also like to round of applause to Marcin Krzyżanowski for his [Natalie Generator](https://github.com/krzyzanowskim/Natalie), which heavily inspired this project by his approach. Here, have a beer!
+I'd also like to make round of applause to Marcin Krzyżanowski for his [Natalie Generator](https://github.com/krzyzanowskim/Natalie), which heavily inspired this project by his approach. Hope we meet for beer one day!
 
 ## Contact Me!
 
