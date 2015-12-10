@@ -1,9 +1,9 @@
 //
-//  MainVC.swift
-//  Laurine
+//  DetailVC.swift
+//  Laurine Example Project
 //
-//  Created by Jiří Třečák.
-//  Copyright © 2015 Jiří Třečák. All rights reserved.
+//  Created by Jiří Třečák
+//  Copyright © 2015 Jiri Trecak. All rights reserved.
 //
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -24,12 +24,11 @@ import UIKit
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - Implementation
 
-class MainVC : UIViewController {
+class DetailVC : UIViewController {
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
-    @IBOutlet private weak var textLb : UILabel!
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Setup
@@ -56,20 +55,11 @@ class MainVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Private
     
-    private func showAlert() {
-        
-        
-    }
-    
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - IBActions
     
-    @IBAction func alertBtnTouchUpInside(button : UIButton) {
     
-        self.showAlert()
-    }
-
 }
 
 

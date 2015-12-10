@@ -1,0 +1,34 @@
+
+# -------- Pods init
+
+# Disable all warnings in pods so the build is clean
+inhibit_all_warnings! 
+
+# Define CP Specs source
+#source 'https://github.com/CocoaPods/Specs.git'
+
+# Force iOS8+ platform
+platform :ios, '8.3'
+
+# Swift frameworks
+use_frameworks!
+
+
+# -------- Frameworks / Networking
+
+pod 'Alamofire'
+
+
+# -------- Frameworks / Data storage
+
+
+
+# -------- Frameworks / UI
+
+
+
+# -------- Frameworks / Utilities
+
+
+
+
