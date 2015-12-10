@@ -25,6 +25,7 @@ pod 'Alamofire'
 
 # -------- Frameworks / UI
 
+pod 'HanekeSwift'
 
 
 # -------- Frameworks / Utilities

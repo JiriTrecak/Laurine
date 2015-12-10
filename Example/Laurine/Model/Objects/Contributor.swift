@@ -21,8 +21,10 @@ class Contributor : JTDataObject {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Data object properties
     
-    var name : String!
-    var homepage : String!
+    var username : String!
+    var avatarURL : String!
+    var detailURL : String!
+    var contributions : Int = 0
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -31,9 +33,13 @@ class Contributor : JTDataObject {
     override func variableMappingTable() -> Array<PropertyElement> {
         
         return [
-            PropertyElement(remoteName: "name", elementDataType: .String),
+            PropertyElement(remoteName: "login", localName: "username", elementDataType: .String),
+            PropertyElement(remoteName: "avatar_url", localName: "avatarURL", elementDataType: .String),
+            PropertyElement(remoteName: "url", localName: "detailURL", elementDataType: .String),
+            PropertyElement(remoteName: "contributions", elementDataType: .Int),
         ]
     }
 }
+
 
 

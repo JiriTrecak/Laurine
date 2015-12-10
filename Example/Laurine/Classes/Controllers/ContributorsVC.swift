@@ -32,10 +32,31 @@ class ContributorsVC : UIViewController {
     // MARK: - Properties
     
     @IBOutlet private weak var table : UITableView!
+    private var fetchedContributors : [Contributor] = []
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Setup
+    
+    override func viewDidLoad() {
+        
+        super.viewDidLoad()
+        self.loadData()
+    }
+    
+    
+    private func loadData() {
+        
+        ContributorAPI.sharedInstance.getContributors { (contributors, error) -> () in
+            
+            if let contributors = contributors {
+                self.fetchedContributors = contributors
+                self.table.reloadData()
+            } else if let error = error {
+                NSLog("error %@", error.localizedDescription)
+            }
+        }
+    }
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -55,17 +76,7 @@ class ContributorsVC : UIViewController {
 extension ContributorsVC : UITableViewDataSource {
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
-    }
-    
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 76
+        return self.fetchedContributors.count
     }
 }
 
@@ -86,7 +97,8 @@ extension ContributorsVC : UITableViewDelegate {
     
     func configureContributorCell(cell: ContributorCell, forIndexPath indexPath: NSIndexPath) {
         
-        
+        let contributor = self.fetchedContributors[indexPath.row]
+        cell.configureWithContributor(contributor)
     }
 }
 
