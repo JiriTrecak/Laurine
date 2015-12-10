@@ -11,6 +11,7 @@
 
 import Foundation
 import UIKit
+import Haneke
 
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -35,18 +36,32 @@ class ContributorCell: UITableViewCell {
     // MARK: - Properties
     
     @IBOutlet private weak var personNameLb : UILabel!
-    @IBOutlet private weak var personGitHubLb : UILabel!
-    @IBOutlet private weak var personIconLb : UILabel!
+    @IBOutlet private weak var personContributions : UILabel!
+    @IBOutlet private weak var personIconIV : UIImageView!
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Public
     
     
+    
+    
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Actions
     
-    
+    func configureWithContributor(contributor : Contributor) {
+        
+        // Set username
+        self.personNameLb.text = contributor.username
+        
+        // Set number of contribution
+        self.personContributions.text = String(format: "Contributed: %d times", contributor.contributions)
+        
+        // Set profile picture, if available
+        if let profilePictureURL = NSURL(string: contributor.avatarURL) {
+            self.personIconIV.hnk_setImageFromURL(profilePictureURL)
+        }
+    }
 }
 
 
