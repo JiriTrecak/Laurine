@@ -9,20 +9,20 @@
 
 ## Do I need it? (yes you do)
 
-Laurine is clever Swift script that scans your localization file and generates actual structured code out of it (in both ObjC or Swift, your call), therefore making the usage of localization strings much easier. 
+Laurine is a clever Swift script that scans your localization file and generates actual structured code out of it (in both ObjC or Swift, your call), thereby making the usage of localization strings much easier. 
 
-The great thing is that by removing magical strings from your code, compiler can actually tell you that you forgot to make changes (and where), if your localization file changes. It also introduces type checking for strings that contain runtime parameters (`%@`, `%d` etc.).
+The great thing is that by removing magical strings from your code, the compiler can actually tell you when you forget to make changes (and where), if your localization file changes. It also introduces type checking for strings that contain runtime format specifiers (`%@`, `%d` etc.).
 
-Laurine requires Swift to run and can be used from command line as well as build script (recommended). Laurine uses [CommandLine](https://github.com/jatoben/CommandLine "CommandLine Swift Tool") to get settings directly from command line, no extra configuration needed.
+Laurine requires Swift to run and can be used from the command line as well as from a build script (recommended). Laurine uses [CommandLine](https://github.com/jatoben/CommandLine "CommandLine Swift Tool") to parse command line arguemnts: no extra configuration is needed.
 
 
 ## Generated Structures
 
-Once you run Laurine, the output will be one .swift or .m file containing `Localizations` structure / object. From this single access point, you will get access to all the sweetness:
+Once you run Laurine, the output will be one .swift or .m file containing a `Localizations` structure / object. From this single access point, you will get access to all the sweetness:
 
 **Variables**
 
-For each string that does not contain any special characters, property is generated. Following:
+For each string that does not contain any special characters, a property is generated. For example:
 
 ```swift
 "PROFILE_PHONE_NUMBER" = "Your phone number!"
@@ -38,7 +38,9 @@ in XCode, autocomplete is actually, for once, really helpful! Madness.
 
 **Methods**
 
-If your localization string contains characters to be replaced in runtime, it is generated as method instead. Laurine detects its data type and generates proper method header from that definition. There is no limit to how many of them you have. Following:
+If your localization string has runtime format specifiers, it is generated as a method instead. Laurine detects the format specifiers and generates a proper method header from that definition. There is no limit to how many of them you have. 
+
+For example:
 
 ```swift
 "PROFILE_INFO" = "I am %@, I am %d years old and %.2fm in height!"
@@ -52,19 +54,19 @@ Once again, Xcode autocomplete for the win! Insanity.
 
 ![Image : XCode help for methods](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-2.png?raw=true "Xcode autocomplete")
 
-**Obj-C support**
+**Objective-C support**
 
-In recent version, ObjC support was added. Because of the way how the code is generated, it is actually possible to write completely same code as you would in Swift (use dot notation to access next element). Following:
+Objective-C is now supported. Because of the way the code is generated, you can write just the same code as you would in Swift, using dot notation to access each next element. For example:
 
 ```objective-c
 NSString *text = Localizations.ProfileInfo("Jiri", 25, 1.75)
 ```
 
-Produces completely same result as you would get in Swift and is recommended. 
+This produces exactly the same result as you would get in Swift and is recommended. 
 
 ## Nested Structures
 
-It is good practice to write keys so they are as descriptive as possible. Laurine takes advantage of that and instead of super-lengthy name of the property, it generates nested structures. Following:
+It is best practice to make the keys as descriptive and structured as possible. Laurine takes advantage of that to generate nested structures rather than overly long key names. For example:
 
 ```swift
 "PROFILE-NAVIGATION_BAR-ITEMS-DONE" = "Done" // -c -d -
@@ -86,7 +88,7 @@ Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesome
 
 ## Usage
 
-Laurine uses script parameters to change the way how output is generated. Currently, following is supported:
+Laurine uses script parameters to change the way how output is generated. Currently, the following is supported:
 
 ```
   -i, --input:     
@@ -123,7 +125,7 @@ $ LaurineGenerator.swift -i Localizable.strings -c -o Localizations.m -l objc
 
 **Build script**
 
-Recommended way how to use Laurine is to create Build Phase Run script (Xcode > Project > Targets > Your build target > Build Phases > New Run Script Phase). This way, Laurine will be executed before each build and will ensure integrity of your translations. Be sure to move script before "Compile Sources" phase, as it has to generate the code first, before it can be used anywhere else. For convenience, you can just copy following, and change configuration appropriately.
+The recommended way to use Laurine is to create a "Run Script" Build Phase (Xcode > Project > Targets > Your build target > Build Phases > New Run Script Phase). This way, Laurine will be executed before each build and will ensure the integrity of your translations. Be sure to put the script before the "Compile Sources" phase, as it has to generate the code first, before it can be used anywhere else. For convenience, you can just copy the following, and change the configuration appropriately.
 
 ```sh
 set -x
@@ -165,7 +167,7 @@ echo "Laurine Generator : Finished"
 
 **Brew**
 
-Laurine does not require installation. For your convenience, you can make it easily accessible from /usr/local/bin by installing Laurine through brew:
+Laurine does not require installation. For your convenience, you can make it easily accessible from ``/usr/local/bin`` by installing Laurine through brew:
 
 ```
 $ brew tap jiritrecak/laurine
