@@ -1,24 +1,29 @@
 //
 //  Localizable.strings (English)
-//  Laurine
+//  Laurine Example Project
 //
-//  Created by Jiří Třečák.
-//  Copyright © 2015 Jiří Třečák. All rights reserved.
+//  Created by Jiří Třečák
+//  Copyright © 2015 Jiri Trecak. All rights reserved.
 //
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-// MARK: - Welcome screen
+// MARK: - Contributors
 
-"WelcomeScreen.NavigationBar.Title" = "Welcome!";
-"WelcomeScreen.NavigationBar.Subtitle" = "This is example of Laurine Generator";
+"Contributors.NavigationBar.Title" = "Laurine Lovers";
+"Contributors.Header" = "This is the list of people who contributed with their work to make Laurine Better - it is also great example of how to use it, and my way how to say thank you!";
+"Contributors.Footer" = "Thanks everyone! You rock!";
+
+// This will be later integrated in the library (support for gender / plurality), for now, I am making simple decision what to use in code
+"Contributors.Contributor.Contributed.Singular" = "1 contribution";
+"Contributors.Contributor.Contributed.Plural" = "%d contributions";
 
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - Detail screen
 
-"DetailScreen.NavigationBar.Title" = "Detail Screen!";
-"DetailScreen.Content.Header" = "This will be generated as %d method";
-"DetailScreen.Content.Bulletin.FirstPoint" = "This is first bulletin point";
-"DetailScreen.Content.Bulletin.SecondPoint" = "This is second bulletin point";
-
-"MainScreen.Myabel" = "Hello, I am label";
+"DetailScreen.NavigationBar.Title" = "User profile";
+"DetailScreen.Stats.Repositories" = "Repositories";
+"DetailScreen.Stats.Followers" = "Followers";
+"DetailScreen.Stats.Following" = "Following";
+"DetailScreen.Misc.LoveNote" = "* Yes, this contributor is awesome";
+"DetailScreen.Buttons.GITHubProfile" = "Check my profile on GitHub.com >";

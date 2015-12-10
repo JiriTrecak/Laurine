@@ -32,10 +32,15 @@ class DetailVC : UIViewController {
     // MARK: - Properties
     
     @IBOutlet private weak var contributorProfilePictureIV : UIImageView!
+    
+    @IBOutlet private weak var contributorFollowersTitleLb : UILabel!
+    @IBOutlet private weak var contributorFollowingTitleLb : UILabel!
+    @IBOutlet private weak var contributorReposTitleLb : UILabel!
     @IBOutlet private weak var contributorNameLb : UILabel!
     @IBOutlet private weak var contributorFollowersLb : UILabel!
     @IBOutlet private weak var contributorFollowingLb : UILabel!
     @IBOutlet private weak var contributorReposLb : UILabel!
+    @IBOutlet private weak var contributorLoveNoteLb : UILabel!
     @IBOutlet private weak var contributorPageBtn : UIButton!
     
     var contributor : Contributor!
@@ -47,8 +52,20 @@ class DetailVC : UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        self.setupUI()
         self.updateWithContributor(self.contributor)
         self.loadData()
+    }
+    
+    
+    func setupUI() {
+        
+        // Localize. Try playing with it, so you know how fast it is to traverse through tons of strings [mostly enter, enter, enter, enter..]
+        self.contributorFollowersTitleLb.text = Localizations.DetailScreen.Stats.Followers
+        self.contributorFollowingTitleLb.text = Localizations.DetailScreen.Stats.Following
+        self.contributorReposLb.text = Localizations.DetailScreen.Stats.Repositories
+        self.contributorReposLb.text = Localizations.DetailScreen.Misc.LoveNote
+        self.contributorPageBtn.setTitle(Localizations.DetailScreen.Buttons.GITHubProfile, forState: .Normal)
     }
     
     

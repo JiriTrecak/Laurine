@@ -32,7 +32,10 @@ class ContributorsVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
+    @IBOutlet private weak var tableHeaderLb : UILabel!
+    @IBOutlet private weak var footerLb : UILabel!
     @IBOutlet private weak var table : UITableView!
+    
     private var fetchedContributors : [Contributor] = []
     
     
@@ -62,7 +65,12 @@ class ContributorsVC : UIViewController {
         // Setup navigation bar
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: self, action: nil)
         self.navigationController?.navigationBar.tintColor = UIColor.darkGrayColor()
+        
+        // Localize. Try playing with it, so you know how fast it is to traverse through tons of strings [mostly enter, enter, enter, enter..]
+        self.tableHeaderLb.text = Localizations.Contributors.Header
+        self.footerLb.text = Localizations.Contributors.Footer
     }
+        
     
     
     private func loadData() {
