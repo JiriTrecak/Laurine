@@ -1,4 +1,4 @@
-## 0.2.1 [In development]
+## 0.2.2
 
 Enhancements:
 
@@ -10,11 +10,17 @@ Bugfixes:
 
 - When last-level-string is also substring of longer string, generate special property in deeper levels instead of throwing it out (fe. profile.text & profile.text.title)
 
+## 0.2.1 (2015-12-10)
+
+Enhancements:
+
+- **Example is now pretty sweet. [check it out](https://github.com/JiriTrecak/Laurine/tree/master/Example).**
+
 ## 0.2.0 (2015-11-29)
 
 Enhancements:
 
-- ObjC code generation
+- **ObjC code generation**
 - New option -c --capitalize - enables autocapitalization of the property / method names
 - New option -l --language [objc|swift] - decides which language should be generated
 - New option -v --verbose - when selected, creates generator.log file in the place of the generator, for debugging purposes and statistics
@@ -31,10 +37,10 @@ Initial release
 
 Enhancements:
 
-- input parameter processing
-- translation file processing
-- swift code generation
-- nested structs
-- localize methods and extensions
-- static vars for end-level parameters
-- special characters parsed as functions
+- Input parameter processing
+- Translation file processing
+- Swift code generation
+- Nested structs
+- Localize methods and extensions
+- Static vars for end-level parameters
+- Special characters parsed as functions
