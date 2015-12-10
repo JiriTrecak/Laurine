@@ -213,11 +213,14 @@ I will gladly accept Pull Requests (and I encourage you to do so). If you encoun
 
 I'd also like to make round of applause to Marcin Krzyżanowski for his [Natalie Generator](https://github.com/krzyzanowskim/Natalie), which heavily inspired this project by his approach. Hope we meet for beer one day!
 
-## Contact Me!
+## Contact me
 
-Jiří Třečák
 
 - [@JiriTrecak](https://twitter.com/@JiriTrecak "My twitter account")
+- [jiritrecak@gmail.com](mailto:jiritrecak@gmail.com "My email") 
+
+Or, if you would like to know me better, check out my portfolio.
+
 - [jiritrecak.com](http://jiritrecak.com/ "My personal website") 
 
 ##Licence
