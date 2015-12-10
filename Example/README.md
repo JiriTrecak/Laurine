@@ -15,7 +15,7 @@ Example uses pods which are checked in, so please **open Laurine.xcworkspace** i
 
 ## Love for contributors!
 
-The example is connected to GitHub open API and feeds the data in real-time. I made the example so it lists all the contributors to this repository. *It is basically Hall of Fame*. If you want to be in, lets build the best library together.
+The example is connected to GitHub open API and feeds the data in real-time. I made the example so it lists all the contributors to this repository. **It is basically Hall of Fame**. If you want to be in, lets build the best library together.
 
 **List of contributors**
 
