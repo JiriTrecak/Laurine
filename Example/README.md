@@ -10,6 +10,8 @@ If you would like to use any part of the project for your personal projects, or 
 
 Example uses pods which are checked in, so please **open Laurine.xcworkspace** instead of .xcodeproj.
 
+> If you do fullsearch for `.Localizations`, you will find all the tricks in the code.
+
 
 ## Love for contributors!
 
