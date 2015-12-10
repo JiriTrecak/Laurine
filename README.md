@@ -2,6 +2,8 @@
 [![Platforms OS X | iOS | tvos](https://img.shields.io/badge/Platforms-OS%20X%20%7C%20iOS-lightgray.svg?style=flat)](https://developer.apple.com/swift/)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
 
+> (Update 2015-12-10) : **Laurine is now #1 trending swift repo in the world**. To everyone who liked it, here, have a beer with me. :beer:
+
 # Laurine
 
 **Localization code generator** written (with love) for Swift, **intended to end the constant problems** that localizations present for developers.
