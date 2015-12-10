@@ -148,7 +148,7 @@ echo "Laurine Generator : Write"
 /usr/bin/chflags nouchg "$OUTPUT_PATH"
 
 # Add permission to generator for script execution
-chmod 777 $LAURINE_PATH
+chmod 755 $LAURINE_PATH
 
 # Actually generate output. Customize parameters to your needs (see documentation)
 $LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH -c
