@@ -4,15 +4,40 @@
 
 # Laurine Example 
 
- WIP
+**I find most of the examples boring**. This is why I decided to build **full-fledged** application as example. It contains all you would expect from real application - UI, network, logic.. but also localizations and configured laurine generator. 
+
+If you would like to use any part of the project for your personal projects, or use it as template if you are just starting with development, you are very welcome to do that. 
+
+Example uses pods which are checked in, so please **open Laurine.xcworkspace** instead of .xcodeproj.
 
 
-## Contact Me!
+## Love for contributors!
 
-Jiří Třečák
+The example is connected to GitHub open API and feeds the data in real-time. I made the example so it lists all the contributors to this repository. *It is basically Hall of Fame*. If you want to be in, lets build the best library together.
+
+**List of contributors**
+
+![Image : XCode help for variables](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-3.png?raw=true "Xcode autocomplete")
+
+**Contributor detail**
+
+![Image : XCode help for variables](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-4.png?raw=true "Xcode autocomplete")
+
+
+## Sneakpeek
+
+There is another library / tool that I am releasing in very near future (definitely before christmas), if you want to get idea about what it is, go to Classes/Model/Objects and see the beauty.
+
+## Contact me
+
 
 - [@JiriTrecak](https://twitter.com/@JiriTrecak "My twitter account")
+- [jiritrecak@gmail.com](mailto:jiritrecak@gmail.com "My email") 
+
+Or, if you would like to know me better, check out my portfolio.
+
 - [jiritrecak.com](http://jiritrecak.com/ "My personal website") 
+
 
 ##Licence
 
