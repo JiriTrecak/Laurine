@@ -17,6 +17,7 @@ import UIKit
 //MARK: - Definitions
 
 private let CELL_IDENTIFIER_CONTRIBUTORS : String = "ContributorCell"
+private let SEGUE_SHOW_DETAIL : String = "ShowDetailVC"
 
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -41,7 +42,26 @@ class ContributorsVC : UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        self.setupUI()
         self.loadData()
+    }
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        
+        super.viewWillAppear(animated)
+        
+        if let indexPath = self.table.indexPathForSelectedRow {
+            self.table.deselectRowAtIndexPath(indexPath, animated: true)
+        }
+    }
+    
+    
+    private func setupUI() {
+        
+        // Setup navigation bar
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: self, action: nil)
+        self.navigationController?.navigationBar.tintColor = UIColor.darkGrayColor()
     }
     
     
@@ -62,11 +82,14 @@ class ContributorsVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Public
     
-    
-    // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-    // MARK: - Private
-    
-    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        // Forward contributor object if we are showing profile page
+        if segue.identifier! == SEGUE_SHOW_DETAIL {
+            let dvc = segue.destinationViewController as! DetailVC
+            dvc.contributor = sender as! Contributor
+        }
+    }
 }
 
 
@@ -99,6 +122,13 @@ extension ContributorsVC : UITableViewDelegate {
         
         let contributor = self.fetchedContributors[indexPath.row]
         cell.configureWithContributor(contributor)
+    }
+    
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        let contributor = self.fetchedContributors[indexPath.row]
+        self.performSegueWithIdentifier(SEGUE_SHOW_DETAIL, sender: contributor)
     }
 }
 
