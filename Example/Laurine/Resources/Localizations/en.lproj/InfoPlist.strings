@@ -1,13 +1,13 @@
 //
-//  InfoPList.strings (English)
-//  Laurine
+//  InfoPlist.strings (English)
+//  Laurine Example Project
 //
-//  Created by Jiří Třečák.
-//  Copyright © 2015 Jiří Třečák. All rights reserved.
+//  Created by Jiří Třečák
+//  Copyright © 2015 Jiri Trecak. All rights reserved.
 //
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - Main
 
-"CFBundleDisplayName" = "Laurine EN";
-"CFBundleName" = "Laurine EN";
+"CFBundleDisplayName" = "Laurine";
+"CFBundleName" = "Laurine";

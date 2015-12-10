@@ -174,7 +174,9 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="Laurine Lovers" id="3FU-sf-TRU"/>
                     <connections>
+                        <outlet property="footerLb" destination="hE7-qH-WPk" id="NLt-2o-rVp"/>
                         <outlet property="table" destination="lmf-z8-aPb" id="YpA-hm-OJg"/>
+                        <outlet property="tableHeaderLb" destination="lQG-Uw-c9E" id="ETb-uj-D4Y"/>
                         <segue destination="dDo-6x-nL1" kind="show" identifier="ShowDetailVC" id="fti-2b-Qdd"/>
                     </connections>
                 </viewController>
@@ -382,11 +384,15 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="contributorFollowersLb" destination="sxD-mF-P6s" id="hMi-h9-tP6"/>
+                        <outlet property="contributorFollowersTitleLb" destination="0mU-Dq-BQH" id="a5w-Vy-8Dh"/>
                         <outlet property="contributorFollowingLb" destination="fOy-ZD-Svd" id="pO9-Gb-7vE"/>
+                        <outlet property="contributorFollowingTitleLb" destination="GTU-Z7-cH2" id="YmF-yA-ZN4"/>
+                        <outlet property="contributorLoveNoteLb" destination="7NU-Rd-Khq" id="Xeg-rP-T9F"/>
                         <outlet property="contributorNameLb" destination="zAS-QH-ocX" id="ii8-Hw-NWk"/>
                         <outlet property="contributorPageBtn" destination="VXG-Q4-owH" id="AD0-gj-TxN"/>
                         <outlet property="contributorProfilePictureIV" destination="vpW-od-OwQ" id="eMh-XD-2Fi"/>
                         <outlet property="contributorReposLb" destination="faP-3O-520" id="7BN-Ld-R97"/>
+                        <outlet property="contributorReposTitleLb" destination="KZL-Fo-P7t" id="k3q-ef-rIJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Obd-Sr-ucn" userLabel="First Responder" sceneMemberID="firstResponder"/>
