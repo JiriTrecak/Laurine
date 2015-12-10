@@ -11,6 +11,8 @@
 
 import Foundation
 import UIKit
+import Haneke
+import SafariServices
 
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -29,6 +31,15 @@ class DetailVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
+    @IBOutlet private weak var contributorProfilePictureIV : UIImageView!
+    @IBOutlet private weak var contributorNameLb : UILabel!
+    @IBOutlet private weak var contributorFollowersLb : UILabel!
+    @IBOutlet private weak var contributorFollowingLb : UILabel!
+    @IBOutlet private weak var contributorReposLb : UILabel!
+    @IBOutlet private weak var contributorPageBtn : UIButton!
+    
+    var contributor : Contributor!
+    
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Setup
@@ -36,15 +47,39 @@ class DetailVC : UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-    
-        // Setup all localizations
-        self.setupLocalizations()
+        self.updateWithContributor(self.contributor)
+        self.loadData()
     }
     
     
-    func setupLocalizations() {
+    func updateWithContributor(contributor : Contributor) {
+        
+        // Update texts
+        self.contributorNameLb.text = self.contributor.username
+        self.contributorFollowersLb.text = String(format: "%d", self.contributor.followers)
+        self.contributorFollowingLb.text = String(format: "%d", self.contributor.following)
+        self.contributorReposLb.text = String(format: "%d", self.contributor.repositories)
+        self.contributorPageBtn.enabled = self.contributor.detailURL != nil
+        
+        // Set profile pictures
+        if let profilePictureURL = NSURL(string: self.contributor.avatarURL) {
+            self.contributorProfilePictureIV.hnk_setImageFromURL(profilePictureURL)
+        }
+    }
     
-        // TODO: Localizations
+    
+    func loadData() {
+        
+        ContributorAPI.sharedInstance.updateContributor(self.contributor) { (contributor, error) -> () in
+            
+            if let contributor = contributor {
+                self.contributor = contributor
+                self.updateWithContributor(contributor)
+                
+            } else if let error = error {
+                NSLog("error %@", error.localizedDescription)
+            }
+        }
     }
     
     
@@ -59,7 +94,13 @@ class DetailVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - IBActions
     
+    @IBAction func githubBtnTouchUpInside(button : UIButton) {
     
+        if let githubURLString = self.contributor.githubURL, githubURL = NSURL(string: githubURLString) {
+            let svc = SFSafariViewController(URL: githubURL)
+            self.presentViewController(svc, animated: true, completion: nil)
+        }
+    }
 }
 
 

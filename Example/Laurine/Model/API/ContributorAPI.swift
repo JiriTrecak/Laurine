@@ -62,6 +62,25 @@ class ContributorAPI {
                 }
         }
     }
+    
+    
+    func updateContributor(contributor : Contributor, handler : (contributor : Contributor?, error : NSError?) -> ()) {
+        
+        Alamofire.request(.GET, contributor.detailURL, parameters: nil, encoding: ParameterEncoding.JSON, headers: nil)
+            .responseJSON { response in
+                
+                if let JSON = response.result.value as? NSDictionary {
+                    
+                    // Update contributor
+                    contributor.updateWithDictionary(JSON)
+                    
+                    // Notify caller
+                    handler(contributor: contributor, error: nil)
+                } else {
+                    handler(contributor: nil, error: response.result.error)
+                }
+        }
+    }
 }
 
 

@@ -24,19 +24,27 @@ class Contributor : JTDataObject {
     var username : String!
     var avatarURL : String!
     var detailURL : String!
+    var githubURL : String? = nil
     var contributions : Int = 0
+    var followers : Int = 0
+    var following : Int = 0
+    var repositories : Int = 0
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Data object mapping
     
-    override func variableMappingTable() -> Array<PropertyElement> {
+    override func variableMappingTable() -> [PropertyElement] {
         
         return [
             PropertyElement(remoteName: "login", localName: "username", elementDataType: .String),
             PropertyElement(remoteName: "avatar_url", localName: "avatarURL", elementDataType: .String),
+            PropertyElement(remoteName: "html_url", localName: "githubURL", elementDataType: .String),
             PropertyElement(remoteName: "url", localName: "detailURL", elementDataType: .String),
             PropertyElement(remoteName: "contributions", elementDataType: .Int),
+            PropertyElement(remoteName: "followers", elementDataType: .Int),
+            PropertyElement(remoteName: "following", elementDataType: .Int),
+            PropertyElement(remoteName: "public_repos", localName: "repositories", elementDataType: .Int)
         ]
     }
 }
