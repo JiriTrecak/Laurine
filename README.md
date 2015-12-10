@@ -6,7 +6,7 @@
 
 **Localization code generator** written (with love) for Swift, **intended to end the constant problems** that localizations present for developers.
 
-> Too tired to Read? That is understandable. That is why I made an example, that it little different than usual - [check it out](https://github.com/JiriTrecak/Laurine/tree/master/Example). Just download and run in XCode.
+> Too tired to read? That is understandable. That is why I made this example. You will find it little bit different from what you usually see - [check it out](https://github.com/JiriTrecak/Laurine/tree/master/Example). Just download and run in XCode.
 
 
 
