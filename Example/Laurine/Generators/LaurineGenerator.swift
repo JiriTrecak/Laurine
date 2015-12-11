@@ -853,6 +853,7 @@ private extension String {
     var nolineString: String {
         
         return self.stringByReplacingOccurrencesOfString("\n", withString: "")
+                   .stringByReplacingOccurrencesOfString("\r", withString: "")
     }
     
     
@@ -1541,8 +1542,8 @@ class TemplateFactory {
         return "\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "public struct \(name) {\n"
              + "\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "\(content)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "}"
+             + "\(content)"
+             + TemplateFactory.contentIndentForLevel(contentLevel) + "}\n"
     }
     
     
