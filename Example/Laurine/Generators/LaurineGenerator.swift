@@ -1436,7 +1436,7 @@ class StreamWriter {
     
     func writeRequiredExtensions() {
         
-        self.store("extension String {\n")
+        self.store("private extension String {\n")
         self.store("\n")
         self.store("    var localized: String {\n")
         self.store("\n")
@@ -1539,7 +1539,7 @@ class TemplateFactory {
     class func templateForSwiftStructWithName(name : String, content : String, contentLevel : Int) -> String {
         
         return "\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "struct \(name) {\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel) + "public struct \(name) {\n"
              + "\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "\(content)\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "}"
@@ -1549,14 +1549,14 @@ class TemplateFactory {
     class func templateForSwiftStaticVarWithName(name : String, key : String, baseTranslation : String, contentLevel : Int) -> String {
         
         return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "static var \(name) : String = \"\(key)\".localized\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel) + "public static var \(name) : String = \"\(key)\".localized\n"
     }
     
     
     class func templateForSwiftFuncWithName(name : String, key : String, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
         
         return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "static func \(name)(\(methodHeader)) -> String {\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel) + "public static func \(name)(\(methodHeader)) -> String {\n"
              + TemplateFactory.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "}\n"
     }
