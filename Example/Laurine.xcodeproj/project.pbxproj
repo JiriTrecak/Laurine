@@ -22,7 +22,6 @@
 		0BF9E6571BF234F80055C0D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E64C1BF234F80055C0D8 /* Assets.xcassets */; };
 		0BF9E65D1BF2356A0055C0D8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E65B1BF2356A0055C0D8 /* LaunchScreen.storyboard */; };
 		0BF9E65E1BF2356A0055C0D8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E65C1BF2356A0055C0D8 /* Main.storyboard */; };
-		0BF9E6781BF237300055C0D8 /* Localizations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF9E6771BF237300055C0D8 /* Localizations.swift */; };
 		CB5391DF151B7C3DA457BF51 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07D399D40D89F38AEDB64A47 /* Pods.framework */; };
 /* End PBXBuildFile section */
 
@@ -46,7 +45,6 @@
 		0BF9E64D1BF234F80055C0D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0BF9E65B1BF2356A0055C0D8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0BF9E65C1BF2356A0055C0D8 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		0BF9E6771BF237300055C0D8 /* Localizations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localizations.swift; sourceTree = "<group>"; };
 		65DCC94C976998D3574E1606 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -203,7 +201,6 @@
 		0BF9E6761BF237300055C0D8 /* Generated */ = {
 			isa = PBXGroup;
 			children = (
-				0BF9E6771BF237300055C0D8 /* Localizations.swift */,
 			);
 			path = Generated;
 			sourceTree = "<group>";
@@ -311,7 +308,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -x\necho \"Laurine Generator : Configuration\"\n\n# CONFIGURATION\n# Get base path to project\nBASE_PATH=\"$PROJECT_DIR/$PROJECT_NAME\"\n\n# Get path to Laurine Generator script\nLAURINE_PATH=\"$BASE_PATH/Generators/LaurineGenerator.swift\"\n\n# Get path to main localization file (usually english).\nSOURCE_PATH=\"$BASE_PATH/Resources/Localizations/en.lproj/Localizable.strings\"\n\n# Get path to output. If you use ObjC version of output, set implementation file (.m), as header will be generated automatically\nOUTPUT_PATH=\"$BASE_PATH/Classes/Generated/Localizations.swift\"\n\necho \"Laurine Generator : Write\"\n\n# Unlock output file for write\n/usr/bin/chflags nouchg \"$OUTPUT_PATH\"\n\n# Add permission to generator for script execution\nchmod 777 $LAURINE_PATH\n\n# Actually generate output. Customize parameters to your needs (see documentation)\n$LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH\n\n# Lock output file for write\n/usr/bin/chflags uchg \"$OUTPUT_PATH\"\n\necho \"Laurine Generator : Finished\"\n";
+			shellScript = "set -x\n\n#--------- START OF CONFIGURATION\n\n# Get base path to project\nBASE_PATH=\"$PROJECT_DIR/$PROJECT_NAME\"\n\n# Get path to Laurine Generator script\nLAURINE_PATH=\"$BASE_PATH/Generators/LaurineGenerator.swift\"\n\n# Get path to main localization file (usually english).\nSOURCE_PATH=\"$BASE_PATH/Resources/Localizations/en.lproj/Localizable.strings\"\n\n# Get path to output. If you use ObjC version of output, set implementation file (.m), as header will be generated automatically\nOUTPUT_PATH=\"$BASE_PATH/Classes/Generated/Localizations.swift\"\n\n#--------- END OF CONFIGURATION\n\n# Add permission to generator for script execution\nchmod 755 $LAURINE_PATH\n\n# Actually generate output. Customize parameters to your needs (see documentation)\n$LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH\n\n";
 		};
 		6F6EA6058ADEA073BE5E46A5 /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -374,7 +371,6 @@
 				0BBA61EA1C19C2A1003D12F6 /* JTDataObject.swift in Sources */,
 				0B138E2F1C1973160079867B /* DetailVC.swift in Sources */,
 				0BF9E6541BF234F80055C0D8 /* ContributorsVC.swift in Sources */,
-				0BF9E6781BF237300055C0D8 /* Localizations.swift in Sources */,
 				0BBA61ED1C19C2A1003D12F6 /* Contributor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
