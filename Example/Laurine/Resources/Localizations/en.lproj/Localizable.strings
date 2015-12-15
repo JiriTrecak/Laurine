@@ -26,4 +26,4 @@
 "DetailScreen.Stats.Followers" = "Followers";
 "DetailScreen.Stats.Following" = "Following";
 "DetailScreen.Misc.LoveNote" = "* Yes, this contributor is awesome";
-"DetailScreen.Buttons.GITHubProfile" = "Check my profile on GitHub.com >";
+"DetailScreen.Buttons.GITHubProfile" = "Check my profile on GitHub.com >"; 

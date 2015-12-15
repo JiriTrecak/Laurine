@@ -154,8 +154,11 @@ The recommended way to use Laurine is to create a "Run Script" Build Phase (Xcod
  # Add permission to generator for script execution
  chmod 755 $LAURINE_PATH
  
- # Actually generate output. -- CUSTOMIZE -- parameters to your needs (see documentation)
- $LAURINE_PATH -i $SOURCE_PATH -o $OUTPUT_PATH
+ # Actually generate output. -- CUSTOMIZE -- parameters to your needs (see documentation). 
+ # Will only re-generate script if something changed
+ if [ "$OUTPUT_PATH" -ot "$SOURCE_PATH" ]; then
+    "$LAURINE_PATH" -i "$SOURCE_PATH" -o "$OUTPUT_PATH"
+ fi
 
 ```
 
