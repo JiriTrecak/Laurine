@@ -21,7 +21,7 @@ The great thing is that by removing magical strings from your code, the compiler
 Laurine requires Swift to run and can be used from the command line as well as from a build script (recommended). Laurine uses [CommandLine](https://github.com/jatoben/CommandLine "CommandLine Swift Tool") to parse command line arguemnts: no extra configuration is needed.
 
 
-## Generated Structures
+## What do I get?
 
 Once you run Laurine, the output will be one .swift or .m file containing a `Localizations` structure / object. From this single access point, you will get access to all the sweetness:
 
