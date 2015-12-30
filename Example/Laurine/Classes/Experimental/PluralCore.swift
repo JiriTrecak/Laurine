@@ -402,4 +402,52 @@ class PluralCore {
     private func vietnameseRuleForCount(count : UInt) -> PluralGroup {
         return .Other
     }
+    
+    
+    private func unknownRuleForCount(count : UInt) -> PluralGroup {
+        return .Other
+    }
+    
+    private func ruleForLanguageCode(code : String) -> ((count : UInt) -> PluralGroup) {
+        
+        switch code {
+            case "ar": return self.vietnameseRuleForCount
+            case "ca": return self.catalanRuleForCount
+            case "zh-Hans": return self.simplifiedChineseRuleForCount
+            case "zh-Hant": return self.traditionalChineseRuleForCount
+            case "cr": return croatianRuleForCount
+            case "cs": return czechRuleForCount
+            case "da": return danishRuleForCount
+            case "nl": return dutchRuleForCount
+            case "en": return englishRuleForCount
+            case "fr": return frenchRuleForCount
+            case "de": return germanRuleForCount
+            case "fi": return finnishRuleForCount
+            case "el": return greekRuleForCount
+            case "he": return hebrewRuleForCount
+            case "hu": return hungarianRuleForCount
+            case "id": return indonesianRuleForCount
+            case "it": return italianRuleForCount
+            case "ja": return japaneseRuleForCount
+            case "ko": return koreanRuleForCount
+            case "lv": return latvianRuleForCount
+            case "ms": return malayRuleForCount
+            case "nb": return norwegianBokamlRuleForCount
+            case "nn": return norwegianNynorskRuleForCount
+            case "pl": return polishRuleForCount
+            case "pt": return portugeseRuleForCount
+            case "ro": return romanianRuleForCount
+            case "ru": return russianRuleForCount
+            case "es": return spanishRuleForCount
+            case "sk": return slovakRuleForCount
+            case "sv": return swedishRuleForCount
+            case "th": return thaiRuleForCount
+            case "tr": return turkishRuleForCount
+            case "uk": return ukrainianRuleForCount
+            case "vi": return vietnameseRuleForCount
+            default:
+            print("whoa whoa, unsupported language %@ bro!", code)
+            return unknownRuleForCount
+        }
+    }
 }
