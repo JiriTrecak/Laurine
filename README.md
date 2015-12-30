@@ -14,9 +14,9 @@
 
 ## Do I need it? (yes you do)
 
-Laurine is a clever Swift script that scans your localization file and generates actual structured code out of it (in both ObjC or Swift, your call), thereby making the usage of localization strings much easier. 
+Laurine is a clever Swift script that scans your localization file and generates structured, high-performance code out of it (in both ObjC or Swift, your call), thereby making the usage of localization strings much easier and safer. 
 
-The great thing is that by removing magical strings from your code, the compiler can actually tell you when you forget to make changes (and where), if your localization file changes. It also introduces type checking for strings that contain runtime format specifiers (`%@`, `%d` etc.).
+The great thing is that by removing magical strings from your code, the compiler can actually tell you when you forget to make changes (and where), if your localization file changes. It also introduces type checking for strings that contain runtime format specifiers (`%@`, `%d` etc.). 
 
 Laurine requires Swift to run and can be used from the command line as well as from a build script (recommended). Laurine uses [CommandLine](https://github.com/jatoben/CommandLine "CommandLine Swift Tool") to parse command line arguemnts: no extra configuration is needed.
 
@@ -58,10 +58,14 @@ self.labelToLocalize.text = Localizations.ProfileInfo("Jiri", 25, 1.75)
 Once again, Xcode autocomplete for the win! Insanity.
 
 ![Image : XCode help for methods](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-2.png?raw=true "Xcode autocomplete")
+ 
+**Swift support**
+ 
+ Swift-written application is recommended Laurine usecase. Internally, it uses nested structures to make your life much easier. Also, it is extremely performant and will have no impact on your current codebase.
 
-**Objective-C support**
+**ObjC support**
 
-Objective-C is now supported. Because of the way the code is generated, you can write just the same code as you would in Swift, using dot notation to access each next element. For example:
+Objective-C is supported from v0.2 as well. Because of the way the code is generated, you can write just the same code as you would in Swift, using dot notation to access each next element. For example:
 
 ```objective-c
 NSString *text = Localizations.ProfileInfo("Jiri", 25, 1.75)
