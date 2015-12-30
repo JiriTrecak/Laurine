@@ -1084,8 +1084,12 @@ class Localization {
             }
         }
         
-        if baseClass == BASE_CLASS_NAME && !header {
-            contentStructure.append(TemplateFactory.templateForObjCBaseClassImplementation(OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
+        if baseClass == BASE_CLASS_NAME {
+			if header {
+				contentStructure.append(TemplateFactory.templateForObjCBaseClassHeader(OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
+			} else {
+				contentStructure.append(TemplateFactory.templateForObjCBaseClassImplementation(OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
+			}
         }
         
         // Generate class code for current class
@@ -1643,7 +1647,11 @@ class TemplateFactory {
              + "- (NSString *(^)(\(methodHeader)))\(name);"
     }
     
-    
+	
+	class func templateForObjCBaseClassHeader(name: String) -> String {
+		return "+ (\(name) *)sharedInstance;\n"
+	}
+	
     class func templateForObjCBaseClassImplementation(name : String) -> String {
         
         return "+ (\(name) *)sharedInstance {\n"
