@@ -866,6 +866,23 @@ private extension String {
         let digits = NSCharacterSet.decimalDigitCharacterSet()
         return digits.longCharacterIsMember(uni.value)
     }
+    
+    
+    func isReservedKeyword(lang : Runtime.ExportLanguage) -> Bool {
+        
+        // Define keywords for each language
+        var keywords : [String] = []
+        if lang == .ObjC {
+            keywords = ["auto", "break", "case", "char", "const", "continue", "default", "do", "double", "else", "enum", "extern", "float", "for", "goto", "if", "inline", "int", "long",
+                        "register", "restrict", "return", "short", "signed", "sizeof", "static", "struct", "swift", "typedef", "union", "unsigned", "void", "volatile", "while",
+                        "BOOL", "Class", "bycopy", "byref", "id", "IMP", "in", "inout", "nil", "NO", "NULL", "oneway", "out", "Protocol", "SEL", "self", "super", "YES"]
+        } else if lang == .Swift {
+            keywords = ["class", "deinit", "enum", "extension", "func", "import", "init", "inout", "internal", "let", "operator", "private", "protocol", "public", "static", "struct", "subscript", "typealias", "var", "break", "case", "continue", "default", "defer", "do", "else", "fallthrough", "for", "guard", "if", "in", "repeat", "return", "switch", "where", "while", "as", "catch", "dynamicType", "false", "is", "nil", "rethrows", "super", "self", "Self", "throw", "throws", "true", "try", "__COLUMN__", "__FILE__", "__FUNCTION__", "__LINE__"]
+        }
+        
+        // Check if it contains that keyword
+        return keywords.indexOf(self) != nil
+    }
 }
 
 
@@ -1049,9 +1066,9 @@ class Localization {
                 let staticString : String
                 
                 if methodParams.count > 0 {
-                    staticString = self.objcLocalizationFuncFromLocalizationKey(value as! String, methodName: self.variableName(key as! String), baseTranslation: comment, methodSpecification: methodParams, header: header)
+                    staticString = self.objcLocalizationFuncFromLocalizationKey(value as! String, methodName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, methodSpecification: methodParams, header: header)
                 } else {
-                    staticString = self.objcLocalizationStaticVarFromLocalizationKey(value as! String, variableName: self.variableName(key as! String), baseTranslation: comment, header: header)
+                    staticString = self.objcLocalizationStaticVarFromLocalizationKey(value as! String, variableName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, header: header)
                 }
                 
                 contentStructure.append(staticString)
@@ -1062,8 +1079,8 @@ class Localization {
         for (key, value) in expandedStructure {
             
             if value is NSDictionary {
-                outputStructure.append(self.codifyObjC(value as! NSDictionary, baseClass : baseClass + self.variableName(key as! String), header: header))
-                contentStructure.insert(self.objcClassVarWithName(self.variableName(key as! String), className: baseClass + self.variableName(key as! String), header: header), atIndex: 0)
+                outputStructure.append(self.codifyObjC(value as! NSDictionary, baseClass : baseClass + self.variableName(key as! String, lang: .ObjC), header: header))
+                contentStructure.insert(self.objcClassVarWithName(self.variableName(key as! String, lang: .ObjC), className: baseClass + self.variableName(key as! String, lang: .ObjC), header: header), atIndex: 0)
             }
         }
         
@@ -1109,12 +1126,12 @@ class Localization {
     }
     
     
-    private func variableName(string : String) -> String {
+    private func variableName(string : String, lang : Runtime.ExportLanguage) -> String {
         
         if self.autocapitalize {
-            return (string.isFirstLetterDigit() ? "_" + string.camelCasedString : string.camelCasedString)
+            return (string.isFirstLetterDigit() || string.isReservedKeyword(lang) ? "_" + string.camelCasedString : string.camelCasedString)
         } else {
-            return (string.isFirstLetterDigit() ? "_" + string : string)
+            return (string.isFirstLetterDigit() || string.isReservedKeyword(lang) ? "_" + string : string)
         }
     }
     
@@ -1146,13 +1163,13 @@ class Localization {
     
     private func swiftStructWithContent(content : String, structName : String, contentLevel : Int = 0) -> String {
         
-        return TemplateFactory.templateForSwiftStructWithName(self.variableName(structName), content: content, contentLevel: contentLevel)
+        return TemplateFactory.templateForSwiftStructWithName(self.variableName(structName, lang: .Swift), content: content, contentLevel: contentLevel)
     }
     
     
     private func swiftLocalizationStaticVarFromLocalizationKey(key : String, variableName : String, baseTranslation : String, contentLevel : Int = 0) -> String {
         
-        return TemplateFactory.templateForSwiftStaticVarWithName(self.variableName(variableName), key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
+        return TemplateFactory.templateForSwiftStaticVarWithName(self.variableName(variableName, lang: .Swift), key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
     }
     
     
@@ -1171,7 +1188,7 @@ class Localization {
         let methodParamsString = methodParams.joinWithSeparator(", ")
         
         methodHeaderParams = methodHeaderParams.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", _"))
-        return TemplateFactory.templateForSwiftFuncWithName(self.variableName(methodName), key: key, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
+        return TemplateFactory.templateForSwiftFuncWithName(self.variableName(methodName, lang: .Swift), key: key, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
     }
     
     

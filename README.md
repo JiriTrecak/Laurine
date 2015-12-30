@@ -89,6 +89,8 @@ This way, you can easily traverse through thousands of strings without even thin
 You can use `-d "delimiter"` option to specify which character you would like to use for nesting, defaults to `-` (slash). 
 
 Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesomeKey`), or omit "c" option to disable this feature.
+ 
+Note: Language-specific keywords (such as Swift: `func` and ObjC: `YES`) and names starting with numbers (`Profile.1stButton`) will get prefixed with `_` to prevent build errors.
 
 
 ## Usage
