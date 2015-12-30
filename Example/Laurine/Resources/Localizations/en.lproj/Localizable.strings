@@ -26,4 +26,12 @@
 "DetailScreen.Stats.Followers" = "Followers";
 "DetailScreen.Stats.Following" = "Following";
 "DetailScreen.Misc.LoveNote" = "* Yes, this contributor is awesome";
-"DetailScreen.Buttons.GITHubProfile" = "Check my profile on GitHub.com >"; 
+"DetailScreen.Buttons.GITHubProfile" = "Check my profile on GitHub.com >";
+
+
+// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+// MARK: - Special cases (not used in project)
+
+"SpecialCases.General.Errors.1StartWithNumber" = "I start with number";
+"SpecialCases.ObjC.Errors.IamKeyword.YES" = "I am Objc Keyword";
+"SpecialCases.Swift.Errors.IamKeyword.true" = "I am Swift Keyword";

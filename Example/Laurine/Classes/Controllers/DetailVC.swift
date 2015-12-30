@@ -28,7 +28,7 @@ import SafariServices
 
 class DetailVC : UIViewController {
     
-    // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+    // --- --- --- --- --- --- --- --- --- --- tak--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
     @IBOutlet private weak var contributorProfilePictureIV : UIImageView!

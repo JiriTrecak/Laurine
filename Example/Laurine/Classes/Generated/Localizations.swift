@@ -49,11 +49,11 @@ public struct Localizations {
                     /// Base translation: Repositories
             public static var Repositories : String = "DetailScreen.Stats.Repositories".localized
 
-            /// Base translation: Followers
-            public static var Followers : String = "DetailScreen.Stats.Followers".localized
-
             /// Base translation: Following
             public static var Following : String = "DetailScreen.Stats.Following".localized
+
+            /// Base translation: Followers
+            public static var Followers : String = "DetailScreen.Stats.Followers".localized
 
         }
 
@@ -102,6 +102,51 @@ public struct Localizations {
                     /// Base translation: Laurine Lovers
             public static var Title : String = "Contributors.NavigationBar.Title".localized
 
+        }
+    }
+
+    public struct SpecialCases {
+
+    
+        public struct General {
+
+        
+            public struct Errors {
+
+                            /// Base translation: I start with number
+                public static var _1StartWithNumber : String = "SpecialCases.General.Errors.1StartWithNumber".localized
+
+            }
+        }
+
+        public struct Swift {
+
+        
+            public struct Errors {
+
+            
+                public struct IamKeyword {
+
+                                    /// Base translation: I am Swift Keyword
+                    public static var _true : String = "SpecialCases.Swift.Errors.IamKeyword.true".localized
+
+                }
+            }
+        }
+
+        public struct ObjC {
+
+        
+            public struct Errors {
+
+            
+                public struct IamKeyword {
+
+                                    /// Base translation: I am Objc Keyword
+                    public static var YES : String = "SpecialCases.ObjC.Errors.IamKeyword.YES".localized
+
+                }
+            }
         }
     }
 }

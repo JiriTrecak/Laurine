@@ -1,14 +1,18 @@
-## 0.2.2
+
+
+## 0.3.0 (coming January 2016)
 
 Enhancements:
 
+- Support for plurals / gender [WIP]
 - Support for all special symbols [WIP]
-- Code documentation [WIP]
-- New version of CommandLine [WIP]
+
+## 0.2.2 (2015-12-30)
 
 Bugfixes:
 
 - When last-level-string is also substring of longer string, generate special property in deeper levels instead of throwing it out (fe. profile.text & profile.text.title)
+- Keywords of each language are now properly sanitized in the same way as numbers (prefixed with _)
 
 ## 0.2.1 (2015-12-10)
 
