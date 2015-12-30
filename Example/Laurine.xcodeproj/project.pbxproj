@@ -10,6 +10,7 @@
 		0B138E2F1C1973160079867B /* DetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B138E2E1C1973160079867B /* DetailVC.swift */; };
 		0B138E331C1973570079867B /* ContributorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B138E321C1973570079867B /* ContributorCell.swift */; };
 		0B6BE8471C1C619D00803097 /* Localizations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6BE8461C1C619D00803097 /* Localizations.swift */; };
+		0B9AA2501C3419BE002CE33C /* PluralCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B9AA24F1C3419BE002CE33C /* PluralCore.swift */; };
 		0BBA61DC1C19B623003D12F6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BBA61D81C19B623003D12F6 /* InfoPlist.strings */; };
 		0BBA61DD1C19B623003D12F6 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BBA61DA1C19B623003D12F6 /* Localizable.strings */; };
 		0BBA61E81C19C2A1003D12F6 /* ContributorAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBA61E01C19C2A1003D12F6 /* ContributorAPI.swift */; };
@@ -32,6 +33,7 @@
 		0B138E2E1C1973160079867B /* DetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailVC.swift; sourceTree = "<group>"; };
 		0B138E321C1973570079867B /* ContributorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContributorCell.swift; sourceTree = "<group>"; };
 		0B6BE8461C1C619D00803097 /* Localizations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localizations.swift; sourceTree = "<group>"; };
+		0B9AA24F1C3419BE002CE33C /* PluralCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PluralCore.swift; sourceTree = "<group>"; };
 		0BBA61D91C19B623003D12F6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0BBA61DB1C19B623003D12F6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BBA61E01C19C2A1003D12F6 /* ContributorAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContributorAPI.swift; sourceTree = "<group>"; };
@@ -76,6 +78,14 @@
 				0B138E321C1973570079867B /* ContributorCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		0B9AA24E1C3419BE002CE33C /* Experimental */ = {
+			isa = PBXGroup;
+			children = (
+				0B9AA24F1C3419BE002CE33C /* PluralCore.swift */,
+			);
+			path = Experimental;
 			sourceTree = "<group>";
 		};
 		0BBA61D71C19B623003D12F6 /* Localizations */ = {
@@ -154,6 +164,7 @@
 		0BF9E6441BF234F80055C0D8 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				0B9AA24E1C3419BE002CE33C /* Experimental */,
 				0BBA61DE1C19C2A1003D12F6 /* Model */,
 				0BF9E6451BF234F80055C0D8 /* Controllers */,
 				0B138E301C1973410079867B /* Views */,
@@ -365,6 +376,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B9AA2501C3419BE002CE33C /* PluralCore.swift in Sources */,
 				0BF9E6551BF234F80055C0D8 /* AppDelegate.swift in Sources */,
 				0B138E331C1973570079867B /* ContributorCell.swift in Sources */,
 				0BBA61E91C19C2A1003D12F6 /* JTDataEnums.swift in Sources */,
