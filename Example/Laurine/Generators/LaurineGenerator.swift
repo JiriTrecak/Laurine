@@ -853,6 +853,7 @@ private extension String {
     var nolineString: String {
         
         return self.stringByReplacingOccurrencesOfString("\n", withString: "")
+                   .stringByReplacingOccurrencesOfString("\r", withString: "")
     }
     
     
