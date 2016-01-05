@@ -345,7 +345,7 @@ public class Option {
         case (_, let lf) where lf != nil:
             return "\(LongOptionPrefix)\(lf!)"
         default:
-            return "\(ShortOptionPrefix)\(shortFlag!)"
+            return "\(ShortOptionPrefix)\(shortFlag ?? "")"
         }
     }
     
@@ -634,8 +634,8 @@ internal extension String {
             }
         }
         
-        return (Double(Int(characteristic)!) +
-            Double(Int(mantissa)!) / pow(Double(10), Double(mantissa.characters.count - 1))) *
+        return (Double(Int(characteristic) ?? 0) +
+            Double(Int(mantissa) ?? 0) / pow(Double(10), Double(mantissa.characters.count - 1))) *
             (isNegative ? -1 : 1)
     }
     
@@ -742,13 +742,34 @@ private let OBJC_CLASS_PREFIX : String = "_"
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - Extensions
+private extension String {
+    
+    func alphanumericString(exceptionCharactersFromString: String = "") -> String {
+        
+        // removes diacritic marks
+        var copy = self.stringByFoldingWithOptions(.DiacriticInsensitiveSearch, locale: NSLocale.currentLocale())
+        
+        // removes all non alphanumeric characters
+        let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet.mutableCopy() as! NSMutableCharacterSet
+        
+        // don't remove the characters that are given
+        characterSet.removeCharactersInString(exceptionCharactersFromString)
+        copy = copy.componentsSeparatedByCharactersInSet(characterSet).reduce("") { $0 + $1 }
+        
+        return copy
+    }
+}
 
 private extension NSMutableDictionary {
     
     
-    func setObject(object : AnyObject!, forKeyPath : String, delimiter : String = ".") {
+    func setObject(object : AnyObject!, var forKeyPath : String, delimiter : String = ".") {
         
-        self.setObject(object, onObject : self, forKeyPath: forKeyPath, createIntermediates: true, replaceIntermediates: true, delimiter: delimiter);
+        forKeyPath = forKeyPath.stringByReplacingOccurrencesOfString(" ", withString: "_")
+        
+        forKeyPath = forKeyPath.alphanumericString("_")
+        
+        self.setObject(object, onObject : self, forKeyPath: forKeyPath, createIntermediates: true, replaceIntermediates: true, delimiter: delimiter)
     }
     
     
@@ -831,7 +852,7 @@ private extension NSFileManager {
         do {
             let attribs: NSDictionary? = try manager.attributesOfItemAtPath(path)
             if let attributes = attribs {
-                let type = attributes["NSFileType"] as! String
+                let type = attributes["NSFileType"] as? String
                 return type == NSFileTypeDirectory
             }
         } catch _ {
@@ -854,12 +875,15 @@ private extension String {
         
         return self.stringByReplacingOccurrencesOfString("\n", withString: "")
                    .stringByReplacingOccurrencesOfString("\r", withString: "")
+        
     }
     
     
     func isFirstLetterDigit() -> Bool {
         
-        let c : Character = self.characters.first!
+        guard let c : Character = self.characters.first else {
+            return false
+        }
         
         let s = String(c).unicodeScalars
         let uni = s[s.startIndex]
@@ -921,15 +945,15 @@ class Localization {
     
     func processInputFromFile(file : NSURL, delimiter : String, autocapitalize : Bool) {
         
-        if let dictionary = NSDictionary(contentsOfFile: file.path!) {
-            self.flatStructure = dictionary
-            self.autocapitalize = autocapitalize
-            self.expandFlatStructure(dictionary, delimiter: delimiter)
-        } else {
+        guard let path = file.path, let dictionary = NSDictionary(contentsOfFile: path) else {
             // TODO: Better error handling
             print("Bad format of input file")
             exit(EX_IOERR)
         }
+        
+        self.flatStructure = dictionary
+        self.autocapitalize = autocapitalize
+        self.expandFlatStructure(dictionary, delimiter: delimiter)
     }
 
     
@@ -1008,7 +1032,8 @@ class Localization {
     
         // Writes values to dictionary and also
         for (key, _) in flatStructure {
-            objectStructure.setObject(key as! String, forKeyPath: key as! String, delimiter: delimiter)
+            guard let key = key as? String else { continue }
+            objectStructure.setObject(key, forKeyPath: key, delimiter: delimiter)
         }
     }
     
@@ -1024,15 +1049,15 @@ class Localization {
         // First iterate through properties
         for (key, value) in expandedStructure {
             
-            if value is String {
-                let comment = (self.flatStructure.objectForKey(value as! String) as! String).nolineString
+            if let value = value as? String {
+                let comment = (self.flatStructure.objectForKey(value) as! String).nolineString
                 let methodParams = self.methodParamsForString(comment)
-                let staticString : String
+                let staticString: String
                 
                 if methodParams.count > 0 {
-                    staticString = self.swiftLocalizationFuncFromLocalizationKey(value as! String, methodName: key as! String, baseTranslation: comment, methodSpecification: methodParams, contentLevel: contentLevel)
+                    staticString = self.swiftLocalizationFuncFromLocalizationKey(value, methodName: key as! String, baseTranslation: comment, methodSpecification: methodParams, contentLevel: contentLevel)
                 } else {
-                    staticString = self.swiftLocalizationStaticVarFromLocalizationKey(value as! String, variableName: key as! String, baseTranslation: comment, contentLevel: contentLevel)
+                    staticString = self.swiftLocalizationStaticVarFromLocalizationKey(value, variableName: key as! String, baseTranslation: comment, contentLevel: contentLevel)
                 }
                 outputStructure.append(staticString)
             }
@@ -1041,8 +1066,8 @@ class Localization {
         // Then iterate through nested structures
         for (key, value) in expandedStructure {
             
-            if value is NSDictionary {
-                outputStructure.append(self.swiftStructWithContent(self.codifySwift(value as! NSDictionary, contentLevel: contentLevel), structName: key as! String, contentLevel: contentLevel))
+            if let value = value as? NSDictionary {
+                outputStructure.append(self.swiftStructWithContent(self.codifySwift(value, contentLevel: contentLevel), structName: key as! String, contentLevel: contentLevel))
             }
         }
         
@@ -1060,16 +1085,16 @@ class Localization {
         // First iterate through properties
         for (key, value) in expandedStructure {
             
-            if value is String {
+            if let value = value as? String {
                 
-                let comment = (self.flatStructure.objectForKey(value as! String) as! String).nolineString
+                let comment = (self.flatStructure.objectForKey(value) as! String).nolineString
                 let methodParams = self.methodParamsForString(comment)
                 let staticString : String
                 
                 if methodParams.count > 0 {
-                    staticString = self.objcLocalizationFuncFromLocalizationKey(value as! String, methodName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, methodSpecification: methodParams, header: header)
+                    staticString = self.objcLocalizationFuncFromLocalizationKey(value, methodName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, methodSpecification: methodParams, header: header)
                 } else {
-                    staticString = self.objcLocalizationStaticVarFromLocalizationKey(value as! String, variableName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, header: header)
+                    staticString = self.objcLocalizationStaticVarFromLocalizationKey(value, variableName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, header: header)
                 }
                 
                 contentStructure.append(staticString)
@@ -1079,14 +1104,18 @@ class Localization {
         // Then iterate through nested structures
         for (key, value) in expandedStructure {
             
-            if value is NSDictionary {
-                outputStructure.append(self.codifyObjC(value as! NSDictionary, baseClass : baseClass + self.variableName(key as! String, lang: .ObjC), header: header))
+            if let value = value as? NSDictionary {
+                outputStructure.append(self.codifyObjC(value, baseClass : baseClass + self.variableName(key as! String, lang: .ObjC), header: header))
                 contentStructure.insert(self.objcClassVarWithName(self.variableName(key as! String, lang: .ObjC), className: baseClass + self.variableName(key as! String, lang: .ObjC), header: header), atIndex: 0)
             }
         }
         
-        if baseClass == BASE_CLASS_NAME && !header {
-            contentStructure.append(TemplateFactory.templateForObjCBaseClassImplementation(OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
+        if baseClass == BASE_CLASS_NAME {
+            if header {
+                contentStructure.append(TemplateFactory.templateForObjCBaseClassHeader(OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
+            } else {
+                contentStructure.append(TemplateFactory.templateForObjCBaseClassImplementation(OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
+            }
         }
         
         // Generate class code for current class
@@ -1279,12 +1308,12 @@ class Runtime {
     var localizationFilePathToRead : NSURL!
     var localizationFilePathToWriteTo : NSURL!
     var localizationFileHeaderPathToWriteTo : NSURL?
-    var localizationDelimiter : String! = "."
-    var localizationDebug : Bool = false
+    var localizationDelimiter = "."
+    var localizationDebug = false
     var localizationCore : Localization!
     var localizationExportLanguage : ExportLanguage = .Swift
     var localizationExportStream : ExportStream = .File
-    var localizationAutocapitalize : Bool = false
+    var localizationAutocapitalize = false
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -1642,6 +1671,11 @@ class TemplateFactory {
         
         return "/// Base translation: \(baseTranslation)\n"
              + "- (NSString *(^)(\(methodHeader)))\(name);"
+    }
+    
+    
+    class func templateForObjCBaseClassHeader(name: String) -> String {
+        return "+ (\(name) *)sharedInstance;\n"
     }
     
     
