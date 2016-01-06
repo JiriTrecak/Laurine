@@ -214,7 +214,7 @@ Laurine should suit most of developers, because it covers all the basic stuff. T
 
 
 ## Contribute
-I will gladly accept Pull Requests (and I encourage you to do so). If you encounter any bug or you have enhancement that you would like to see, please open an issue.
+I will gladly accept Pull Requests (and I encourage you to do so). If you encounter any bug or you have enhancement that you would like to see, please open an issue. Please make sure you target your PR against Development branch.
 
 I'd also like to make round of applause to Marcin Krzyżanowski for his [Natalie Generator](https://github.com/krzyzanowskim/Natalie), which heavily inspired this project by his approach. Hope we meet for beer one day!
 
