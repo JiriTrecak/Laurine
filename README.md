@@ -1,8 +1,9 @@
 [![Swift 2.1](https://img.shields.io/badge/Swift-2.1-orange.svg?style=flat)](https://developer.apple.com/swift/)
+[![XX](https://img.shields.io/badge/Reached_World_1st-trending-orange.svg?style=flat)](https://github.com/trending?l=swift)
 [![Platforms OS X | iOS | tvos](https://img.shields.io/badge/Platforms-OS%20X%20%7C%20iOS-lightgray.svg?style=flat)](https://developer.apple.com/swift/)
+[![Twitter](http://img.shields.io/:Twitter-@-blue.svg)](https://twitter.com/@JiriTrecak)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
 
-> (Update 2015-12-10) : **Laurine is now #1 trending swift repo in the world**. To everyone who liked it, here, have a beer with me. :beer:
 
 # Laurine
 
@@ -218,6 +219,10 @@ I will gladly accept Pull Requests (and I encourage you to do so). If you encoun
 
 I'd also like to make round of applause to Marcin Krzyżanowski for his [Natalie Generator](https://github.com/krzyzanowskim/Natalie), which heavily inspired this project by his approach. Hope we meet for beer one day!
 
+## More libraries, same awesomeness
+
+If you liked it, check out my [other library - Warp](https://github.com/JiriTrecak/Warp "Warp"), that will help you with development of your data models. 
+
 ## Contact me
 
 
@@ -227,6 +232,11 @@ I'd also like to make round of applause to Marcin Krzyżanowski for his [Natalie
 Or, if you would like to know me better, check out my portfolio.
 
 - [jiritrecak.com](http://jiritrecak.com/ "My personal website") 
+
+##Achievements
+
+2015-12-10: **Laurine is now #1 trending swift repo in the world**. To everyone who liked it, here, have a beer with me. :beer:
+
 
 ##Licence
 
