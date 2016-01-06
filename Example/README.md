@@ -26,9 +26,9 @@ The example is connected to GitHub open API and feeds the data in real-time. I m
 ![Image : XCode help for variables](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-4.png?raw=true "Xcode autocomplete")
 
 
-## Sneakpeek
+## Warp
 
-There is another library / tool that I am releasing in very near future (definitely before christmas), if you want to get idea about what it is, go to Classes/Model/Objects and see the beauty.
+Example uses another [tool that I made - Warp](https://github.com/JiriTrecak/Warp "My twitter account") - to bind properties and relationships, but without actual database. Check it out!
 
 ## Contact me
 
