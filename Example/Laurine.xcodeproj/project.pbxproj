@@ -14,21 +14,17 @@
 		0BBA61DC1C19B623003D12F6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BBA61D81C19B623003D12F6 /* InfoPlist.strings */; };
 		0BBA61DD1C19B623003D12F6 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BBA61DA1C19B623003D12F6 /* Localizable.strings */; };
 		0BBA61E81C19C2A1003D12F6 /* ContributorAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBA61E01C19C2A1003D12F6 /* ContributorAPI.swift */; };
-		0BBA61E91C19C2A1003D12F6 /* JTDataEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBA61E31C19C2A1003D12F6 /* JTDataEnums.swift */; };
-		0BBA61EA1C19C2A1003D12F6 /* JTDataObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBA61E41C19C2A1003D12F6 /* JTDataObject.swift */; };
-		0BBA61EB1C19C2A1003D12F6 /* JTDataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBA61E51C19C2A1003D12F6 /* JTDataStructs.swift */; };
-		0BBA61EC1C19C2A1003D12F6 /* JTExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBA61E61C19C2A1003D12F6 /* JTExtensions.swift */; };
 		0BBA61ED1C19C2A1003D12F6 /* Contributor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBA61E71C19C2A1003D12F6 /* Contributor.swift */; };
 		0BF9E6541BF234F80055C0D8 /* ContributorsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF9E6461BF234F80055C0D8 /* ContributorsVC.swift */; };
 		0BF9E6551BF234F80055C0D8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF9E6481BF234F80055C0D8 /* AppDelegate.swift */; };
 		0BF9E6571BF234F80055C0D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E64C1BF234F80055C0D8 /* Assets.xcassets */; };
 		0BF9E65D1BF2356A0055C0D8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E65B1BF2356A0055C0D8 /* LaunchScreen.storyboard */; };
 		0BF9E65E1BF2356A0055C0D8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E65C1BF2356A0055C0D8 /* Main.storyboard */; };
-		CB5391DF151B7C3DA457BF51 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07D399D40D89F38AEDB64A47 /* Pods.framework */; };
+		30FE306F1E93A2DFED468249 /* Pods_Laurine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89B215368D701AAAAF9D7F25 /* Pods_Laurine.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0526DD9D1DB46A2BD6F13550 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		04FA02BD5DB4C9D3D837C775 /* Pods-Laurine.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laurine.release.xcconfig"; path = "Pods/Target Support Files/Pods-Laurine/Pods-Laurine.release.xcconfig"; sourceTree = "<group>"; };
 		07D399D40D89F38AEDB64A47 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B138E2E1C1973160079867B /* DetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailVC.swift; sourceTree = "<group>"; };
 		0B138E321C1973570079867B /* ContributorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContributorCell.swift; sourceTree = "<group>"; };
@@ -37,10 +33,6 @@
 		0BBA61D91C19B623003D12F6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0BBA61DB1C19B623003D12F6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BBA61E01C19C2A1003D12F6 /* ContributorAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContributorAPI.swift; sourceTree = "<group>"; };
-		0BBA61E31C19C2A1003D12F6 /* JTDataEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JTDataEnums.swift; sourceTree = "<group>"; };
-		0BBA61E41C19C2A1003D12F6 /* JTDataObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JTDataObject.swift; sourceTree = "<group>"; };
-		0BBA61E51C19C2A1003D12F6 /* JTDataStructs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JTDataStructs.swift; sourceTree = "<group>"; };
-		0BBA61E61C19C2A1003D12F6 /* JTExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JTExtensions.swift; sourceTree = "<group>"; };
 		0BBA61E71C19C2A1003D12F6 /* Contributor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contributor.swift; sourceTree = "<group>"; };
 		0BF9E6281BF2333D0055C0D8 /* Laurine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Laurine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BF9E6461BF234F80055C0D8 /* ContributorsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContributorsVC.swift; sourceTree = "<group>"; };
@@ -49,7 +41,8 @@
 		0BF9E64D1BF234F80055C0D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0BF9E65B1BF2356A0055C0D8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0BF9E65C1BF2356A0055C0D8 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		65DCC94C976998D3574E1606 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		89B215368D701AAAAF9D7F25 /* Pods_Laurine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laurine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD26957F2D120CC284662A04 /* Pods-Laurine.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laurine.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Laurine/Pods-Laurine.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CB5391DF151B7C3DA457BF51 /* Pods.framework in Frameworks */,
+				30FE306F1E93A2DFED468249 /* Pods_Laurine.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,21 +110,9 @@
 		0BBA61E11C19C2A1003D12F6 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
-				0BBA61E21C19C2A1003D12F6 /* Base */,
 				0BBA61E71C19C2A1003D12F6 /* Contributor.swift */,
 			);
 			path = Objects;
-			sourceTree = "<group>";
-		};
-		0BBA61E21C19C2A1003D12F6 /* Base */ = {
-			isa = PBXGroup;
-			children = (
-				0BBA61E31C19C2A1003D12F6 /* JTDataEnums.swift */,
-				0BBA61E41C19C2A1003D12F6 /* JTDataObject.swift */,
-				0BBA61E51C19C2A1003D12F6 /* JTDataStructs.swift */,
-				0BBA61E61C19C2A1003D12F6 /* JTExtensions.swift */,
-			);
-			path = Base;
 			sourceTree = "<group>";
 		};
 		0BF9E61F1BF2333D0055C0D8 = {
@@ -139,8 +120,8 @@
 			children = (
 				0BF9E6431BF234F80055C0D8 /* Laurine */,
 				0BF9E6291BF2333D0055C0D8 /* Products */,
-				AEEF0A8C70853AF4C3E1EF97 /* Pods */,
 				368514CBD199FDB3F54AABCD /* Frameworks */,
+				617C140BADB075D17377E67D /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -223,15 +204,16 @@
 			isa = PBXGroup;
 			children = (
 				07D399D40D89F38AEDB64A47 /* Pods.framework */,
+				89B215368D701AAAAF9D7F25 /* Pods_Laurine.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		AEEF0A8C70853AF4C3E1EF97 /* Pods */ = {
+		617C140BADB075D17377E67D /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				0526DD9D1DB46A2BD6F13550 /* Pods.debug.xcconfig */,
-				65DCC94C976998D3574E1606 /* Pods.release.xcconfig */,
+				CD26957F2D120CC284662A04 /* Pods-Laurine.debug.xcconfig */,
+				04FA02BD5DB4C9D3D837C775 /* Pods-Laurine.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -243,13 +225,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0BF9E63A1BF2333D0055C0D8 /* Build configuration list for PBXNativeTarget "Laurine" */;
 			buildPhases = (
-				C318A5E090FFCF5DCAFA42B8 /* Check Pods Manifest.lock */,
+				BEF2A8158D83682FD4A50B7E /* Check Pods Manifest.lock */,
 				0BF9E6241BF2333D0055C0D8 /* Sources */,
 				0BF9E6251BF2333D0055C0D8 /* Frameworks */,
 				0BF9E6261BF2333D0055C0D8 /* Resources */,
 				0BF9E6791BF2375E0055C0D8 /* Laurine Generator */,
-				DF0D3C521B7AA24A4651BAC8 /* Embed Pods Frameworks */,
-				6F6EA6058ADEA073BE5E46A5 /* Copy Pods Resources */,
+				EF9A316A0685460E9A7FC6DF /* Embed Pods Frameworks */,
+				EAF153D9BE22E33D110EAC71 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -324,22 +306,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -x\n\n#--------- START OF CONFIGURATION\n\n# Get base path to project\nBASE_PATH=\"$PROJECT_DIR/$PROJECT_NAME\"\n\n# Get path to Laurine Generator script\nLAURINE_PATH=\"$BASE_PATH/Generators/LaurineGenerator.swift\"\n\n# Get path to main localization file (usually english).\nSOURCE_PATH=\"$BASE_PATH/Resources/Localizations/en.lproj/Localizable.strings\"\n\n# Get path to output. If you use ObjC version of output, set implementation file (.m), as header will be generated automatically\nOUTPUT_PATH=\"$BASE_PATH/Classes/Generated/Localizations.swift\"\n\n#--------- END OF CONFIGURATION\n\n# Add permission to generator for script execution\nchmod 755 $LAURINE_PATH\n\n# Actually generate output. -- CUSTOMIZE -- parameters to your needs (see documentation).\n# Will only re-generate script if something changed\nif [ \"$OUTPUT_PATH\" -ot \"$SOURCE_PATH\" ]; then\n\"$LAURINE_PATH\" -i \"$SOURCE_PATH\" -o \"$OUTPUT_PATH\"\nfi\n\n";
 		};
-		6F6EA6058ADEA073BE5E46A5 /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C318A5E090FFCF5DCAFA42B8 /* Check Pods Manifest.lock */ = {
+		BEF2A8158D83682FD4A50B7E /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -354,7 +321,22 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		DF0D3C521B7AA24A4651BAC8 /* Embed Pods Frameworks */ = {
+		EAF153D9BE22E33D110EAC71 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Laurine/Pods-Laurine-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EF9A316A0685460E9A7FC6DF /* Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -366,7 +348,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Laurine/Pods-Laurine-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -379,11 +361,7 @@
 				0B9AA2501C3419BE002CE33C /* PluralCore.swift in Sources */,
 				0BF9E6551BF234F80055C0D8 /* AppDelegate.swift in Sources */,
 				0B138E331C1973570079867B /* ContributorCell.swift in Sources */,
-				0BBA61E91C19C2A1003D12F6 /* JTDataEnums.swift in Sources */,
-				0BBA61EB1C19C2A1003D12F6 /* JTDataStructs.swift in Sources */,
 				0BBA61E81C19C2A1003D12F6 /* ContributorAPI.swift in Sources */,
-				0BBA61EC1C19C2A1003D12F6 /* JTExtensions.swift in Sources */,
-				0BBA61EA1C19C2A1003D12F6 /* JTDataObject.swift in Sources */,
 				0B138E2F1C1973160079867B /* DetailVC.swift in Sources */,
 				0BF9E6541BF234F80055C0D8 /* ContributorsVC.swift in Sources */,
 				0BBA61ED1C19C2A1003D12F6 /* Contributor.swift in Sources */,
@@ -496,7 +474,7 @@
 		};
 		0BF9E63B1BF2333D0055C0D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0526DD9D1DB46A2BD6F13550 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = CD26957F2D120CC284662A04 /* Pods-Laurine.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/Laurine/Resources/Info.plist";
@@ -510,7 +488,7 @@
 		};
 		0BF9E63C1BF2333D0055C0D8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 65DCC94C976998D3574E1606 /* Pods.release.xcconfig */;
+			baseConfigurationReference = 04FA02BD5DB4C9D3D837C775 /* Pods-Laurine.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/Laurine/Resources/Info.plist";

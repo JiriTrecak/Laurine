@@ -14,9 +14,11 @@ platform :ios, '8.3'
 use_frameworks!
 
 
+def core_pods
 # -------- Frameworks / Networking
 
 pod 'Alamofire'
+pod 'Warp'
 
 
 # -------- Frameworks / Data storage
@@ -29,6 +31,11 @@ pod 'HanekeSwift'
 
 
 # -------- Frameworks / Utilities
+end
+
+target 'Laurine' do
+   core_pods
+end
 
 
 

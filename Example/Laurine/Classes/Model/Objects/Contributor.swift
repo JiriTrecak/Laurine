@@ -10,12 +10,13 @@
 // MARK: - Imports
 
 import Foundation
+import Warp
 
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - Object definition
 
-class Contributor : JTDataObject {
+class Contributor : WRPObject {
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -34,17 +35,17 @@ class Contributor : JTDataObject {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Data object mapping
     
-    override func variableMappingTable() -> [PropertyElement] {
+    override func propertyMap() -> [WRPProperty] {
         
         return [
-            PropertyElement(remoteName: "login", localName: "username", elementDataType: .String),
-            PropertyElement(remoteName: "avatar_url", localName: "avatarURL", elementDataType: .String),
-            PropertyElement(remoteName: "html_url", localName: "githubURL", elementDataType: .String),
-            PropertyElement(remoteName: "url", localName: "detailURL", elementDataType: .String),
-            PropertyElement(remoteName: "contributions", elementDataType: .Int),
-            PropertyElement(remoteName: "followers", elementDataType: .Int),
-            PropertyElement(remoteName: "following", elementDataType: .Int),
-            PropertyElement(remoteName: "public_repos", localName: "repositories", elementDataType: .Int)
+            WRPProperty(remote: "login", bindTo: "username", type: .String),
+            WRPProperty(remote: "avatar_url", bindTo: "avatarURL", type: .String),
+            WRPProperty(remote: "html_url", bindTo: "githubURL", type: .String),
+            WRPProperty(remote: "url", bindTo: "detailURL", type: .String),
+            WRPProperty(remote: "contributions", type: .Int),
+            WRPProperty(remote: "followers", type: .Int),
+            WRPProperty(remote: "following", type: .Int),
+            WRPProperty(remote: "public_repos", bindTo: "repositories", type: .Int)
         ]
     }
 }
