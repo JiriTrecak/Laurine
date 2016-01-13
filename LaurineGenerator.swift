@@ -765,9 +765,8 @@ private extension NSMutableDictionary {
     
     func setObject(object : AnyObject!, var forKeyPath : String, delimiter : String = ".") {
         
-        forKeyPath = forKeyPath.stringByReplacingOccurrencesOfString(" ", withString: "_")
-        
-        forKeyPath = forKeyPath.alphanumericString("_")
+        // forKeyPath = forKeyPath.stringByReplacingOccurrencesOfString(" ", withString: "_")
+        // forKeyPath = forKeyPath.alphanumericString("_")
         
         self.setObject(object, onObject : self, forKeyPath: forKeyPath, createIntermediates: true, replaceIntermediates: true, delimiter: delimiter)
     }

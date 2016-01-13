@@ -15,7 +15,7 @@
 
 // This will be later integrated in the library (support for gender / plurality), for now, I am making simple decision what to use in code
 "Contributors.Contributor.Contributed.Singular" = "1 contribution";
-"Contributors.Contributor.Contributed.Plural" = "%d contributions";
+"Contributors.Contributor.Contributed.Plural" = "%d contributions"; 
 
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
