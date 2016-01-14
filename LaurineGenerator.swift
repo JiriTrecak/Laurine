@@ -912,7 +912,7 @@ private extension String {
 
 private enum SpecialCharacter {
     case String
-    case Float
+    case Double
     case Int
 }
 
@@ -1148,7 +1148,7 @@ class Localization {
         if string.containsString("d") || string.containsString("i") {
             return .Int
         } else if string.containsString("f") {
-            return .Float
+            return .Double
         } else {
             return .String
         }
@@ -1184,7 +1184,7 @@ class Localization {
         
         switch char {
             case .String: return language == .Swift ? "String" : "NSString *"
-            case .Float: return language == .Swift ? "Float" : "float"
+            case .Double: return language == .Swift ? "Double" : "double"
             case .Int: return language == .Swift ? "Int" : "int"
         }
     }
