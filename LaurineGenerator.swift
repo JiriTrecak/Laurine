@@ -915,6 +915,7 @@ private enum SpecialCharacter {
     case Double
     case Int
     case Int64
+    case UInt
 }
 
 
@@ -1191,6 +1192,7 @@ class Localization {
             case .Double: return language == .Swift ? "Double" : "double"
             case .Int: return language == .Swift ? "Int" : "int"
             case .Int64: return language == .Swift ? "Int64" : "long"
+            case .UInt: return language == .Swift ? "UInt" : "unsigned int"
         }
     }
     
