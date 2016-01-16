@@ -912,8 +912,10 @@ private extension String {
 
 private enum SpecialCharacter {
     case String
-    case Float
+    case Double
     case Int
+    case Int64
+    case UInt
 }
 
 
@@ -1128,7 +1130,7 @@ class Localization {
     private func methodParamsForString(string : String) -> [SpecialCharacter] {
         
         // Split the string into pieces by %
-        let matches = self.matchesForRegexInText("%([0-9]*.[0-9]*(d|f|ld)|@|d)", text: string)
+        let matches = self.matchesForRegexInText("%([0-9]*.[0-9]*(d|i|u|f|ld)|@|d|i|u|f|ld)", text: string)
         var characters : [SpecialCharacter] = []
         
         // If there is just one component, no special characters are found
@@ -1144,11 +1146,14 @@ class Localization {
     
     
     private func propertyTypeForMatch(string : String) -> SpecialCharacter {
-        
-        if string.containsString("d") {
+        if string.containsString("ld") {
+            return .Int64
+        } else if string.containsString("d") || string.containsString("i") {
             return .Int
+        } else if string.containsString("u") {
+            return .UInt
         } else if string.containsString("f") {
-            return .Float
+            return .Double
         } else {
             return .String
         }
@@ -1184,8 +1189,10 @@ class Localization {
         
         switch char {
             case .String: return language == .Swift ? "String" : "NSString *"
-            case .Float: return language == .Swift ? "Float" : "float"
+            case .Double: return language == .Swift ? "Double" : "double"
             case .Int: return language == .Swift ? "Int" : "int"
+            case .Int64: return language == .Swift ? "Int64" : "long"
+            case .UInt: return language == .Swift ? "UInt" : "unsigned int"
         }
     }
     
