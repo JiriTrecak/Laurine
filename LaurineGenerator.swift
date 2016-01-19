@@ -871,10 +871,9 @@ private extension String {
     
     
     var nolineString: String {
-        
-        return self.stringByReplacingOccurrencesOfString("\n", withString: "")
-                   .stringByReplacingOccurrencesOfString("\r", withString: "")
-        
+        return self.componentsSeparatedByCharactersInSet(NSCharacterSet.newlineCharacterSet())
+            .filter { !$0.isEmpty }
+            .joinWithSeparator(" ")
     }
     
     
