@@ -1129,7 +1129,7 @@ class Localization {
     private func methodParamsForString(string : String) -> [SpecialCharacter] {
         
         // Split the string into pieces by %
-        let matches = self.matchesForRegexInText("%([0-9]*.[0-9]*(d|i|u|f|ld)|@|d|i|u|f|ld)", text: string)
+        let matches = self.matchesForRegexInText("%([0-9]*.[0-9]*(d|i|u|f|ld)|(\\d\\$)?@|d|i|u|f|ld)", text: string)
         var characters : [SpecialCharacter] = []
         
         // If there is just one component, no special characters are found
