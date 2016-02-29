@@ -34,44 +34,6 @@ private extension String {
 public struct Localizations {
 
 
-    public struct DetailScreen {
-
-    
-        public struct Misc {
-
-                    /// Base translation: * Yes, this contributor is awesome
-            public static var LoveNote : String = "DetailScreen.Misc.LoveNote".localized
-
-        }
-
-        public struct Stats {
-
-                    /// Base translation: Repositories
-            public static var Repositories : String = "DetailScreen.Stats.Repositories".localized
-
-            /// Base translation: Following
-            public static var Following : String = "DetailScreen.Stats.Following".localized
-
-            /// Base translation: Followers
-            public static var Followers : String = "DetailScreen.Stats.Followers".localized
-
-        }
-
-        public struct Buttons {
-
-                    /// Base translation: Check my profile on GitHub.com >
-            public static var GITHubProfile : String = "DetailScreen.Buttons.GITHubProfile".localized
-
-        }
-
-        public struct NavigationBar {
-
-                    /// Base translation: User profile
-            public static var Title : String = "DetailScreen.NavigationBar.Title".localized
-
-        }
-    }
-
     public struct Contributors {
 
             /// Base translation: This is the list of people who contributed with their work to make Laurine Better - it is also great example of how to use it, and my way how to say thank you!
@@ -148,5 +110,50 @@ public struct Localizations {
                 }
             }
         }
+    }
+
+    public struct DetailScreen {
+
+    
+        public struct Misc {
+
+                    /// Base translation: * Yes, this contributor is awesome
+            public static var LoveNote : String = "DetailScreen.Misc.LoveNote".localized
+
+        }
+
+        public struct Stats {
+
+                    /// Base translation: Repositories
+            public static var Repositories : String = "DetailScreen.Stats.Repositories".localized
+
+            /// Base translation: Following
+            public static var Following : String = "DetailScreen.Stats.Following".localized
+
+            /// Base translation: Followers
+            public static var Followers : String = "DetailScreen.Stats.Followers".localized
+
+        }
+
+        public struct Buttons {
+
+                    /// Base translation: Check my profile on GitHub.com >
+            public static var GITHubProfile : String = "DetailScreen.Buttons.GITHubProfile".localized
+
+        }
+
+        public struct NavigationBar {
+
+                    /// Base translation: User profile
+            public static var Title : String = "DetailScreen.NavigationBar.Title".localized
+
+        }
+    }
+
+    public struct Special_Cases_Whitespaces__Foo_ {
+
+            /// Base translation: Special Cases Whitespaces  Foo.Bar 
+        public static var _Bar_ : String = "Special Cases Whitespaces  Foo . Bar ".localized
+
     }
 }

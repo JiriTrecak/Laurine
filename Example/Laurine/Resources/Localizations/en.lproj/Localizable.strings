@@ -35,3 +35,5 @@
 "SpecialCases.General.Errors.1StartWithNumber" = "I start with number";
 "SpecialCases.ObjC.Errors.IamKeyword.YES" = "I am Objc Keyword";
 "SpecialCases.Swift.Errors.IamKeyword.true" = "I am Swift Keyword";
+
+"Special Cases Whitespaces  Foo.Bar " = "Special Cases Whitespaces  Foo.Bar ";
