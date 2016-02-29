@@ -69,17 +69,18 @@ public struct Localizations {
 
     public struct SpecialCases {
 
-    
-        public struct General {
+            /// Base translation: SpecialCases.DotAtEnd.
+        public static var DotAtEnd : String = "SpecialCases.DotAtEnd.".localized
 
-        
-            public struct Errors {
+        /// Base translation: .SpecialCases.DotAtBeginning
+        public static var DotAtBeginning : String = ".SpecialCases.DotAtBeginning".localized
 
-                            /// Base translation: I start with number
-                public static var _1StartWithNumber : String = "SpecialCases.General.Errors.1StartWithNumber".localized
+        /// Base translation: SpecialCases...SeveralDotsInTheMiddle
+        public static var SeveralDotsInTheMiddle : String = "SpecialCases...SeveralDotsInTheMiddle".localized
 
-            }
-        }
+        /// Base translation: .SpecialCases.DotAtBeginningAndEnd.
+        public static var DotAtBeginningAndEnd : String = ".SpecialCases.DotAtBeginningAndEnd.".localized
+
 
         public struct Swift {
 
@@ -108,6 +109,17 @@ public struct Localizations {
                     public static var YES : String = "SpecialCases.ObjC.Errors.IamKeyword.YES".localized
 
                 }
+            }
+        }
+
+        public struct General {
+
+        
+            public struct Errors {
+
+                            /// Base translation: I start with number
+                public static var _1StartWithNumber : String = "SpecialCases.General.Errors.1StartWithNumber".localized
+
             }
         }
     }
@@ -150,10 +162,10 @@ public struct Localizations {
         }
     }
 
-    public struct Special_Cases_Whitespaces__Foo_ {
+    public struct Special_Cases_Whitespaces__Foo {
 
             /// Base translation: Special Cases Whitespaces  Foo.Bar 
-        public static var _Bar_ : String = "Special Cases Whitespaces  Foo . Bar ".localized
+        public static var Bar_ : String = "Special Cases Whitespaces  Foo.Bar ".localized
 
     }
 }
