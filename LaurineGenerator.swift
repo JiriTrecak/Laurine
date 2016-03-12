@@ -1003,6 +1003,26 @@ private extension String {
         
         return copy
     }
+	
+	func replacedNonAlphaNumericCharacters(replacement: Character) -> String {
+		
+		return String( self.characters.map { NSCharacterSet.alphanumericCharacterSet().containsCharacter($0) ? $0 : replacement } )
+	}
+	
+}
+
+private extension NSCharacterSet {
+	
+	// thanks to http://stackoverflow.com/a/27698155/354018
+	func containsCharacter(c: Character) -> Bool {
+		
+		let s = String(c)
+		let ix = s.startIndex
+		let ix2 = s.endIndex
+		let result = s.rangeOfCharacterFromSet(self, options: [], range: ix..<ix2)
+		return result != nil
+	}
+	
 }
 
 private extension NSMutableDictionary {
@@ -1023,14 +1043,16 @@ private extension NSMutableDictionary {
         let baseDelimiter = "."
         forKeyPath = forKeyPath.stringByReplacingOccurrencesOfString(delimiter, withString: baseDelimiter, options: .LiteralSearch, range: nil)
         
-        // There is no keypath, just assign object
-        if forKeyPath.rangeOfString(baseDelimiter) == nil {
-            onObject.setObject(object, forKey: forKeyPath);
-        }
-        
         // Create path components separated by delimiter (. by default) and get key for root object
-        let pathComponents : Array<String> = forKeyPath.componentsSeparatedByString(baseDelimiter);
-        let rootKey : String = pathComponents[0];
+		// filter empty path components, these can be caused by delimiter at beginning/end, or multiple consecutive delimiters in the middle
+		let pathComponents : Array<String> = forKeyPath.componentsSeparatedByString(baseDelimiter).filter({ $0.characters.count > 0 })
+		forKeyPath = pathComponents.joinWithSeparator(baseDelimiter)
+        let rootKey : String = pathComponents[0]
+		
+		if pathComponents.count == 1 {
+			onObject.setObject(object, forKey: rootKey)
+		}
+		
         let replacementDictionary : NSMutableDictionary = NSMutableDictionary();
         
         // Store current state for further replacement
@@ -1405,11 +1427,14 @@ class Localization {
     
     
     private func variableName(string : String, lang : Runtime.ExportLanguage) -> String {
-        
+	
+		// . is not allowed, nested structure expanding must take place before calling this function
+		let legalCharacterString = string.replacedNonAlphaNumericCharacters("_")
+		
         if self.autocapitalize {
-            return (string.isFirstLetterDigit() || string.isReservedKeyword(lang) ? "_" + string.camelCasedString : string.camelCasedString)
+            return (legalCharacterString.isFirstLetterDigit() || legalCharacterString.isReservedKeyword(lang) ? "_" + legalCharacterString.camelCasedString : legalCharacterString.camelCasedString)
         } else {
-            return (string.isFirstLetterDigit() || string.isReservedKeyword(lang) ? "_" + string : string)
+            return (legalCharacterString.isFirstLetterDigit() || legalCharacterString.isReservedKeyword(lang) ? "_" + string : legalCharacterString)
         }
     }
     
