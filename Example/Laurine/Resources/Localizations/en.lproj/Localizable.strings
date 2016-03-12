@@ -37,3 +37,8 @@
 "SpecialCases.Swift.Errors.IamKeyword.true" = "I am Swift Keyword";
 
 "Special Cases Whitespaces  Foo.Bar " = "Special Cases Whitespaces  Foo.Bar ";
+
+".SpecialCases.DotAtBeginning" = ".SpecialCases.DotAtBeginning";
+"SpecialCases.DotAtEnd." = "SpecialCases.DotAtEnd.";
+".SpecialCases.DotAtBeginningAndEnd." = ".SpecialCases.DotAtBeginningAndEnd.";
+"SpecialCases...SeveralDotsInTheMiddle" = "SpecialCases...SeveralDotsInTheMiddle";

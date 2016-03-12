@@ -798,14 +798,16 @@ private extension NSMutableDictionary {
         let baseDelimiter = "."
         forKeyPath = forKeyPath.stringByReplacingOccurrencesOfString(delimiter, withString: baseDelimiter, options: .LiteralSearch, range: nil)
         
-        // There is no keypath, just assign object
-        if forKeyPath.rangeOfString(baseDelimiter) == nil {
-            onObject.setObject(object, forKey: forKeyPath);
-        }
-        
         // Create path components separated by delimiter (. by default) and get key for root object
-        let pathComponents : Array<String> = forKeyPath.componentsSeparatedByString(baseDelimiter);
-        let rootKey : String = pathComponents[0];
+		// filter empty path components, these can be caused by delimiter at beginning/end, or multiple consecutive delimiters in the middle
+		let pathComponents : Array<String> = forKeyPath.componentsSeparatedByString(baseDelimiter).filter({ $0.characters.count > 0 })
+		forKeyPath = pathComponents.joinWithSeparator(baseDelimiter)
+        let rootKey : String = pathComponents[0]
+		
+		if pathComponents.count == 1 {
+			onObject.setObject(object, forKey: rootKey)
+		}
+		
         let replacementDictionary : NSMutableDictionary = NSMutableDictionary();
         
         // Store current state for further replacement
