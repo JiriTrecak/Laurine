@@ -1,8 +1,7 @@
-[![Swift 2.1](https://img.shields.io/badge/Swift-2.1-orange.svg?style=flat)](https://developer.apple.com/swift/)
-[![XX](https://img.shields.io/badge/Reached_World_1st-trending-orange.svg?style=flat)](https://github.com/trending?l=swift)
-[![Platforms OS X | iOS | tvos](https://img.shields.io/badge/Platforms-OS%20X%20%7C%20iOS-lightgray.svg?style=flat)](https://developer.apple.com/swift/)
-[![Twitter](http://img.shields.io/:Twitter-@-blue.svg)](https://twitter.com/@JiriTrecak)
-[![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
+[![Swift 2.2](https://img.shields.io/badge/Swift-2.2-orange.svg?style=flat)](https://developer.apple.com/swift/)
+[![Platforms OS X | iOS | tvos](https://img.shields.io/badge/Platforms-OS%20X%20%7C%20iOS-green.svg?style=flat)](https://developer.apple.com/swift/)
+[![License](http://img.shields.io/:License-MIT-green.svg)](http://doge.mit-license.org)
+[![Contact Me](http://img.shields.io/:Contact_Me-jiritrecak.com-blue.svg)](http://jiritrecak.com)
 
 
 # Laurine

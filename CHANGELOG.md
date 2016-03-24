@@ -1,18 +1,20 @@
 
 
-## 0.3.0 (coming January 2016)
+## 0.3.0 (coming soon)TM
 
 Enhancements:
 
 - Support for plurals / gender [WIP]
 - Support for all special symbols [WIP]
 
-## 0.2.2 (2015-12-30)
+## 0.2.2 (2016-03-24)
 
 Bugfixes:
 
 - When last-level-string is also substring of longer string, generate special property in deeper levels instead of throwing it out (fe. profile.text & profile.text.title)
 - Keywords of each language are now properly sanitized in the same way as numbers (prefixed with _)
+- Added support for Swift 2.2
+- Removed all warnings / error when used from XCode 7.3
 
 ## 0.2.1 (2015-12-10)
 
