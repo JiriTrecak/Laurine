@@ -1028,25 +1028,25 @@ private extension NSCharacterSet {
 private extension NSMutableDictionary {
     
     
-    func setObject(object : AnyObject!, var forKeyPath : String, delimiter : String = ".") {
-        
-        // forKeyPath = forKeyPath.stringByReplacingOccurrencesOfString(" ", withString: "_")
-        // forKeyPath = forKeyPath.alphanumericString("_")
+    func setObject(object : AnyObject!, forKeyPath : String, delimiter : String = ".") {
         
         self.setObject(object, onObject : self, forKeyPath: forKeyPath, createIntermediates: true, replaceIntermediates: true, delimiter: delimiter)
     }
     
     
-    func setObject(object : AnyObject, onObject : AnyObject, var forKeyPath : String, createIntermediates: Bool, replaceIntermediates: Bool, delimiter: String) {
+    func setObject(object : AnyObject, onObject : AnyObject, forKeyPath keyPath : String, createIntermediates: Bool, replaceIntermediates: Bool, delimiter: String) {
+        
+        // Make keypath mutable
+        var primaryKeypath = keyPath
         
         // Replace delimiter with dot delimiter - otherwise key value observing does not work properly
         let baseDelimiter = "."
-        forKeyPath = forKeyPath.stringByReplacingOccurrencesOfString(delimiter, withString: baseDelimiter, options: .LiteralSearch, range: nil)
+        primaryKeypath = primaryKeypath.stringByReplacingOccurrencesOfString(delimiter, withString: baseDelimiter, options: .LiteralSearch, range: nil)
         
         // Create path components separated by delimiter (. by default) and get key for root object
 		// filter empty path components, these can be caused by delimiter at beginning/end, or multiple consecutive delimiters in the middle
-		let pathComponents : Array<String> = forKeyPath.componentsSeparatedByString(baseDelimiter).filter({ $0.characters.count > 0 })
-		forKeyPath = pathComponents.joinWithSeparator(baseDelimiter)
+		let pathComponents : Array<String> = primaryKeypath.componentsSeparatedByString(baseDelimiter).filter({ $0.characters.count > 0 })
+		primaryKeypath = pathComponents.joinWithSeparator(baseDelimiter)
         let rootKey : String = pathComponents[0]
 		
 		if pathComponents.count == 1 {
@@ -1103,7 +1103,7 @@ private extension NSMutableDictionary {
         }
         
         // Replace root object with newly created n-level dictionary
-        replacementDictionary.setValue(object, forKeyPath: forKeyPath);
+        replacementDictionary.setValue(object, forKeyPath: primaryKeypath);
         onObject.setObject(replacementDictionary.objectForKey(rootKey), forKey: rootKey);
     }
 }
@@ -1305,10 +1305,10 @@ class Localization {
     }
     
     
-    private func codifySwift(expandedStructure : NSDictionary, var contentLevel : Int = 0) -> String {
+    private func codifySwift(expandedStructure : NSDictionary, contentLevel : Int = 0) -> String {
         
         // Increase content level
-        contentLevel++
+        let contentLevel = contentLevel + 1
         
         // Prepare output structure
         var outputStructure : [String] = []
@@ -1482,7 +1482,7 @@ class Localization {
         
         var counter = 0
         var methodHeaderParams = methodSpecification.reduce("") { (string, character) -> String in
-            counter++
+            counter += 1
             return "\(string), _ value\(counter) : \(self.dataTypeFromSpecialCharacter(character, language: .Swift))"
         }
         
@@ -1531,12 +1531,12 @@ class Localization {
         
         var counter = 0
         var methodHeader = methodSpecification.reduce("") { (string, character) -> String in
-            counter++
+            counter += 1
             return "\(string), \(self.dataTypeFromSpecialCharacter(character, language: .ObjC))"
         }
         counter = 0
         var blockHeader = methodSpecification.reduce("") { (string, character) -> String in
-            counter++
+            counter += 1
             return "\(string), \(self.dataTypeFromSpecialCharacter(character, language: .ObjC)) value\(counter) "
         }
         
