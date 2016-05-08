@@ -1237,11 +1237,7 @@ class Localization {
         // Imports
         writer.writeMarkWithName("Imports")
         writer.writeSwiftImports()
-        
-        // Extensions
-        writer.writeMarkWithName("Extensions")
-        writer.writeRequiredExtensions()
-        
+                
         // Generate actual localization structures
         writer.writeMarkWithName("Localizations")
         writer.writeCodeStructure(self.swiftStructWithContent(self.codifySwift(self.objectStructure), structName: BASE_CLASS_NAME, contentLevel: 0))
@@ -1764,22 +1760,6 @@ class StreamWriter {
         // self.store("//\n")
     }
     
-    
-    func writeRequiredExtensions() {
-        
-        self.store("private extension String {\n")
-        self.store("\n")
-        self.store("    var localized: String {\n")
-        self.store("\n")
-        self.store("        return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\")\n")
-        self.store("    }\n")
-        self.store("\n")
-        self.store("    func localizedWithComment(comment:String) -> String {\n")
-        self.store("\n")
-        self.store("        return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: comment)\n")
-        self.store("    }\n")
-        self.store("}\n")
-    }
     
     
     func writeMarkWithName(name : String, contentLevel : Int = 0) {
