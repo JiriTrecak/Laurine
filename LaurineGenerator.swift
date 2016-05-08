@@ -1196,15 +1196,15 @@ class Localization {
     var flatStructure = NSDictionary()
     var objectStructure = NSMutableDictionary()
     var autocapitalize : Bool = true
-    
+    var table: String?
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Setup
     
-    convenience init(inputFile : NSURL, delimiter : String, autocapitalize : Bool) {
+    convenience init(inputFile : NSURL, delimiter : String, autocapitalize : Bool, table: String? = nil) {
         
         self.init()
-        
+        self.table = table
         // Load localization file
         self.processInputFromFile(inputFile, delimiter: delimiter, autocapitalize: autocapitalize)
     }
@@ -1474,7 +1474,7 @@ class Localization {
     
     private func swiftLocalizationStaticVarFromLocalizationKey(key : String, variableName : String, baseTranslation : String, contentLevel : Int = 0) -> String {
         
-        return TemplateFactory.templateForSwiftStaticVarWithName(self.variableName(variableName, lang: .Swift), key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
+        return TemplateFactory.templateForSwiftStaticVarWithName(self.variableName(variableName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, contentLevel: contentLevel)
     }
     
     
@@ -1493,7 +1493,7 @@ class Localization {
         let methodParamsString = methodParams.joinWithSeparator(", ")
         
         methodHeaderParams = methodHeaderParams.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", _"))
-        return TemplateFactory.templateForSwiftFuncWithName(self.variableName(methodName, lang: .Swift), key: key, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
+        return TemplateFactory.templateForSwiftFuncWithName(self.variableName(methodName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
     }
     
     
@@ -1522,7 +1522,7 @@ class Localization {
         if header {
             return TemplateFactory.templateForObjCStaticVarHeaderWithName(variableName, key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
         } else {
-            return TemplateFactory.templateForObjCStaticVarImplementationWithName(variableName, key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCStaticVarImplementationWithName(variableName, key: key, table: table, baseTranslation : baseTranslation, contentLevel: contentLevel)
         }
     }
     
@@ -1551,7 +1551,7 @@ class Localization {
         if header {
             return TemplateFactory.templateForObjCMethodHeaderWithName(methodName, key: key, baseTranslation: baseTranslation, methodHeader: methodHeader, contentLevel: contentLevel)
         } else {
-            return TemplateFactory.templateForObjCMethodImplementationWithName(methodName, key: key, baseTranslation: baseTranslation, methodHeader: methodHeader, blockHeader: blockHeader, blockParams: blockParams, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCMethodImplementationWithName(methodName, key: key, table: table, baseTranslation: baseTranslation, methodHeader: methodHeader, blockHeader: blockHeader, blockParams: blockParams, contentLevel: contentLevel)
         }
     }
 }
@@ -1589,7 +1589,7 @@ class Runtime {
     var localizationExportLanguage : ExportLanguage = .Swift
     var localizationExportStream : ExportStream = .File
     var localizationAutocapitalize = false
-    
+    var localizationStringsTable: String?
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Public
@@ -1627,9 +1627,11 @@ class Runtime {
             helpMessage: "Optional | Bool | When enabled, name of all structures / methods / properties are automatically CamelCased | Defaults to false")
         let baseClassName = StringOption(shortFlag: "b", longFlag: "baseClassName", required: false,
                                          helpMessage: "Optional | String | Name of the base class | Defaults to \"Localizations\"")
+        let stringsTableName = StringOption(shortFlag: "t", longFlag: "stringsTableName", required: false,
+                                            helpMessage: "Optional | String | Name of strings table | Defaults to nil")
         
         let cli = CommandLine()
-        cli.addOptions(inputFilePath, outputFilePath, outputLanguage, delimiter, autocapitalize, baseClassName)
+        cli.addOptions(inputFilePath, outputFilePath, outputLanguage, delimiter, autocapitalize, baseClassName, stringsTableName)
         
         // TODO: make output file path NOT optional when print output stream is selected
         do {
@@ -1653,6 +1655,8 @@ class Runtime {
             if let bcn = baseClassName.value {
                 BASE_CLASS_NAME = bcn
             }
+            
+            self.localizationStringsTable = stringsTableName.value
             
             return true
         } catch {
@@ -1706,7 +1710,7 @@ class Runtime {
     private func processOutput() {
         
         // Create translation core which will process all required data
-        self.localizationCore = Localization(inputFile: self.localizationFilePathToRead, delimiter: self.localizationDelimiter, autocapitalize: self.localizationAutocapitalize)
+        self.localizationCore = Localization(inputFile: self.localizationFilePathToRead, delimiter: self.localizationDelimiter, autocapitalize: self.localizationAutocapitalize, table: self.localizationStringsTable)
         
         // Write output for swift
         if self.localizationExportLanguage == .Swift {
@@ -1873,18 +1877,18 @@ class TemplateFactory {
     }
     
     
-    class func templateForSwiftStaticVarWithName(name : String, key : String, baseTranslation : String, contentLevel : Int) -> String {
-        
+    class func templateForSwiftStaticVarWithName(name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
+        let tableName = table != nil ? "\"\(table!)\"" : "nil"
         return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "public static var \(name) : String = \"\(key)\".localized\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel) + "public static var \(name) : String = NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\")\n"
     }
     
     
-    class func templateForSwiftFuncWithName(name : String, key : String, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
-        
+    class func templateForSwiftFuncWithName(name : String, key : String, table: String?, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
+        let tableName = table != nil ? "\"\(table!)\"" : "nil"
         return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "public static func \(name)(\(methodHeader)) -> String {\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "}\n"
     }
     
@@ -1900,10 +1904,10 @@ class TemplateFactory {
     }
     
     
-    class func templateForObjCStaticVarImplementationWithName(name : String, key : String, baseTranslation : String, contentLevel : Int) -> String {
-        
+    class func templateForObjCStaticVarImplementationWithName(name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
+        let tableName = table != nil ? "@\"\(table!)\"" : "nil"
         return "- (NSString *)\(name) {\n"
-              + TemplateFactory.contentIndentForLevel(1) + "return NSLocalizedString(@\"\(key)\", nil);\n"
+              + TemplateFactory.contentIndentForLevel(1) + "return NSLocalizedStringFromTable(@\"\(key)\", \(tableName), nil);\n"
             + "}\n"
     }
     
@@ -1916,11 +1920,11 @@ class TemplateFactory {
     }
     
     
-    class func templateForObjCMethodImplementationWithName(name : String, key : String, baseTranslation : String, methodHeader : String, blockHeader : String, blockParams : String, contentLevel : Int) -> String {
-        
+    class func templateForObjCMethodImplementationWithName(name : String, key : String, table: String?, baseTranslation : String, methodHeader : String, blockHeader : String, blockParams : String, contentLevel : Int) -> String {
+        let tableName = table != nil ? "@\"\(table!)\"" : "nil"
         return "- (NSString *(^)(\(methodHeader)))\(name) {\n"
              + TemplateFactory.contentIndentForLevel(1) + "return ^(\(blockHeader)) {\n"
-             + TemplateFactory.contentIndentForLevel(2) + "return [NSString stringWithFormat: NSLocalizedString(@\"\(key)\", nil), \(blockParams)];\n"
+             + TemplateFactory.contentIndentForLevel(2) + "return [NSString stringWithFormat: NSLocalizedStringFromTable(@\"\(key)\", \(tableName), nil), \(blockParams)];\n"
              + TemplateFactory.contentIndentForLevel(1) + "};\n"
              + "}\n"
     }
