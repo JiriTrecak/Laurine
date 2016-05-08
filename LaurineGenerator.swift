@@ -981,7 +981,7 @@ import Foundation
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 //MARK: - Definitions
 
-private let BASE_CLASS_NAME : String = "Localizations"
+private var BASE_CLASS_NAME : String = "Localizations"
 private let OBJC_CLASS_PREFIX : String = "_"
 
 
@@ -1625,10 +1625,11 @@ class Runtime {
             helpMessage: "Optional | String | String delimiter to separate segments of each string | Defaults to [.]")
         let autocapitalize = BoolOption(shortFlag: "c", longFlag: "capitalize", required: false,
             helpMessage: "Optional | Bool | When enabled, name of all structures / methods / properties are automatically CamelCased | Defaults to false")
-
+        let baseClassName = StringOption(shortFlag: "b", longFlag: "baseClassName", required: false,
+                                         helpMessage: "Optional | String | Name of the base class | Defaults to \"Localizations\"")
         
         let cli = CommandLine()
-        cli.addOptions(inputFilePath, outputFilePath, outputLanguage, delimiter, autocapitalize)    
+        cli.addOptions(inputFilePath, outputFilePath, outputLanguage, delimiter, autocapitalize, baseClassName)
         
         // TODO: make output file path NOT optional when print output stream is selected
         do {
@@ -1647,6 +1648,10 @@ class Runtime {
                 self.localizationExportStream = .File
             } else {
                 self.localizationExportStream = .Standard
+            }
+            
+            if let bcn = baseClassName.value {
+                BASE_CLASS_NAME = bcn
             }
             
             return true
@@ -1805,7 +1810,7 @@ class StreamWriter {
     func writeObjCHeaderMacros() {
         
         self.store("// Make localization to be easily accessible\n")
-        self.store("#define Localizations [\(OBJC_CLASS_PREFIX)\(BASE_CLASS_NAME) sharedInstance]\n")
+        self.store("#define \(BASE_CLASS_NAME) [\(OBJC_CLASS_PREFIX)\(BASE_CLASS_NAME) sharedInstance]\n")
     }
     
     
