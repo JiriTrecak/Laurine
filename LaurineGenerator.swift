@@ -1787,7 +1787,7 @@ class StreamWriter {
     func writeObjCHeaderImports() {
         
         self.store("@import Foundation;\n")
-        self.store("@import UIKit;\n")
+        
     }
     
     
