@@ -1176,12 +1176,608 @@ private extension String {
 }
 
 
-private enum SpecialCharacter {
-    case String
-    case Double
-    case Int
-    case Int64
-    case UInt
+struct StringFormatSpecifier {
+    
+    struct Flags: OptionSetType {
+        private static let charMap: [Character: Flags] = [
+            "'": .GroupThousands,
+            "-": .JustifyLeft,
+            "+": .ExplicitSign,
+            " ": .PrefixSpace,
+            "#": .AlternativeForm,
+            "0": .LeadingZeros
+        ]
+        
+        let rawValue: Int
+        
+        init (rawValue: Int) {
+            self.rawValue = rawValue
+        }
+        
+        init? (fromCharacter character: Character) {
+            if let value = Flags.charMap[character] {
+                self = value
+            } else {
+                return nil
+            }
+        }
+        
+        init? (fromString string: String) {
+            
+            var flags = Flags.None
+            
+            for character in string.characters {
+                if let value = Flags.charMap[character] {
+                    flags.unionInPlace(value)
+                } else {
+                    return nil
+                }
+            }
+            
+            self = flags
+        }
+        
+        static let None = Flags(rawValue: 0)
+        static let GroupThousands = Flags(rawValue: 1 << 0)
+        static let JustifyLeft = Flags(rawValue: 1 << 1)
+        static let ExplicitSign = Flags(rawValue: 1 << 2)
+        static let PrefixSpace = Flags(rawValue: 1 << 3)
+        static let AlternativeForm = Flags(rawValue: 1 << 4)
+        static let LeadingZeros = Flags(rawValue: 1 << 5)
+    }
+    
+    enum OptionalInt {
+        case Unspecified
+        case Value(Int)
+        case Parameterized(argumentPosition: Int?)
+    }
+    
+    enum SpecifierType {
+        
+        private static let charMap: [Character: SpecifierType] = [
+            "@": .Object,
+            "d": .Integer(.Signed, .Decimal),
+            "D": .Integer(.Signed, .Decimal),
+            "u": .Integer(.Unsigned, .Decimal),
+            "U": .Integer(.Unsigned, .Decimal),
+            "x": .Integer(.Unsigned, .Hexadecimal(.Lower)),
+            "X": .Integer(.Unsigned, .Hexadecimal(.Upper)),
+            "o": .Integer(.Unsigned, .Octal),
+            "O": .Integer(.Unsigned, .Octal),
+            "f": .Float(.Decimal),
+            "F": .Float(.Decimal),
+            "e": .Float(.Scientific(.Lower)),
+            "E": .Float(.Scientific(.Upper)),
+            "g": .Float(.DecimalOrScientific(.Lower)),
+            "G": .Float(.DecimalOrScientific(.Upper)),
+            "a": .Float(.HexadecimalScientific(.Lower)),
+            "A": .Float(.HexadecimalScientific(.Upper)),
+            "c": .UChar,
+            "C": .UniChar,
+            "s": .NilString,
+            "S": .NilUniString,
+            "p": .Pointer
+        ]
+        
+        enum Signedness {
+            case Signed, Unsigned
+        }
+        
+        enum Case {
+            case Lower, Upper
+        }
+        
+        enum Notation {
+            case
+            Octal,
+            Decimal,
+            Hexadecimal(Case),
+            Scientific(Case),
+            DecimalOrScientific(Case),
+            HexadecimalScientific(Case)
+        }
+        
+        init? (fromCharacter character: Character) {
+            if let value = SpecifierType.charMap[character] {
+                self = value
+            } else {
+                return nil
+            }
+        }
+        
+        case
+        Object,
+        Integer(Signedness, Notation),
+        Float(Notation),
+        UChar,
+        UniChar,
+        NilString,
+        NilUniString,
+        Pointer
+    }
+    
+    enum LengthModifier {
+        
+        private static let strMap: [String: LengthModifier] = [
+            "hh": .Char,
+            "h": .Short,
+            "l": .Long,
+            "ll": .LongLong,
+            "q": .LongLong,
+            "L": .LongDouble,
+            "z": .Size,
+            "t": .PtrDiff,
+            "j": .IntMax
+        ]
+        
+        init? (fromString string: String) {
+            if let value = LengthModifier.strMap[string] {
+                self = value
+            } else {
+                return nil
+            }
+        }
+        
+        case None, Char, Short, Long, LongLong, LongDouble, Size, PtrDiff, IntMax
+    }
+    
+    private enum MatchCaptureGroup: Int {
+        case
+        Position = 1,
+        Flags,
+        WidthParameterizedFlag, WidthParameterizedPosition, WidthValue,
+        PrecisionParameterizedFlag, PrecisionParameterizedPosition, PrecisionValue,
+        UnmodifiableType,
+        IntegerLengthModifier, IntegerModifiableType,
+        FloatLengthModifier, FloatModifiableType
+    }
+    
+    private static let regex = try! NSRegularExpression(pattern: "(?<!%)%(?:%%)*(?:(\\d)\\$)?([-+' #0]*)(?:(\\*)(?:(\\d)\\$)?|(\\d+))?(?:\\.(?:(\\*)(?:(\\d)\\$)?|(\\d*)))?(?:([@cCsSpDOU])|(h|hh|l|ll|q|z|t|j)?([douxX])|(L)?([aAeEfFgG]))", options: [])
+    
+    typealias Bundle = [StringFormatSpecifier]
+    
+    static func parse(text: String) -> Bundle {
+        let nsString = text as NSString
+        let matches = regex.matchesInString(text, options: [], range: NSMakeRange(0, nsString.length))
+        
+        var bundle: Bundle = []
+        
+        for match in matches {
+            
+            var position: Int?
+            var flags: Flags
+            var width: OptionalInt
+            var precision: OptionalInt
+            var lengthModifier: LengthModifier
+            var type: SpecifierType
+            
+            // position
+            let positionRange = match.rangeAtIndex(MatchCaptureGroup.Position.rawValue)
+            if positionRange.location != NSNotFound {
+                position = Int(nsString.substringWithRange(positionRange))
+            }
+            
+            // flags
+            let flagsRange = match.rangeAtIndex(MatchCaptureGroup.Flags.rawValue)
+            flags = StringFormatSpecifier.Flags(fromString: nsString.substringWithRange(flagsRange))!
+            
+            // width
+            let widthValueRange = match.rangeAtIndex(MatchCaptureGroup.WidthValue.rawValue)
+            if widthValueRange.location != NSNotFound {
+                width = .Value(Int(nsString.substringWithRange(widthValueRange))!)
+            } else {
+                let widthParameterizedFlagRange = match.rangeAtIndex(MatchCaptureGroup.WidthParameterizedFlag.rawValue)
+                if widthParameterizedFlagRange.location != NSNotFound {
+                    
+                    var widthPosition: Int?
+                    
+                    let widthParameterizedPositionRange = match.rangeAtIndex(MatchCaptureGroup.WidthParameterizedPosition.rawValue)
+                    if widthParameterizedPositionRange.location != NSNotFound {
+                        widthPosition = Int(nsString.substringWithRange(widthParameterizedPositionRange))!
+                    }
+                    
+                    width = .Parameterized(argumentPosition: widthPosition)
+                } else {
+                    width = .Unspecified
+                }
+            }
+            
+            // precision
+            let precisionValueRange = match.rangeAtIndex(MatchCaptureGroup.PrecisionValue.rawValue)
+            if precisionValueRange.location != NSNotFound {
+                precision = .Value(Int(nsString.substringWithRange(precisionValueRange)) ?? 0)
+            } else {
+                let precisionParameterizedFlagRange = match.rangeAtIndex(MatchCaptureGroup.PrecisionParameterizedFlag.rawValue)
+                if precisionParameterizedFlagRange.location != NSNotFound {
+                    
+                    var precisionPosition: Int?
+                    
+                    let precisionParameterizedPositionRange = match.rangeAtIndex(MatchCaptureGroup.PrecisionParameterizedPosition.rawValue)
+                    if precisionParameterizedPositionRange.location != NSNotFound {
+                        precisionPosition = Int(nsString.substringWithRange(precisionParameterizedPositionRange))!
+                    }
+                    
+                    precision = .Parameterized(argumentPosition: precisionPosition)
+                } else {
+                    precision = .Unspecified
+                }
+            }
+            
+            // type + length modifier
+            let unmodifiableTypeRange = match.rangeAtIndex(MatchCaptureGroup.UnmodifiableType.rawValue)
+            if unmodifiableTypeRange.location != NSNotFound {
+                let strType = nsString.substringWithRange(unmodifiableTypeRange)
+                type = SpecifierType(fromCharacter: strType.characters.first!)!
+                lengthModifier = .None
+            } else {
+                
+                var modifiableTypeRange: NSRange
+                var lengthModifierRange: NSRange
+                
+                let integerModifiableRange = match.rangeAtIndex(MatchCaptureGroup.IntegerModifiableType.rawValue)
+                if integerModifiableRange.location != NSNotFound {
+                    
+                    modifiableTypeRange = integerModifiableRange
+                    lengthModifierRange = match.rangeAtIndex(MatchCaptureGroup.IntegerLengthModifier.rawValue)
+                    
+                } else {
+                    
+                    let floatModifiableTypeRange = match.rangeAtIndex(MatchCaptureGroup.FloatModifiableType.rawValue)
+                    if floatModifiableTypeRange.location == NSNotFound {
+                        fatalError("Unknown specifier type")
+                    }
+                    
+                    modifiableTypeRange = floatModifiableTypeRange
+                    lengthModifierRange = match.rangeAtIndex(MatchCaptureGroup.FloatLengthModifier.rawValue)
+                    
+                }
+                
+                let strType = nsString.substringWithRange(modifiableTypeRange)
+                type = SpecifierType(fromCharacter: strType.characters.first!)!
+                
+                if lengthModifierRange.location != NSNotFound {
+                    lengthModifier = LengthModifier(fromString: nsString.substringWithRange(lengthModifierRange))!
+                } else {
+                    lengthModifier = .None
+                }
+            }
+            
+            let specifierMatch = StringFormatSpecifier(argumentPosition: position, flags: flags, width: width, precision: precision, lengthModifier: lengthModifier, type: type)
+            bundle.append(specifierMatch)
+        }
+        
+        return bundle
+    }
+    
+    let argumentPosition: Int?
+    let flags: Flags
+    let width: OptionalInt
+    let precision: OptionalInt
+    let lengthModifier: LengthModifier
+    let type: SpecifierType
+}
+
+
+extension StringFormatSpecifier.OptionalInt: Equatable {}
+
+
+func ==(lhs: StringFormatSpecifier.OptionalInt, rhs: StringFormatSpecifier.OptionalInt) -> Bool {
+    switch (lhs, rhs) {
+        
+    case (.Unspecified, .Unspecified):
+        return true
+        
+    case (.Value(let value1), .Value(let value2)):
+        return value1 == value2
+        
+    case (.Parameterized(let position1), .Parameterized(let position2)):
+        return position1 == position2
+        
+    default:
+        return false
+        
+    }
+}
+
+
+class StringFormatArgument {
+    
+    enum ArgumentType {
+        
+        init? (fromSpecifier specifier: StringFormatSpecifier) {
+            
+            switch (specifier.type, specifier.lengthModifier) {
+                
+            case (.Object, _):
+                // HACK: allow different argument types using the precision flag
+                self = specifier.precision == .Unspecified ? .String : .NSObject
+                
+            case (.Integer(let s, _), .Char):
+                self = s == .Signed ? .Int8 : .UInt8
+                
+            case (.Integer(let s, _), .Short):
+                self = s == .Signed ? .Int16 : .UInt16
+                
+            case (.Integer(let s, _), .None):
+                self = s == .Signed ? .Int : .UInt
+                
+            case (.Integer(let s, _), .Long):
+                self = s == .Signed ? .Int32 : .UInt32
+                
+            case (.Integer(let s, _), .LongLong):
+                self = s == .Signed ? .Int64 : .UInt64
+                
+            case (.Integer(let s, _), .IntMax):
+                self = s == .Signed ? .IntMax : .UIntMax
+                
+            case (.Float(_), .LongDouble):
+                self = .Double
+                
+            case (.Float(_), .None):
+                self = .Float
+                
+            case (.UChar, _):
+                self = .UInt8
+                
+            case (.UniChar, _):
+                self = .UnicodeScalar
+                
+            case (.NilString, _), (.NilUniString, _):
+                self = .NSData
+                
+            case (.Pointer, _):
+                self = .Pointer
+                
+            default:
+                return nil
+            }
+        }
+        
+        case
+            String,
+            Int8, UInt8,
+            Int16, UInt16,
+            Int32, UInt32,
+            Int, UInt,
+            Int64, UInt64,
+            IntMax, UIntMax,
+            UnicodeScalar,
+            Float, Double,
+            NSData, NSObject,
+            Pointer
+    }
+    
+    enum EffectType {
+        case Value, Width, Precision
+    }
+    
+    struct Effect {
+        let type: EffectType
+        let specifierPosition: Int
+    }
+    
+    enum Error: ErrorType {
+        case MixedArguments
+        case ConflictingTypes(position: Int, typeA: StringFormatArgument.ArgumentType, typeB: StringFormatArgument.ArgumentType)
+        case SparsePositions
+    }
+    
+    let type: ArgumentType
+    var groups: Set<Int>
+    var effects: [Effect] = []
+    var hasValueEffects: Bool = false
+    var hasWidthEffects: Bool = false
+    var hasPrecisionEffects: Bool = false
+    
+    init (type: ArgumentType, group: Int? = nil, effect: Effect) {
+        self.type = type
+        
+        if let groupValue = group {
+            self.groups = [groupValue]
+        } else {
+            self.groups = []
+        }
+        
+        addEffect(effect)
+    }
+    
+    func addToGroup(group: Int) {
+        groups.insert(group)
+    }
+    
+    func addEffect(effect: Effect) {
+        
+        switch effect.type {
+        case .Value:
+            hasValueEffects = true
+        case .Width:
+            hasWidthEffects = true
+        case .Precision:
+            hasPrecisionEffects = true
+        }
+        
+        effects.append(effect)
+    }
+    
+    func getName() -> String {
+        
+        var prefix: String
+        
+        if hasValueEffects {
+            prefix = "value"
+        } else if hasWidthEffects {
+            if hasPrecisionEffects {
+                prefix = "options"
+            } else {
+                prefix = "width"
+            }
+        } else if hasPrecisionEffects {
+            prefix = "precision"
+        } else {
+            prefix = "unknown"
+        }
+        
+        return prefix + groups.sort().map({ String($0) }).joinWithSeparator("_")
+    }
+    
+    static func inferFormatArguments(bundle: StringFormatSpecifier.Bundle) throws -> [StringFormatArgument] {
+        
+        if bundle.isEmpty {
+            return []
+        }
+        
+        var arguments: [StringFormatArgument] = []
+        
+        let first = bundle.first!
+        if first.argumentPosition == nil {
+            
+            /**
+             * Unnumbered arguments
+             */
+            
+            // specifier position == argument group
+            var position = 1
+            
+            for specifier in bundle {
+ 
+                guard specifier.argumentPosition == nil else {
+                    throw Error.MixedArguments
+                }
+                
+                if case .Parameterized(argumentPosition: let widthArgumentPosition) = specifier.width {
+                    guard widthArgumentPosition == nil else {
+                        throw Error.MixedArguments
+                    }
+                    
+                    arguments.append(StringFormatArgument(type: .Int, group: position,
+                        effect: Effect(type: .Width, specifierPosition: position)))
+                }
+                
+                if case .Parameterized(argumentPosition: let precisionArgumentPosition) = specifier.precision {
+                    guard precisionArgumentPosition == nil else {
+                        throw Error.MixedArguments
+                    }
+                    
+                    arguments.append(StringFormatArgument(type: .Int, group: position,
+                        effect: Effect(type: .Precision, specifierPosition: position)))
+                }
+                
+                arguments.append(StringFormatArgument(type: ArgumentType(fromSpecifier: specifier)!, group: position,
+                    effect:  Effect(type: .Value, specifierPosition: position)))
+                
+                position += 1
+            }
+            
+        } else {
+            
+            /**
+             * Numbered arguments
+             */
+            
+            var argumentMap: [Int: StringFormatArgument] = [:]
+            
+            // map to store argument positions of specifier VALUES (not weight or precision)
+            var specifierToValueArgumentMap : [Int: Int] = [:]
+            
+            let append = { (argumentPosition: Int, type: ArgumentType, effect: Effect) -> Void in
+                
+                if let existingArgument = argumentMap[argumentPosition] {
+                    
+                    guard existingArgument.type == type else {
+                        throw Error.ConflictingTypes(position: argumentPosition,
+                                                     typeA: existingArgument.type,
+                                                     typeB: type)
+                    }
+                    
+                    existingArgument.addEffect(effect)
+                    
+                } else {
+                    argumentMap[argumentPosition] = StringFormatArgument(type: type, effect: effect)
+                }
+            }
+            
+            var specifierPosition = 1
+            
+            for specifier in bundle {
+                
+                guard let valueArgumentPosition = specifier.argumentPosition else {
+                    throw Error.MixedArguments
+                }
+                
+                if case .Parameterized(argumentPosition: let widthArgumentPosition) = specifier.width {
+                    guard let positionUnwrapped = widthArgumentPosition else {
+                        throw Error.MixedArguments
+                    }
+                    
+                    try append(positionUnwrapped, .Int, Effect(type: .Width, specifierPosition: specifierPosition))
+                }
+                
+                if case .Parameterized(argumentPosition: let precisionArgumentPosition) = specifier.precision {
+                    guard let positionUnwrapped = precisionArgumentPosition else {
+                        throw Error.MixedArguments
+                    }
+                    
+                    try append(positionUnwrapped, .Int, Effect(type: .Precision, specifierPosition: specifierPosition))
+                }
+                
+                try append(valueArgumentPosition, ArgumentType(fromSpecifier: specifier)!, Effect(type: .Value, specifierPosition: specifierPosition))
+                
+                specifierToValueArgumentMap[specifierPosition] = valueArgumentPosition
+                
+                specifierPosition += 1
+            }
+            
+            // check that the map keys are incremental and contiguous, and assign groups
+            var argumentPosition = 1
+            var groupNumber = 1
+            var ungroupedArguments: [StringFormatArgument] = []
+            
+            for (actualPosition, argument) in argumentMap.sort({ $0.0 < $1.0 }) {
+                if actualPosition != argumentPosition {
+                    throw Error.SparsePositions
+                }
+                
+                argumentPosition += 1
+                
+                if argument.hasValueEffects {
+                    // each "value" argument creates a new group
+                    argument.addToGroup(groupNumber)
+                    groupNumber += 1
+                } else {
+                    ungroupedArguments.append(argument)
+                }
+                
+                arguments.append(argument)
+            }
+            
+            // group the remaining arguments according to their effects on values that correspond to other arguments
+            for argument in ungroupedArguments {
+                for effect in argument.effects {
+                    let valueArgumentPosition = specifierToValueArgumentMap[effect.specifierPosition]!
+                    let valueArgument = argumentMap[valueArgumentPosition]!
+                    
+                    let group = valueArgument.groups.first!
+                    
+                    argument.addToGroup(group)
+                }
+            }
+        }
+        
+        return arguments
+    }
+}
+
+extension StringFormatArgument.Error : CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .MixedArguments:
+            return "Mixing numbered and unnumbered argument specifications in a format string is unsupported"
+        case .ConflictingTypes(let position, let typeA, let typeB):
+            return "Coflicting argument types in format string. Position \(position), types \(typeA) and \(typeB)"
+        case .SparsePositions:
+            return "Numbered format strings must be contiguous"
+        }
+    }
 }
 
 
@@ -1318,11 +1914,20 @@ class Localization {
             
             if let value = value as? String {
                 let comment = (self.flatStructure.objectForKey(value) as! String).nolineString
-                let methodParams = self.methodParamsForString(comment)
-                let staticString: String
+                let arguments: [StringFormatArgument]
+                    
+                do {
+                    arguments = try self.inferArgumentsFromFormatString(comment)
+                } catch let error as StringFormatArgument.Error {
+                    fatalError("Error parsing format string \"\(key)\": \(error.description)")
+                } catch {
+                    fatalError("Unknown error")
+                }
                 
-                if methodParams.count > 0 {
-                    staticString = self.swiftLocalizationFuncFromLocalizationKey(value, methodName: key as! String, baseTranslation: comment, methodSpecification: methodParams, contentLevel: contentLevel)
+                let staticString: String
+
+                if arguments.count > 0 {
+                    staticString = self.swiftLocalizationFuncFromLocalizationKey(value, methodName: key as! String, baseTranslation: comment, arguments: arguments, contentLevel: contentLevel)
                 } else {
                     staticString = self.swiftLocalizationStaticVarFromLocalizationKey(value, variableName: key as! String, baseTranslation: comment, contentLevel: contentLevel)
                 }
@@ -1355,11 +1960,20 @@ class Localization {
             if let value = value as? String {
                 
                 let comment = (self.flatStructure.objectForKey(value) as! String).nolineString
-                let methodParams = self.methodParamsForString(comment)
-                let staticString : String
+                let arguments: [StringFormatArgument]
                 
-                if methodParams.count > 0 {
-                    staticString = self.objcLocalizationFuncFromLocalizationKey(value, methodName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, methodSpecification: methodParams, header: header)
+                do {
+                    arguments = try self.inferArgumentsFromFormatString(comment)
+                } catch let error as StringFormatArgument.Error {
+                    fatalError("Error parsing format string \"\(key)\": \(error.description)")
+                } catch {
+                    fatalError("Unknown error")
+                }
+                
+                let staticString : String
+
+                if arguments.count > 0 {
+                    staticString = self.objcLocalizationFuncFromLocalizationKey(value, methodName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, arguments: arguments, header: header)
                 } else {
                     staticString = self.objcLocalizationStaticVarFromLocalizationKey(value, variableName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, header: header)
                 }
@@ -1391,38 +2005,12 @@ class Localization {
         // At the end, return everything merged together
         return outputStructure.joinWithSeparator("\n")
     }
-    
-    
-    private func methodParamsForString(string : String) -> [SpecialCharacter] {
-        
-        // Split the string into pieces by %
-        let matches = self.matchesForRegexInText("%([0-9]*.[0-9]*(d|i|u|f|ld)|(\\d\\$)?@|d|i|u|f|ld)", text: string)
-        var characters : [SpecialCharacter] = []
-        
-        // If there is just one component, no special characters are found
-        if matches.count == 0 {
-            return []
-        } else {
-            for match in matches {
-                characters.append(self.propertyTypeForMatch(match))
-            }
-            return characters
-        }
-    }
-    
-    
-    private func propertyTypeForMatch(string : String) -> SpecialCharacter {
-        if string.containsString("ld") {
-            return .Int64
-        } else if string.containsString("d") || string.containsString("i") {
-            return .Int
-        } else if string.containsString("u") {
-            return .UInt
-        } else if string.containsString("f") {
-            return .Double
-        } else {
-            return .String
-        }
+
+
+    private func inferArgumentsFromFormatString(string : String) throws -> [StringFormatArgument] {
+
+        let specifierBundle = StringFormatSpecifier.parse(string)
+        return try StringFormatArgument.inferFormatArguments(specifierBundle)
     }
     
     
@@ -1437,31 +2025,32 @@ class Localization {
             return (legalCharacterString.isFirstLetterDigit() || legalCharacterString.isReservedKeyword(lang) ? "_" + string : legalCharacterString)
         }
     }
-    
-    
-    private func matchesForRegexInText(regex: String!, text: String!) -> [String] {
+
+
+    private func dataTypeFromArgumentType(argumentType : StringFormatArgument.ArgumentType, language : Runtime.ExportLanguage) -> String {
+
+        let swift = language == .Swift
         
-        do {
-            let regex = try NSRegularExpression(pattern: regex, options: [])
-            let nsString = text as NSString
-            let results = regex.matchesInString(text,
-                options: [], range: NSMakeRange(0, nsString.length))
-            return results.map { nsString.substringWithRange($0.range)}
-        } catch let error as NSError {
-            print("invalid regex: \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    
-    private func dataTypeFromSpecialCharacter(char : SpecialCharacter, language : Runtime.ExportLanguage) -> String {
-        
-        switch char {
-            case .String: return language == .Swift ? "String" : "NSString *"
-            case .Double: return language == .Swift ? "Double" : "double"
-            case .Int: return language == .Swift ? "Int" : "int"
-            case .Int64: return language == .Swift ? "Int64" : "long"
-            case .UInt: return language == .Swift ? "UInt" : "unsigned int"
+        switch argumentType {
+        case .String: return swift ? "String" : "NSString *"
+        case .Int8: return swift ? "Int8" : "char"
+        case .UInt8: return swift ? "UInt8" : "unsigned char"
+        case .Int16: return swift ? "Int16" : "short"
+        case .UInt16: return swift ? "UInt16" : "unsigned short"
+        case .Int32: return swift ? "Int32" : "int"
+        case .UInt32: return swift ? "UInt32" : "unsigned int"
+        case .Int: return swift ? "Int" : "int"
+        case .UInt: return swift ? "UInt" : "unsigned int"
+        case .Int64: return swift ? "Int64" : "long long"
+        case .UInt64: return swift ? "UInt64" : "unsigned long long"
+        case .IntMax: return swift ? "IntMax" : "intmax_t"
+        case .UIntMax: return swift ? "UIntMax" : "uintmax_t"
+        case .UnicodeScalar: return swift ? "UnicodeScalar" : "unichar"
+        case .Float: return swift ? "Float" : "float"
+        case .Double: return swift ? "Double" : "double"
+        case .NSData: return "NSData" 
+        case .NSObject: return "NSObject" 
+        case .Pointer: return swift ? "UnsafePointer<Void>" : "void *"
         }
     }
     
@@ -1478,21 +2067,16 @@ class Localization {
     }
     
     
-    private func swiftLocalizationFuncFromLocalizationKey(key : String, methodName : String, baseTranslation : String, methodSpecification : [SpecialCharacter], contentLevel : Int = 0) -> String {
+    private func swiftLocalizationFuncFromLocalizationKey(key : String, methodName : String, baseTranslation : String, arguments : [StringFormatArgument], contentLevel : Int = 0) -> String {
+
+        let argumentsSignature = arguments.map({ (name: $0.getName(), type: $0.type) })
         
-        var counter = 0
-        var methodHeaderParams = methodSpecification.reduce("") { (string, character) -> String in
-            counter += 1
-            return "\(string), _ value\(counter) : \(self.dataTypeFromSpecialCharacter(character, language: .Swift))"
-        }
-        
-        var methodParams : [String] = []
-        for (index, _) in methodSpecification.enumerate() {
-            methodParams.append("value\(index + 1)")
-        }
-        let methodParamsString = methodParams.joinWithSeparator(", ")
-        
-        methodHeaderParams = methodHeaderParams.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", _"))
+        let methodHeaderParams = argumentsSignature
+            .map({ "\($0.name) : \(self.dataTypeFromArgumentType($0.type, language: .Swift))" })
+            .joinWithSeparator(", _ ")
+ 
+        let methodParamsString = argumentsSignature.map({ $0.name }).joinWithSeparator(", ")
+
         return TemplateFactory.templateForSwiftFuncWithName(self.variableName(methodName, lang: .Swift), key: key, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
     }
     
@@ -1527,27 +2111,22 @@ class Localization {
     }
     
     
-    private func objcLocalizationFuncFromLocalizationKey(key : String, methodName : String, baseTranslation : String, methodSpecification : [SpecialCharacter], header : Bool, contentLevel : Int = 0) -> String {
+    private func objcLocalizationFuncFromLocalizationKey(key : String, methodName : String, baseTranslation : String, arguments : [StringFormatArgument], header : Bool, contentLevel : Int = 0) -> String {
+
+        let argumentsSignature = arguments.map({ (name: $0.getName(), type: $0.type) })
         
-        var counter = 0
-        var methodHeader = methodSpecification.reduce("") { (string, character) -> String in
-            counter += 1
-            return "\(string), \(self.dataTypeFromSpecialCharacter(character, language: .ObjC))"
-        }
-        counter = 0
-        var blockHeader = methodSpecification.reduce("") { (string, character) -> String in
-            counter += 1
-            return "\(string), \(self.dataTypeFromSpecialCharacter(character, language: .ObjC)) value\(counter) "
-        }
+        let methodHeader = argumentsSignature
+            .map({ self.dataTypeFromArgumentType($0.type, language: .ObjC) })
+            .joinWithSeparator(", ")
         
-        var blockParamComponent : [String] = []
-        for (index, _) in methodSpecification.enumerate() {
-            blockParamComponent.append("value\(index + 1)")
-        }
-        let blockParams = blockParamComponent.joinWithSeparator(", ")
-        methodHeader = methodHeader.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", "))
-        blockHeader = blockHeader.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", "))
+        let blockHeader = argumentsSignature
+            .map({ "\(self.dataTypeFromArgumentType($0.type, language: .ObjC)) \($0.name) " })
+            .joinWithSeparator(", ")
         
+        let blockParams = argumentsSignature
+            .map({ $0.name })
+            .joinWithSeparator(", ")
+
         if header {
             return TemplateFactory.templateForObjCMethodHeaderWithName(methodName, key: key, baseTranslation: baseTranslation, methodHeader: methodHeader, contentLevel: contentLevel)
         } else {
@@ -1877,10 +2456,12 @@ class TemplateFactory {
     
     class func templateForSwiftFuncWithName(name : String, key : String, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
         
+        // we use NSString(format:) instead of String(format:) because of an issue:
+        // https://bugs.swift.org/browse/SR-1378
         return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "public static func \(name)(\(methodHeader)) -> String {\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "}\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel) + "public static func \(name)(\(methodHeader)) -> String {\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel + 1) + "return NSString(format: NSLocalizedString(\"\(key)\", tableName: nil, bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params)) as String\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel) + "}\n"
     }
     
     
