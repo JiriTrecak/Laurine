@@ -983,7 +983,7 @@ import Foundation
 
 private var BASE_CLASS_NAME : String = "Localizations"
 private let OBJC_CLASS_PREFIX : String = "_"
-
+private var OBJC_CUSTOM_SUPERCLASS: String?
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 // MARK: - Extensions
@@ -1625,9 +1625,11 @@ class Runtime {
                                          helpMessage: "Optional | String | Name of the base class | Defaults to \"Localizations\"")
         let stringsTableName = StringOption(shortFlag: "t", longFlag: "stringsTableName", required: false,
                                             helpMessage: "Optional | String | Name of strings table | Defaults to nil")
+        let customSuperclass = StringOption(shortFlag: "s", longFlag: "customSuperclass", required: false,
+                                            helpMessage: "Optional | String | A custom superclass name | Defaults to NSObject (only applicable in ObjC)")
         
         let cli = CommandLine()
-        cli.addOptions(inputFilePath, outputFilePath, outputLanguage, delimiter, autocapitalize, baseClassName, stringsTableName)
+        cli.addOptions(inputFilePath, outputFilePath, outputLanguage, delimiter, autocapitalize, baseClassName, stringsTableName, customSuperclass)
         
         // TODO: make output file path NOT optional when print output stream is selected
         do {
@@ -1654,6 +1656,8 @@ class Runtime {
             
             self.localizationStringsTable = stringsTableName.value
             
+            OBJC_CUSTOM_SUPERCLASS = customSuperclass.value
+
             return true
         } catch {
             cli.printUsage(error)
@@ -1787,7 +1791,9 @@ class StreamWriter {
     func writeObjCHeaderImports() {
         
         self.store("@import Foundation;\n")
-        
+        if let csc = OBJC_CUSTOM_SUPERCLASS {
+            self.store("#import \"\(csc).h\"\n")
+        }
     }
     
     
@@ -1912,7 +1918,7 @@ class TemplateFactory {
     
     class func templateForObjCClassHeaderWithName(name : String, content : String, contentLevel : Int) -> String {
         
-        return "@interface \(name) : NSObject\n\n"
+        return "@interface \(name) : \(OBJC_CUSTOM_SUPERCLASS ?? "NSObject")\n\n"
              + "\(content)\n"
              + "@end\n"
     }
