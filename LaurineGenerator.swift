@@ -1858,7 +1858,7 @@ class TemplateFactory {
         return "\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "public struct \(name) {\n"
              + "\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "\(content)\n"
+             + "\(content)\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "}"
     }
     
