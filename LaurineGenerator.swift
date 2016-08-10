@@ -64,9 +64,9 @@ let ArgumentStopper = "--"
 let ArgumentAttacher: Character = "="
 
 /* An output stream to stderr; used by CommandLine.printUsage(). */
-private struct StderrOutputStream: OutputStreamType {
+private struct StderrOutputStream: OutputStream {
     static let stream = StderrOutputStream()
-    func write(s: String) {
+    func write(_ s: String) {
         fputs(s, stderr)
     }
 }
@@ -157,7 +157,7 @@ public class CommandLine {
      */
     public var maxFlagDescriptionWidth: Int {
         if _maxFlagDescriptionWidth == 0 {
-            _maxFlagDescriptionWidth = _options.map { $0.flagDescription.characters.count }.sort().first ?? 0
+            _maxFlagDescriptionWidth = _options.map { $0.flagDescription.characters.count }.sorted().first ?? 0
         }
         
         return _maxFlagDescriptionWidth
@@ -170,37 +170,37 @@ public class CommandLine {
      */
     public enum OutputType {
         /** About text: `Usage: command-example [options]` and the like */
-        case About
+        case about
         
         /** An error message: `Missing required option --extract`  */
-        case Error
+        case error
         
         /** An Option's `flagDescription`: `-h, --help:` */
-        case OptionFlag
+        case optionFlag
         
         /** An Option's help message */
-        case OptionHelp
+        case optionHelp
     }
     
     /** A ParseError is thrown if the `parse()` method fails. */
-    public enum ParseError: ErrorType, CustomStringConvertible {
+    public enum ParseError: Error, CustomStringConvertible {
         /** Thrown if an unrecognized argument is passed to `parse()` in strict mode */
-        case InvalidArgument(String)
+        case invalidArgument(String)
         
         /** Thrown if the value for an Option is invalid (e.g. a string is passed to an IntOption) */
-        case InvalidValueForOption(Option, [String])
+        case invalidValueForOption(Option, [String])
         
         /** Thrown if an Option with required: true is missing */
-        case MissingRequiredOptions([Option])
+        case missingRequiredOptions([Option])
         
         public var description: String {
             switch self {
-            case let .InvalidArgument(arg):
+            case let .invalidArgument(arg):
                 return "Invalid argument: \(arg)"
-            case let .InvalidValueForOption(opt, vals):
-                let vs = vals.joinWithSeparator(", ")
+            case let .invalidValueForOption(opt, vals):
+                let vs = vals.joined(separator: ", ")
                 return "Invalid value(s) for option \(opt.flagDescription): \(vs)"
-            case let .MissingRequiredOptions(opts):
+            case let .missingRequiredOptions(opts):
                 return "Missing required options: \(opts.map { return $0.flagDescription })"
             }
         }
@@ -222,7 +222,7 @@ public class CommandLine {
     }
     
     /* Returns all argument values from flagIndex to the next flag or the end of the argument array. */
-    private func _getFlagValues(flagIndex: Int, _ attachedArg: String? = nil) -> [String] {
+    private func _getFlagValues(_ flagIndex: Int, _ attachedArg: String? = nil) -> [String] {
         var args: [String] = [String]()
         var skipFlagChecks = false
         
@@ -230,7 +230,7 @@ public class CommandLine {
             args.append(a)
         }
         
-        for i in (flagIndex + 1).stride(to: _arguments.count, by: 1) {
+        for i in stride(from: (flagIndex + 1), to: _arguments.count, by: 1) {
             if !skipFlagChecks {
                 if _arguments[i] == ArgumentStopper {
                     skipFlagChecks = true
@@ -254,7 +254,7 @@ public class CommandLine {
      *
      * - parameter option: The option to add.
      */
-    public func addOption(option: Option) {
+    public func addOption(_ option: Option) {
         let uf = _usedFlags
         for case let flag? in [option.shortFlag, option.longFlag] {
             assert(!uf.contains(flag), "Flag '\(flag)' already in use")
@@ -269,7 +269,7 @@ public class CommandLine {
      *
      * - parameter options: An array containing the options to add.
      */
-    public func addOptions(options: [Option]) {
+    public func addOptions(_ options: [Option]) {
         for o in options {
             addOption(o)
         }
@@ -280,7 +280,7 @@ public class CommandLine {
      *
      * - parameter options: The options to add.
      */
-    public func addOptions(options: Option...) {
+    public func addOptions(_ options: Option...) {
         for o in options {
             addOption(o)
         }
@@ -291,7 +291,7 @@ public class CommandLine {
      *
      * - parameter options: An array containing the options to set.
      */
-    public func setOptions(options: [Option]) {
+    public func setOptions(_ options: [Option]) {
         _options = [Option]()
         addOptions(options)
     }
@@ -301,7 +301,7 @@ public class CommandLine {
      *
      * - parameter options: The options to set.
      */
-    public func setOptions(options: Option...) {
+    public func setOptions(_ options: Option...) {
         _options = [Option]()
         addOptions(options)
     }
@@ -317,14 +317,14 @@ public class CommandLine {
      *     example, a string is supplied for an IntOption)
      *   - `.MissingRequiredOptions` if a required option isn't present
      */
-    public func parse(strict: Bool = false) throws {
+    public func parse(_ strict: Bool = false) throws {
         /* Kind of an ugly cast here */
         var strays = _arguments.map { $0 as String? }
         
         /* Nuke executable name */
         strays[0] = nil
         
-        for (idx, arg) in _arguments.enumerate() {
+        for (idx, arg) in _arguments.enumerated() {
             if arg == ArgumentStopper {
                 break
             }
@@ -333,9 +333,8 @@ public class CommandLine {
                 continue
             }
             
-            let skipChars = arg.hasPrefix(LongOptionPrefix) ?
-                LongOptionPrefix.characters.count : ShortOptionPrefix.characters.count
-            let flagWithArg = arg[arg.startIndex.advancedBy(skipChars)..<arg.endIndex]
+            let skipChars = arg.hasPrefix(LongOptionPrefix) ? LongOptionPrefix.characters.count : ShortOptionPrefix.characters.count
+            let flagWithArg = String(arg.characters.suffix(from: arg.characters.index(arg.startIndex, offsetBy: skipChars)))
             
             /* The argument contained nothing but ShortOptionPrefix or LongOptionPrefix */
             if flagWithArg.isEmpty {
@@ -351,12 +350,12 @@ public class CommandLine {
             for option in _options where option.flagMatch(flag) {
                 let vals = self._getFlagValues(idx, attachedArg)
                 guard option.setValue(vals) else {
-                    throw ParseError.InvalidValueForOption(option, vals)
+                    throw ParseError.invalidValueForOption(option, vals)
                 }
                 
                 var claimedIdx = idx + option.claimedValues
                 if attachedArg != nil { claimedIdx -= 1 }
-                for i in idx.stride(through: claimedIdx, by: 1) {
+                for i in stride(from: idx, through: claimedIdx, by: 1) {
                     strays[i] = nil
                 }
                 
@@ -367,19 +366,19 @@ public class CommandLine {
             /* Flags that do not take any arguments can be concatenated */
             let flagLength = flag.characters.count
             if !flagMatched && !arg.hasPrefix(LongOptionPrefix) {
-                for (i, c) in flag.characters.enumerate() {
+                for (i, c) in flag.characters.enumerated() {
                     for option in _options where option.flagMatch(String(c)) {
                         /* Values are allowed at the end of the concatenated flags, e.g.
                         * -xvf <file1> <file2>
                         */
                         let vals = (i == flagLength - 1) ? self._getFlagValues(idx, attachedArg) : [String]()
                         guard option.setValue(vals) else {
-                            throw ParseError.InvalidValueForOption(option, vals)
+                            throw ParseError.invalidValueForOption(option, vals)
                         }
                         
                         var claimedIdx = idx + option.claimedValues
                         if attachedArg != nil { claimedIdx -= 1 }
-                        for i in idx.stride(through: claimedIdx, by: 1) {
+                        for i in stride(from: idx, through: claimedIdx, by: 1) {
                             strays[i] = nil
                         }
                         
@@ -391,14 +390,14 @@ public class CommandLine {
             
             /* Invalid flag */
             guard !strict || flagMatched else {
-                throw ParseError.InvalidArgument(arg)
+                throw ParseError.invalidArgument(arg)
             }
         }
         
         /* Check to see if any required options were not matched */
         let missingOptions = _options.filter { $0.required && !$0.wasSet }
         guard missingOptions.count == 0 else {
-            throw ParseError.MissingRequiredOptions(missingOptions)
+            throw ParseError.missingRequiredOptions(missingOptions)
         }
         
         strayValues = strays.flatMap { $0 }
@@ -413,15 +412,15 @@ public class CommandLine {
      * - returns: The formatted string.
      * - seealso: `formatOutput`
      */
-    public func defaultFormat(s: String, type: OutputType) -> String {
+    public func defaultFormat(_ s: String, type: OutputType) -> String {
         switch type {
-        case .About:
+        case .about:
             return "\(s)\n"
-        case .Error:
+        case .error:
             return "\(s)\n\n"
-        case .OptionFlag:
+        case .optionFlag:
             return "  \(s.paddedToWidth(maxFlagDescriptionWidth)):\n"
-        case .OptionHelp:
+        case .optionHelp:
             return "      \(s)\n"
         }
     }
@@ -435,16 +434,16 @@ public class CommandLine {
     *
     * - parameter to: An OutputStreamType to write the error message to.
     */
-    public func printUsage<TargetStream: OutputStreamType>(inout to: TargetStream) {
+    public func printUsage<TargetStream: OutputStream>(_ to: inout TargetStream) {
         /* Nil coalescing operator (??) doesn't work on closures :( */
         let format = formatOutput != nil ? formatOutput! : defaultFormat
         
         let name = _arguments[0]
-        print(format("Usage: \(name) [options]", .About), terminator: "", toStream: &to)
+        print(format("Usage: \(name) [options]", .about), terminator: "", to: &to)
         
         for opt in _options {
-            print(format(opt.flagDescription, .OptionFlag), terminator: "", toStream: &to)
-            print(format(opt.helpMessage, .OptionHelp), terminator: "", toStream: &to)
+            print(format(opt.flagDescription, .optionFlag), terminator: "", to: &to)
+            print(format(opt.helpMessage, .optionHelp), terminator: "", to: &to)
         }
     }
     
@@ -455,9 +454,9 @@ public class CommandLine {
      *   (e.g. "Missing required option --extract") will be printed before the usage message.
      * - parameter to: An OutputStreamType to write the error message to.
      */
-    public func printUsage<TargetStream: OutputStreamType>(error: ErrorType, inout to: TargetStream) {
+    public func printUsage<TargetStream: OutputStream>(_ error: Error, to: inout TargetStream) {
         let format = formatOutput != nil ? formatOutput! : defaultFormat
-        print(format("\(error)", .Error), terminator: "", toStream: &to)
+        print(format("\(error)", .error), terminator: "", to: &to)
         printUsage(&to)
     }
     
@@ -467,7 +466,7 @@ public class CommandLine {
      * - parameter error: An error thrown from `parse()`. A description of the error
      *   (e.g. "Missing required option --extract") will be printed before the usage message.
      */
-    public func printUsage(error: ErrorType) {
+    public func printUsage(_ error: Error) {
         var out = StderrOutputStream.stream
         printUsage(error, to: &out)
     }
@@ -500,11 +499,11 @@ public class Option {
     
     public var flagDescription: String {
         switch (shortFlag, longFlag) {
-        case let (.Some(sf), .Some(lf)):
+        case let (.some(sf), .some(lf)):
             return "\(ShortOptionPrefix)\(sf), \(LongOptionPrefix)\(lf)"
-        case (.None, let .Some(lf)):
+        case (.none, let .some(lf)):
             return "\(LongOptionPrefix)\(lf)"
-        case (let .Some(sf), .None):
+        case (let .some(sf), .none):
             return "\(ShortOptionPrefix)\(sf)"
         default:
             return ""
@@ -546,11 +545,11 @@ public class Option {
         self.init(nil, longFlag as String?, required, helpMessage)
     }
     
-    func flagMatch(flag: String) -> Bool {
+    func flagMatch(_ flag: String) -> Bool {
         return flag == shortFlag || flag == longFlag
     }
     
-    func setValue(values: [String]) -> Bool {
+    func setValue(_ values: [String]) -> Bool {
         return false
     }
 }
@@ -570,7 +569,7 @@ public class BoolOption: Option {
         return _value
     }
     
-    override func setValue(values: [String]) -> Bool {
+    override func setValue(_ values: [String]) -> Bool {
         _value = true
         return true
     }
@@ -592,7 +591,7 @@ public class IntOption: Option {
         return _value != nil ? 1 : 0
     }
     
-    override func setValue(values: [String]) -> Bool {
+    override func setValue(_ values: [String]) -> Bool {
         if values.count == 0 {
             return false
         }
@@ -625,7 +624,7 @@ public class CounterOption: Option {
         _value = 0
     }
     
-    override func setValue(values: [String]) -> Bool {
+    override func setValue(_ values: [String]) -> Bool {
         _value += 1
         return true
     }
@@ -647,7 +646,7 @@ public class DoubleOption: Option {
         return _value != nil ? 1 : 0
     }
     
-    override func setValue(values: [String]) -> Bool {
+    override func setValue(_ values: [String]) -> Bool {
         if values.count == 0 {
             return false
         }
@@ -677,7 +676,7 @@ public class StringOption: Option {
         return _value != nil ? 1 : 0
     }
     
-    override func setValue(values: [String]) -> Bool {
+    override func setValue(_ values: [String]) -> Bool {
         if values.count == 0 {
             return false
         }
@@ -707,7 +706,7 @@ public class MultiStringOption: Option {
         return 0
     }
     
-    override func setValue(values: [String]) -> Bool {
+    override func setValue(_ values: [String]) -> Bool {
         if values.count == 0 {
             return false
         }
@@ -755,7 +754,7 @@ public class EnumOption<T:RawRepresentable where T.RawValue == String>: Option {
         self.init(nil, longFlag as String?, required, helpMessage)
     }
     
-    override func setValue(values: [String]) -> Bool {
+    override func setValue(_ values: [String]) -> Bool {
         if values.count == 0 {
             return false
         }
@@ -776,9 +775,9 @@ internal extension String {
     private func _localDecimalPoint() -> Character {
         let locale = localeconv()
         if locale != nil {
-            let decimalPoint = locale.memory.decimal_point
+            let decimalPoint = locale?.pointee.decimal_point
             if decimalPoint != nil {
-                return Character(UnicodeScalar(UInt32(decimalPoint.memory)))
+                return Character(UnicodeScalar(UInt32(decimalPoint!.pointee)))
             }
         }
         
@@ -797,7 +796,7 @@ internal extension String {
         var isNegative: Bool = false
         let decimalPoint = self._localDecimalPoint()
         
-        for (i, c) in self.characters.enumerate() {
+        for (i, c) in self.characters.enumerated() {
             if i == 0 && c == "-" {
                 isNegative = true
                 continue
@@ -820,9 +819,10 @@ internal extension String {
             }
         }
         
-        return (Double(Int(characteristic)!) +
-            Double(Int(mantissa)!) / pow(Double(10), Double(mantissa.characters.count - 1))) *
-            (isNegative ? -1 : 1)
+        // breaking up the expression due to compiler error (Expression was too complex to be solved in reasonable time)
+        let expression = Double(Int(characteristic)!) + Double(Int(mantissa)!)
+        let expressionPow = pow(Double(10), Double(mantissa.characters.count - 1))
+        return ( expression / expressionPow ) * (isNegative ? -1 : 1)
     }
     
     /**
@@ -833,7 +833,8 @@ internal extension String {
      *
      * - returns: An array of string components.
      */
-    func splitByCharacter(splitBy: Character, maxSplits: Int = 0) -> [String] {
+    func splitByCharacter(_ splitBy: Character, maxSplits: Int = 0) -> [String] {
+
         var s = [String]()
         var numSplits = 0
         
@@ -842,13 +843,13 @@ internal extension String {
             let c = self[i]
             if c == splitBy && (maxSplits == 0 || numSplits < maxSplits) {
                 s.append(self[curIdx..<i])
-                curIdx = i.successor()
+                curIdx = self.characters.index(after: i)
                 numSplits += 1
             }
         }
         
         if curIdx != self.endIndex {
-            s.append(self[curIdx..<self.endIndex])
+             s.append(self[curIdx..<self.endIndex])
         }
         
         return s
@@ -862,7 +863,7 @@ internal extension String {
      *
      * - returns: A new string, padded to the given width.
      */
-    func paddedToWidth(width: Int, padBy: Character = " ") -> String {
+    func paddedToWidth(_ width: Int, padBy: Character = " ") -> String {
         var s = self
         var currentLength = self.characters.count
         
@@ -887,7 +888,7 @@ internal extension String {
      *
      * - returns: A new string, wrapped at the given width.
      */
-    func wrappedAtWidth(width: Int, wrapBy: Character = "\n", splitBy: Character = " ") -> String {
+    func wrappedAtWidth(_ width: Int, wrapBy: Character = "\n", splitBy: Character = " ") -> String {
         var s = ""
         var currentLineWidth = 0
         
@@ -989,37 +990,37 @@ private var OBJC_CUSTOM_SUPERCLASS: String?
 // MARK: - Extensions
 private extension String {
     
-    func alphanumericString(exceptionCharactersFromString: String = "") -> String {
+    func alphanumericString(_ exceptionCharactersFromString: String = "") -> String {
         
         // removes diacritic marks
-        var copy = self.stringByFoldingWithOptions(.DiacriticInsensitiveSearch, locale: NSLocale.currentLocale())
+        var copy = self.folding(options: .diacriticInsensitive, locale: Locale.current)
         
         // removes all non alphanumeric characters
-        let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet.mutableCopy() as! NSMutableCharacterSet
+        var characterSet = CharacterSet.alphanumerics.inverted
         
         // don't remove the characters that are given
-        characterSet.removeCharactersInString(exceptionCharactersFromString)
-        copy = copy.componentsSeparatedByCharactersInSet(characterSet).reduce("") { $0 + $1 }
+        characterSet.remove(charactersIn: exceptionCharactersFromString)
+        copy = copy.components(separatedBy: characterSet).reduce("") { $0 + $1 }
         
         return copy
     }
 	
-	func replacedNonAlphaNumericCharacters(replacement: Character) -> String {
+	func replacedNonAlphaNumericCharacters(_ replacement: Character) -> String {
 		
-		return String( self.characters.map { NSCharacterSet.alphanumericCharacterSet().containsCharacter($0) ? $0 : replacement } )
+		return String( self.characters.map { CharacterSet.alphanumerics.containsCharacter($0) ? $0 : replacement } )
 	}
 	
 }
 
-private extension NSCharacterSet {
+private extension CharacterSet {
 	
 	// thanks to http://stackoverflow.com/a/27698155/354018
-	func containsCharacter(c: Character) -> Bool {
+	func containsCharacter(_ c: Character) -> Bool {
 		
 		let s = String(c)
 		let ix = s.startIndex
 		let ix2 = s.endIndex
-		let result = s.rangeOfCharacterFromSet(self, options: [], range: ix..<ix2)
+		let result = s.rangeOfCharacter(from: self, options: [], range: ix..<ix2)
 		return result != nil
 	}
 	
@@ -1028,29 +1029,29 @@ private extension NSCharacterSet {
 private extension NSMutableDictionary {
     
     
-    func setObject(object : AnyObject!, forKeyPath : String, delimiter : String = ".") {
+    func setObject(_ object : AnyObject!, forKeyPath : String, delimiter : String = ".") {
         
         self.setObject(object, onObject : self, forKeyPath: forKeyPath, createIntermediates: true, replaceIntermediates: true, delimiter: delimiter)
     }
     
     
-    func setObject(object : AnyObject, onObject : AnyObject, forKeyPath keyPath : String, createIntermediates: Bool, replaceIntermediates: Bool, delimiter: String) {
+    func setObject(_ object : AnyObject, onObject : AnyObject, forKeyPath keyPath : String, createIntermediates: Bool, replaceIntermediates: Bool, delimiter: String) {
         
         // Make keypath mutable
         var primaryKeypath = keyPath
         
         // Replace delimiter with dot delimiter - otherwise key value observing does not work properly
         let baseDelimiter = "."
-        primaryKeypath = primaryKeypath.stringByReplacingOccurrencesOfString(delimiter, withString: baseDelimiter, options: .LiteralSearch, range: nil)
+        primaryKeypath = primaryKeypath.replacingOccurrences(of: delimiter, with: baseDelimiter, options: .literal, range: nil)
         
         // Create path components separated by delimiter (. by default) and get key for root object
 		// filter empty path components, these can be caused by delimiter at beginning/end, or multiple consecutive delimiters in the middle
-		let pathComponents : Array<String> = primaryKeypath.componentsSeparatedByString(baseDelimiter).filter({ $0.characters.count > 0 })
-		primaryKeypath = pathComponents.joinWithSeparator(baseDelimiter)
+		let pathComponents : Array<String> = primaryKeypath.components(separatedBy: baseDelimiter).filter({ $0.characters.count > 0 })
+		primaryKeypath = pathComponents.joined(separator: baseDelimiter)
         let rootKey : String = pathComponents[0]
 		
 		if pathComponents.count == 1 {
-			onObject.setObject(object, forKey: rootKey)
+			onObject.set(object, forKey: rootKey)
 		}
 		
         let replacementDictionary : NSMutableDictionary = NSMutableDictionary();
@@ -1063,7 +1064,7 @@ private extension NSMutableDictionary {
         // Traverse through path from root to deepest level
         for path : String in pathComponents {
             
-            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : previousObject?.objectForKey(path);
+            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : previousObject?.object(forKey: path);
             
             // Check if object already exists. If not, create new level, if allowed, or end
             if currentObject == nil {
@@ -1104,22 +1105,22 @@ private extension NSMutableDictionary {
         
         // Replace root object with newly created n-level dictionary
         replacementDictionary.setValue(object, forKeyPath: primaryKeypath);
-        onObject.setObject(replacementDictionary.objectForKey(rootKey), forKey: rootKey);
+        onObject.set(replacementDictionary.object(forKey: rootKey), forKey: rootKey);
     }
 }
 
 
-private extension NSFileManager {
+private extension FileManager {
     
-    func isDirectoryAtPath(path : String) -> Bool {
+    func isDirectoryAtPath(_ path : String) -> Bool {
         
-        let manager = NSFileManager.defaultManager()
+        let manager = FileManager.default
         
         do {
-            let attribs: NSDictionary? = try manager.attributesOfItemAtPath(path)
+            let attribs: NSDictionary? = try manager.attributesOfItem(atPath: path)
             if let attributes = attribs {
                 let type = attributes["NSFileType"] as? String
-                return type == NSFileTypeDirectory
+                return type == FileAttributeType.typeDirectory.rawValue
             }
         } catch _ {
             return false
@@ -1132,15 +1133,15 @@ private extension String {
     
     var camelCasedString: String {
         
-        let inputArray = self.componentsSeparatedByCharactersInSet(NSCharacterSet.alphanumericCharacterSet().invertedSet)
-        return inputArray.reduce("", combine:{$0 + $1.capitalizedString})
+        let inputArray = self.components(separatedBy: CharacterSet.alphanumerics.inverted)
+        return inputArray.reduce("", {$0 + $1.capitalized})
     }
     
     
     var nolineString: String {
-        return self.componentsSeparatedByCharactersInSet(NSCharacterSet.newlineCharacterSet())
+        return self.components(separatedBy: CharacterSet.newlines)
             .filter { !$0.isEmpty }
-            .joinWithSeparator(" ")
+            .joined(separator: " ")
     }
     
     
@@ -1153,12 +1154,12 @@ private extension String {
         let s = String(c).unicodeScalars
         let uni = s[s.startIndex]
         
-        let digits = NSCharacterSet.decimalDigitCharacterSet()
-        return digits.longCharacterIsMember(uni.value)
+        let digits = CharacterSet.decimalDigits
+        return digits.contains(UnicodeScalar(uni.value))
     }
     
     
-    func isReservedKeyword(lang : Runtime.ExportLanguage) -> Bool {
+    func isReservedKeyword(_ lang : Runtime.ExportLanguage) -> Bool {
         
         // Define keywords for each language
         var keywords : [String] = []
@@ -1171,17 +1172,17 @@ private extension String {
         }
         
         // Check if it contains that keyword
-        return keywords.indexOf(self) != nil
+        return keywords.index(of: self) != nil
     }
 }
 
 
 private enum SpecialCharacter {
-    case String
-    case Double
-    case Int
-    case Int64
-    case UInt
+    case string
+    case double
+    case int
+    case int64
+    case uInt
 }
 
 
@@ -1201,7 +1202,7 @@ class Localization {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Setup
     
-    convenience init(inputFile : NSURL, delimiter : String, autocapitalize : Bool, table: String? = nil) {
+    convenience init(inputFile : URL, delimiter : String, autocapitalize : Bool, table: String? = nil) {
         
         self.init()
         self.table = table
@@ -1210,9 +1211,9 @@ class Localization {
     }
     
     
-    func processInputFromFile(file : NSURL, delimiter : String, autocapitalize : Bool) {
+    func processInputFromFile(_ file : URL, delimiter : String, autocapitalize : Bool) {
         
-        guard let path = file.path, let dictionary = NSDictionary(contentsOfFile: path) else {
+        guard let dictionary = NSDictionary(contentsOfFile: file.path) else {
             // TODO: Better error handling
             print("Bad format of input file")
             exit(EX_IOERR)
@@ -1246,7 +1247,7 @@ class Localization {
     }
     
     
-    func writerWithObjCImplementationWithFilename(filename : String) -> StreamWriter {
+    func writerWithObjCImplementationWithFilename(_ filename : String) -> StreamWriter {
         
         let writer = StreamWriter()
         
@@ -1291,7 +1292,7 @@ class Localization {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Private
     
-    private func expandFlatStructure(flatStructure : NSDictionary, delimiter: String) {
+    private func expandFlatStructure(_ flatStructure : NSDictionary, delimiter: String) {
     
         // Writes values to dictionary and also
         for (key, _) in flatStructure {
@@ -1301,7 +1302,7 @@ class Localization {
     }
     
     
-    private func codifySwift(expandedStructure : NSDictionary, contentLevel : Int = 0) -> String {
+    private func codifySwift(_ expandedStructure : NSDictionary, contentLevel : Int = 0) -> String {
         
         // Increase content level
         let contentLevel = contentLevel + 1
@@ -1313,7 +1314,7 @@ class Localization {
         for (key, value) in expandedStructure {
             
             if let value = value as? String {
-                let comment = (self.flatStructure.objectForKey(value) as! String).nolineString
+                let comment = (self.flatStructure.object(forKey: value) as! String).nolineString
                 let methodParams = self.methodParamsForString(comment)
                 let staticString: String
                 
@@ -1335,11 +1336,11 @@ class Localization {
         }
         
         // At the end, return everything merged together
-        return outputStructure.joinWithSeparator("\n")
+        return outputStructure.joined(separator: "\n")
     }
     
     
-    private func codifyObjC(expandedStructure : NSDictionary, baseClass : String, header : Bool) -> String {
+    private func codifyObjC(_ expandedStructure : NSDictionary, baseClass : String, header : Bool) -> String {
         
         // Prepare output structure
         var outputStructure : [String] = []
@@ -1350,7 +1351,7 @@ class Localization {
             
             if let value = value as? String {
                 
-                let comment = (self.flatStructure.objectForKey(value) as! String).nolineString
+                let comment = (self.flatStructure.object(forKey: value) as! String).nolineString
                 let methodParams = self.methodParamsForString(comment)
                 let staticString : String
                 
@@ -1369,7 +1370,7 @@ class Localization {
             
             if let value = value as? NSDictionary {
                 outputStructure.append(self.codifyObjC(value, baseClass : baseClass + self.variableName(key as! String, lang: .ObjC), header: header))
-                contentStructure.insert(self.objcClassVarWithName(self.variableName(key as! String, lang: .ObjC), className: baseClass + self.variableName(key as! String, lang: .ObjC), header: header), atIndex: 0)
+                contentStructure.insert(self.objcClassVarWithName(self.variableName(key as! String, lang: .ObjC), className: baseClass + self.variableName(key as! String, lang: .ObjC), header: header), at: 0)
             }
         }
         
@@ -1382,14 +1383,14 @@ class Localization {
         }
         
         // Generate class code for current class
-        outputStructure.append(self.objcClassWithContent(contentStructure.joinWithSeparator("\n"), className: OBJC_CLASS_PREFIX + baseClass, header: header))
+        outputStructure.append(self.objcClassWithContent(contentStructure.joined(separator: "\n"), className: OBJC_CLASS_PREFIX + baseClass, header: header))
         
         // At the end, return everything merged together
-        return outputStructure.joinWithSeparator("\n")
+        return outputStructure.joined(separator: "\n")
     }
     
     
-    private func methodParamsForString(string : String) -> [SpecialCharacter] {
+    private func methodParamsForString(_ string : String) -> [SpecialCharacter] {
         
         // Split the string into pieces by %
         let matches = self.matchesForRegexInText("%([0-9]*.[0-9]*(d|i|u|f|ld)|(\\d\\$)?@|d|i|u|f|ld)", text: string)
@@ -1407,22 +1408,22 @@ class Localization {
     }
     
     
-    private func propertyTypeForMatch(string : String) -> SpecialCharacter {
-        if string.containsString("ld") {
-            return .Int64
-        } else if string.containsString("d") || string.containsString("i") {
-            return .Int
-        } else if string.containsString("u") {
-            return .UInt
-        } else if string.containsString("f") {
-            return .Double
+    private func propertyTypeForMatch(_ string : String) -> SpecialCharacter {
+        if string.contains("ld") {
+            return .int64
+        } else if string.contains("d") || string.contains("i") {
+            return .int
+        } else if string.contains("u") {
+            return .uInt
+        } else if string.contains("f") {
+            return .double
         } else {
-            return .String
+            return .string
         }
     }
     
     
-    private func variableName(string : String, lang : Runtime.ExportLanguage) -> String {
+    private func variableName(_ string : String, lang : Runtime.ExportLanguage) -> String {
 	
 		// . is not allowed, nested structure expanding must take place before calling this function
 		let legalCharacterString = string.replacedNonAlphaNumericCharacters("_")
@@ -1435,14 +1436,14 @@ class Localization {
     }
     
     
-    private func matchesForRegexInText(regex: String!, text: String!) -> [String] {
+    private func matchesForRegexInText(_ regex: String!, text: String!) -> [String] {
         
         do {
             let regex = try NSRegularExpression(pattern: regex, options: [])
             let nsString = text as NSString
-            let results = regex.matchesInString(text,
+            let results = regex.matches(in: text,
                 options: [], range: NSMakeRange(0, nsString.length))
-            return results.map { nsString.substringWithRange($0.range)}
+            return results.map { nsString.substring(with: $0.range)}
         } catch let error as NSError {
             print("invalid regex: \(error.localizedDescription)")
             return []
@@ -1450,31 +1451,31 @@ class Localization {
     }
     
     
-    private func dataTypeFromSpecialCharacter(char : SpecialCharacter, language : Runtime.ExportLanguage) -> String {
+    private func dataTypeFromSpecialCharacter(_ char : SpecialCharacter, language : Runtime.ExportLanguage) -> String {
         
         switch char {
-            case .String: return language == .Swift ? "String" : "NSString *"
-            case .Double: return language == .Swift ? "Double" : "double"
-            case .Int: return language == .Swift ? "Int" : "int"
-            case .Int64: return language == .Swift ? "Int64" : "long"
-            case .UInt: return language == .Swift ? "UInt" : "unsigned int"
+            case .string: return language == .Swift ? "String" : "NSString *"
+            case .double: return language == .Swift ? "Double" : "double"
+            case .int: return language == .Swift ? "Int" : "int"
+            case .int64: return language == .Swift ? "Int64" : "long"
+            case .uInt: return language == .Swift ? "UInt" : "unsigned int"
         }
     }
     
     
-    private func swiftStructWithContent(content : String, structName : String, contentLevel : Int = 0) -> String {
+    private func swiftStructWithContent(_ content : String, structName : String, contentLevel : Int = 0) -> String {
         
         return TemplateFactory.templateForSwiftStructWithName(self.variableName(structName, lang: .Swift), content: content, contentLevel: contentLevel)
     }
     
     
-    private func swiftLocalizationStaticVarFromLocalizationKey(key : String, variableName : String, baseTranslation : String, contentLevel : Int = 0) -> String {
+    private func swiftLocalizationStaticVarFromLocalizationKey(_ key : String, variableName : String, baseTranslation : String, contentLevel : Int = 0) -> String {
         
         return TemplateFactory.templateForSwiftStaticVarWithName(self.variableName(variableName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, contentLevel: contentLevel)
     }
     
     
-    private func swiftLocalizationFuncFromLocalizationKey(key : String, methodName : String, baseTranslation : String, methodSpecification : [SpecialCharacter], contentLevel : Int = 0) -> String {
+    private func swiftLocalizationFuncFromLocalizationKey(_ key : String, methodName : String, baseTranslation : String, methodSpecification : [SpecialCharacter], contentLevel : Int = 0) -> String {
         
         var counter = 0
         var methodHeaderParams = methodSpecification.reduce("") { (string, character) -> String in
@@ -1483,17 +1484,17 @@ class Localization {
         }
         
         var methodParams : [String] = []
-        for (index, _) in methodSpecification.enumerate() {
+        for (index, _) in methodSpecification.enumerated() {
             methodParams.append("value\(index + 1)")
         }
-        let methodParamsString = methodParams.joinWithSeparator(", ")
+        let methodParamsString = methodParams.joined(separator: ", ")
         
-        methodHeaderParams = methodHeaderParams.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", _"))
+        methodHeaderParams = methodHeaderParams.trimmingCharacters(in: CharacterSet(charactersIn: ", _"))
         return TemplateFactory.templateForSwiftFuncWithName(self.variableName(methodName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
     }
     
     
-    private func objcClassWithContent(content : String, className : String, header : Bool, contentLevel : Int = 0) -> String {
+    private func objcClassWithContent(_ content : String, className : String, header : Bool, contentLevel : Int = 0) -> String {
         
         if header {
             return TemplateFactory.templateForObjCClassHeaderWithName(className, content: content, contentLevel: contentLevel)
@@ -1503,7 +1504,7 @@ class Localization {
     }
     
     
-    private func objcClassVarWithName(name : String, className : String, header : Bool, contentLevel : Int = 0) -> String {
+    private func objcClassVarWithName(_ name : String, className : String, header : Bool, contentLevel : Int = 0) -> String {
         
         if header {
             return TemplateFactory.templateForObjCClassVarHeaderWithName(name, className: className, contentLevel: contentLevel)
@@ -1513,7 +1514,7 @@ class Localization {
     }
     
     
-    private func objcLocalizationStaticVarFromLocalizationKey(key : String, variableName : String, baseTranslation : String, header : Bool, contentLevel : Int = 0) -> String {
+    private func objcLocalizationStaticVarFromLocalizationKey(_ key : String, variableName : String, baseTranslation : String, header : Bool, contentLevel : Int = 0) -> String {
         
         if header {
             return TemplateFactory.templateForObjCStaticVarHeaderWithName(variableName, key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
@@ -1523,7 +1524,7 @@ class Localization {
     }
     
     
-    private func objcLocalizationFuncFromLocalizationKey(key : String, methodName : String, baseTranslation : String, methodSpecification : [SpecialCharacter], header : Bool, contentLevel : Int = 0) -> String {
+    private func objcLocalizationFuncFromLocalizationKey(_ key : String, methodName : String, baseTranslation : String, methodSpecification : [SpecialCharacter], header : Bool, contentLevel : Int = 0) -> String {
         
         var counter = 0
         var methodHeader = methodSpecification.reduce("") { (string, character) -> String in
@@ -1537,12 +1538,12 @@ class Localization {
         }
         
         var blockParamComponent : [String] = []
-        for (index, _) in methodSpecification.enumerate() {
+        for (index, _) in methodSpecification.enumerated() {
             blockParamComponent.append("value\(index + 1)")
         }
-        let blockParams = blockParamComponent.joinWithSeparator(", ")
-        methodHeader = methodHeader.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", "))
-        blockHeader = blockHeader.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", "))
+        let blockParams = blockParamComponent.joined(separator: ", ")
+        methodHeader = methodHeader.trimmingCharacters(in: CharacterSet(charactersIn: ", "))
+        blockHeader = blockHeader.trimmingCharacters(in: CharacterSet(charactersIn: ", "))
         
         if header {
             return TemplateFactory.templateForObjCMethodHeaderWithName(methodName, key: key, baseTranslation: baseTranslation, methodHeader: methodHeader, contentLevel: contentLevel)
@@ -1576,9 +1577,9 @@ class Runtime {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
-    var localizationFilePathToRead : NSURL!
-    var localizationFilePathToWriteTo : NSURL!
-    var localizationFileHeaderPathToWriteTo : NSURL?
+    var localizationFilePathToRead : URL!
+    var localizationFilePathToWriteTo : URL!
+    var localizationFileHeaderPathToWriteTo : URL?
     var localizationDelimiter = "."
     var localizationDebug = false
     var localizationCore : Localization!
@@ -1638,13 +1639,13 @@ class Runtime {
             try cli.parse()
             
             // It passed, now process input
-            self.localizationFilePathToRead = NSURL(fileURLWithPath: inputFilePath.value!)
+            self.localizationFilePathToRead = URL(fileURLWithPath: inputFilePath.value!)
             
             if let value = delimiter.value { self.localizationDelimiter = value }
             self.localizationAutocapitalize = autocapitalize.wasSet ? true : false
-            if let value = outputLanguage.value, type = ExportLanguage(rawValue: value) { self.localizationExportLanguage = type }
+            if let value = outputLanguage.value, let type = ExportLanguage(rawValue: value) { self.localizationExportLanguage = type }
             if let value = outputFilePath.value {
-                self.localizationFilePathToWriteTo = NSURL(fileURLWithPath: value)
+                self.localizationFilePathToWriteTo = URL(fileURLWithPath: value)
                 self.localizationExportStream = .File
             } else {
                 self.localizationExportStream = .Standard
@@ -1671,7 +1672,7 @@ class Runtime {
     private func checkIO() -> Bool {
         
         // Check if we have input file
-        if !NSFileManager.defaultManager().fileExistsAtPath(self.localizationFilePathToRead.path!) {
+        if !FileManager.default.fileExists(atPath: self.localizationFilePathToRead.path) {
             
             // TODO: Better error handling
             exit(EX_IOERR)
@@ -1681,8 +1682,8 @@ class Runtime {
         if self.localizationExportStream == .File {
             
             // Remove output file first
-            _ = try? NSFileManager.defaultManager().removeItemAtPath(self.localizationFilePathToWriteTo.path!)
-            if !NSFileManager.defaultManager().createFileAtPath(self.localizationFilePathToWriteTo.path!, contents: NSData(), attributes: nil) {
+            _ = try? FileManager.default.removeItem(atPath: self.localizationFilePathToWriteTo.path)
+            if !FileManager.default.createFile(atPath: self.localizationFilePathToWriteTo.path, contents: Data(), attributes: nil) {
                 
                 // TODO: Better error handling
                 exit(EX_IOERR)
@@ -1692,11 +1693,11 @@ class Runtime {
             if self.localizationExportLanguage == .ObjC {
                 
                 // Create header file name
-                self.localizationFileHeaderPathToWriteTo = self.localizationFilePathToWriteTo.URLByDeletingPathExtension!.URLByAppendingPathExtension("h")
+                self.localizationFileHeaderPathToWriteTo = self.localizationFilePathToWriteTo.deletingPathExtension().appendingPathExtension("h")
                 
                 // Remove file at path and replace it with new one
-                _ = try? NSFileManager.defaultManager().removeItemAtPath(self.localizationFileHeaderPathToWriteTo!.path!)
-                if !NSFileManager.defaultManager().createFileAtPath(self.localizationFileHeaderPathToWriteTo!.path!, contents: NSData(), attributes: nil) {
+                _ = try? FileManager.default.removeItem(atPath: self.localizationFileHeaderPathToWriteTo!.path)
+                if !FileManager.default.createFile(atPath: self.localizationFileHeaderPathToWriteTo!.path, contents: Data(), attributes: nil) {
                     
                     // TODO: Better error handling
                     exit(EX_IOERR)
@@ -1725,7 +1726,7 @@ class Runtime {
             
         // or write output for objc, based on user configuration
         } else if self.localizationExportLanguage == .ObjC {
-            let implementation = self.localizationCore.writerWithObjCImplementationWithFilename(self.localizationFilePathToWriteTo.URLByDeletingPathExtension!.lastPathComponent!)
+            let implementation = self.localizationCore.writerWithObjCImplementationWithFilename(self.localizationFilePathToWriteTo.deletingPathExtension().lastPathComponent)
             let header = self.localizationCore.writerWithObjCHeader()
             
             // Write .h and .m file
@@ -1766,7 +1767,7 @@ class StreamWriter {
     
     
     
-    func writeMarkWithName(name : String, contentLevel : Int = 0) {
+    func writeMarkWithName(_ name : String, contentLevel : Int = 0) {
         
         self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "\n")
         self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "\n")
@@ -1782,7 +1783,7 @@ class StreamWriter {
     }
     
     
-    func writeObjCImportsWithFileName(name : String) {
+    func writeObjCImportsWithFileName(_ name : String) {
         
         self.store("#import \"\(name).h\"\n")
     }
@@ -1804,16 +1805,16 @@ class StreamWriter {
     }
     
     
-    func writeCodeStructure(structure : String) {
+    func writeCodeStructure(_ structure : String) {
         
         self.store(structure)
         
     }
     
     
-    func writeToOutputFileAtPath(path : NSURL, clearBuffer : Bool = true) {
+    func writeToOutputFileAtPath(_ path : URL, clearBuffer : Bool = true) {
         
-        _ = try? self.outputBuffer.writeToFile(path.path!, atomically: true, encoding: NSUTF8StringEncoding)
+        _ = try? self.outputBuffer.write(toFile: path.path, atomically: true, encoding: String.Encoding.utf8)
         
         if clearBuffer {
             self.outputBuffer = ""
@@ -1821,7 +1822,7 @@ class StreamWriter {
     }
     
     
-    func writeToSTD(clearBuffer : Bool = true) {
+    func writeToSTD(_ clearBuffer : Bool = true) {
         
         print(self.outputBuffer)
         
@@ -1834,7 +1835,7 @@ class StreamWriter {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Private
     
-    private func store(string : String) {
+    private func store(_ string : String) {
         
         self.outputBuffer += string
     }
@@ -1853,7 +1854,7 @@ class TemplateFactory {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Public - Swift Templates
     
-    class func templateForSwiftStructWithName(name : String, content : String, contentLevel : Int) -> String {
+    class func templateForSwiftStructWithName(_ name : String, content : String, contentLevel : Int) -> String {
         
         return "\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "public struct \(name) {\n"
@@ -1863,18 +1864,18 @@ class TemplateFactory {
     }
     
     
-    class func templateForSwiftStaticVarWithName(name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
+    class func templateForSwiftStaticVarWithName(_ name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
         let tableName = table != nil ? "\"\(table!)\"" : "nil"
         return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "public static var \(name) : String = NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\")\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel) + "public static var \(name) : String = NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: Bundle.main, value: \"\", comment: \"\")\n"
     }
     
     
-    class func templateForSwiftFuncWithName(name : String, key : String, table: String?, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
+    class func templateForSwiftFuncWithName(_ name : String, key : String, table: String?, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
         let tableName = table != nil ? "\"\(table!)\"" : "nil"
         return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "public static func \(name)(\(methodHeader)) -> String {\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: Bundle.main, value: \"\", comment: \"\"), \(params))\n"
              + TemplateFactory.contentIndentForLevel(contentLevel) + "}\n"
     }
     
@@ -1882,7 +1883,7 @@ class TemplateFactory {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Public - ObjC templates
     
-    class func templateForObjCClassImplementationWithName(name : String, content : String, contentLevel : Int) -> String {
+    class func templateForObjCClassImplementationWithName(_ name : String, content : String, contentLevel : Int) -> String {
         
         return "@implementation \(name)\n\n"
             + "\(content)\n"
@@ -1890,7 +1891,7 @@ class TemplateFactory {
     }
     
     
-    class func templateForObjCStaticVarImplementationWithName(name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
+    class func templateForObjCStaticVarImplementationWithName(_ name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
         let tableName = table != nil ? "@\"\(table!)\"" : "nil"
         return "- (NSString *)\(name) {\n"
               + TemplateFactory.contentIndentForLevel(1) + "return NSLocalizedStringFromTable(@\"\(key)\", \(tableName), nil);\n"
@@ -1898,7 +1899,7 @@ class TemplateFactory {
     }
     
     
-    class func templateForObjCClassVarImplementationWithName(name : String, className : String, contentLevel : Int) -> String {
+    class func templateForObjCClassVarImplementationWithName(_ name : String, className : String, contentLevel : Int) -> String {
         
         return "- (_\(className) *)\(name) {\n"
              + TemplateFactory.contentIndentForLevel(1) + "return [\(OBJC_CLASS_PREFIX)\(className) new];\n"
@@ -1906,7 +1907,7 @@ class TemplateFactory {
     }
     
     
-    class func templateForObjCMethodImplementationWithName(name : String, key : String, table: String?, baseTranslation : String, methodHeader : String, blockHeader : String, blockParams : String, contentLevel : Int) -> String {
+    class func templateForObjCMethodImplementationWithName(_ name : String, key : String, table: String?, baseTranslation : String, methodHeader : String, blockHeader : String, blockParams : String, contentLevel : Int) -> String {
         let tableName = table != nil ? "@\"\(table!)\"" : "nil"
         return "- (NSString *(^)(\(methodHeader)))\(name) {\n"
              + TemplateFactory.contentIndentForLevel(1) + "return ^(\(blockHeader)) {\n"
@@ -1916,7 +1917,7 @@ class TemplateFactory {
     }
     
     
-    class func templateForObjCClassHeaderWithName(name : String, content : String, contentLevel : Int) -> String {
+    class func templateForObjCClassHeaderWithName(_ name : String, content : String, contentLevel : Int) -> String {
         
         return "@interface \(name) : \(OBJC_CUSTOM_SUPERCLASS ?? "NSObject")\n\n"
              + "\(content)\n"
@@ -1924,32 +1925,32 @@ class TemplateFactory {
     }
     
     
-    class func templateForObjCStaticVarHeaderWithName(name : String, key : String, baseTranslation : String, contentLevel : Int) -> String {
+    class func templateForObjCStaticVarHeaderWithName(_ name : String, key : String, baseTranslation : String, contentLevel : Int) -> String {
         
         return "/// Base translation: \(baseTranslation)\n"
              + "- (NSString *)\(name);\n"
     }
     
     
-    class func templateForObjCClassVarHeaderWithName(name : String, className : String, contentLevel : Int) -> String {
+    class func templateForObjCClassVarHeaderWithName(_ name : String, className : String, contentLevel : Int) -> String {
         
         return "- (_\(className) *)\(name);\n"
     }
     
     
-    class func templateForObjCMethodHeaderWithName(name : String, key : String, baseTranslation : String, methodHeader : String, contentLevel : Int) -> String {
+    class func templateForObjCMethodHeaderWithName(_ name : String, key : String, baseTranslation : String, methodHeader : String, contentLevel : Int) -> String {
         
         return "/// Base translation: \(baseTranslation)\n"
              + "- (NSString *(^)(\(methodHeader)))\(name);"
     }
     
     
-    class func templateForObjCBaseClassHeader(name: String) -> String {
+    class func templateForObjCBaseClassHeader(_ name: String) -> String {
         return "+ (\(name) *)sharedInstance;\n"
     }
     
     
-    class func templateForObjCBaseClassImplementation(name : String) -> String {
+    class func templateForObjCBaseClassImplementation(_ name : String) -> String {
         
         return "+ (\(name) *)sharedInstance {\n"
         + "\n"
@@ -1967,7 +1968,7 @@ class TemplateFactory {
     // MARK: - Public - Helpers
 
 
-    class func contentIndentForLevel(contentLevel : Int) -> String {
+    class func contentIndentForLevel(_ contentLevel : Int) -> String {
         
         var outputString = ""
         for _ in 0 ..< contentLevel {
