@@ -38,14 +38,14 @@ class Contributor : WRPObject {
     override func propertyMap() -> [WRPProperty] {
         
         return [
-            WRPProperty(remote: "login", bindTo: "username", type: .String),
-            WRPProperty(remote: "avatar_url", bindTo: "avatarURL", type: .String),
-            WRPProperty(remote: "html_url", bindTo: "githubURL", type: .String),
-            WRPProperty(remote: "url", bindTo: "detailURL", type: .String),
-            WRPProperty(remote: "contributions", type: .Int),
-            WRPProperty(remote: "followers", type: .Int),
-            WRPProperty(remote: "following", type: .Int),
-            WRPProperty(remote: "public_repos", bindTo: "repositories", type: .Int)
+            WRPProperty(remote: "login", bindTo: "username", type: .string),
+            WRPProperty(remote: "avatar_url", bindTo: "avatarURL", type: .string),
+            WRPProperty(remote: "html_url", bindTo: "githubURL", type: .string),
+            WRPProperty(remote: "url", bindTo: "detailURL", type: .string),
+            WRPProperty(remote: "contributions", type: .int),
+            WRPProperty(remote: "followers", type: .int),
+            WRPProperty(remote: "following", type: .int),
+            WRPProperty(remote: "public_repos", bindTo: "repositories", type: .int)
         ]
     }
 }

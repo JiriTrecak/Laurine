@@ -41,7 +41,7 @@ extension NSMutableDictionary {
      *	@param	object                  The object for the property identified by _keyPath_.
      *	@param	keyPath                 A key path of the form _relationship.property_ (with one or more relationships): for example “department.name” or “department.manager.lastName.”
      */
-    func setObject(object : AnyObject!, forKeyPath : String) {
+    func setObject(_ object : AnyObject!, forKeyPath : String) {
         
         self.setObject(object, onObject : self, forKeyPath: forKeyPath, createIntermediates: true, replaceIntermediates: true);
     }
@@ -55,18 +55,18 @@ extension NSMutableDictionary {
      *	@param	createIntermediates     Intermediate dictionaries defined within the key path that do not currently exist in the receiver are created.
      *	@param	replaceIntermediates    Intermediate objects encountered in the key path that are not a direct subclass of `NSDictionary` are replaced.
      */
-    func setObject(object : AnyObject, onObject : AnyObject, forKeyPath : String, createIntermediates: Bool, replaceIntermediates: Bool) {
+    func setObject(_ object : AnyObject, onObject : AnyObject, forKeyPath : String, createIntermediates: Bool, replaceIntermediates: Bool) {
         
         // Path delimiter = .
         let pathDelimiter : String = "."
         
         // There is no keypath, just assign object
-        if forKeyPath.rangeOfString(pathDelimiter) == nil {
-            onObject.setObject(object, forKey: forKeyPath);
+        if forKeyPath.range(of: pathDelimiter) == nil {
+            onObject.set(object, forKey: forKeyPath);
         }
         
         // Create path components separated by delimiter (. by default) and get key for root object
-        let pathComponents : Array<String> = forKeyPath.componentsSeparatedByString(pathDelimiter);
+        let pathComponents : Array<String> = forKeyPath.components(separatedBy: pathDelimiter);
         let rootKey : String = pathComponents[0];
         let replacementDictionary : NSMutableDictionary = NSMutableDictionary();
         
@@ -78,7 +78,7 @@ extension NSMutableDictionary {
         // Traverse through path from root to deepest level
         for path : String in pathComponents {
             
-            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : previousObject?.objectForKey(path);
+            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : (previousObject?.object(forKey: path) as? AnyObject);
             
             // Check if object already exists. If not, create new level, if allowed, or end
             if currentObject == nil {
@@ -86,7 +86,7 @@ extension NSMutableDictionary {
                 reachedDictionaryLeaf = true;
                 if createIntermediates {
                     let newNode : NSMutableDictionary = NSMutableDictionary();
-                    previousReplacement.setObject(newNode, forKey: path);
+                    previousReplacement.setObject(newNode, forKey: path as NSCopying);
                     previousReplacement = newNode;
                 } else {
                     return;
@@ -95,8 +95,8 @@ extension NSMutableDictionary {
                 // If it does and it is dictionary, create mutable copy and assign new node there
             } else if currentObject is NSDictionary {
                 
-                let newNode : NSMutableDictionary = NSMutableDictionary(dictionary: currentObject as! [NSObject : AnyObject]);
-                previousReplacement.setObject(newNode, forKey: path);
+                let newNode : NSMutableDictionary = NSMutableDictionary(dictionary: currentObject as! [AnyHashable: Any]);
+                previousReplacement.setObject(newNode, forKey: path as NSCopying);
                 previousReplacement = newNode;
                 
                 // It exists but it is not NSDictionary, so we replace it, if allowed, or end
@@ -106,7 +106,7 @@ extension NSMutableDictionary {
                 if replaceIntermediates {
                     
                     let newNode : NSMutableDictionary = NSMutableDictionary();
-                    previousReplacement.setObject(newNode, forKey: path);
+                    previousReplacement.setObject(newNode, forKey: path as NSCopying);
                     previousReplacement = newNode;
                 } else {
                     return;
@@ -119,7 +119,7 @@ extension NSMutableDictionary {
         
         // Replace root object with newly created n-level dictionary
         replacementDictionary.setValue(object, forKeyPath: forKeyPath);
-        onObject.setObject(replacementDictionary.objectForKey(rootKey), forKey: rootKey);
+        onObject.set(replacementDictionary.object(forKey: rootKey), forKey: rootKey);
     }
 }
 
@@ -143,48 +143,48 @@ extension NSRange {
     
     init(range:Range <Int>) {
         
-        self.location = range.startIndex
-        self.length = range.endIndex - range.startIndex
+        self.location = range.lowerBound
+        self.length = range.upperBound - range.lowerBound
     }
     
     
     init(_ range:Range <Int>) {
         
-        self.location = range.startIndex
-        self.length = range.endIndex - range.startIndex
+        self.location = range.lowerBound
+        self.length = range.upperBound - range.lowerBound
     }
     
     var startIndex:Int { get { return location } }
     var endIndex:Int { get { return location + length } }
-    var asRange:Range<Int> { get { return location..<location + length } }
+    var asRange:CountableRange<Int> { get { return location..<location + length } }
     var isEmpty:Bool { get { return length == 0 } }
     
     
-    func contains(index:Int) -> Bool {
+    func contains(_ index:Int) -> Bool {
         
         return index >= location && index < endIndex
     }
     
     
-    func clamp(index:Int) -> Int {
+    func clamp(_ index:Int) -> Int {
         
         return max(self.startIndex, min(self.endIndex - 1, index))
     }
     
     
-    func intersects(range:NSRange) -> Bool {
+    func intersects(_ range:NSRange) -> Bool {
         
         return NSIntersectionRange(self, range).isEmpty == false
     }
     
     
-    func intersection(range:NSRange) -> NSRange {
+    func intersection(_ range:NSRange) -> NSRange {
         
         return NSIntersectionRange(self, range)
     }
     
     
-    func union(range:NSRange) -> NSRange {
+    func union(_ range:NSRange) -> NSRange {
         
         return NSUnionRange(self, range)
     }

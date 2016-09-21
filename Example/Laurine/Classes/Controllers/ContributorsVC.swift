@@ -32,11 +32,11 @@ class ContributorsVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
-    @IBOutlet private weak var tableHeaderLb : UILabel!
-    @IBOutlet private weak var footerLb : UILabel!
-    @IBOutlet private weak var table : UITableView!
+    @IBOutlet fileprivate weak var tableHeaderLb : UILabel!
+    @IBOutlet fileprivate weak var footerLb : UILabel!
+    @IBOutlet fileprivate weak var table : UITableView!
     
-    private var fetchedContributors : [Contributor] = []
+    fileprivate var fetchedContributors : [Contributor] = []
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -50,21 +50,21 @@ class ContributorsVC : UIViewController {
     }
     
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
         
         if let indexPath = self.table.indexPathForSelectedRow {
-            self.table.deselectRowAtIndexPath(indexPath, animated: true)
+            self.table.deselectRow(at: indexPath, animated: true)
         }
     }
     
     
-    private func setupUI() {
+    fileprivate func setupUI() {
         
         // Setup navigation bar
-        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: self, action: nil)
-        self.navigationController?.navigationBar.tintColor = UIColor.darkGrayColor()
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        self.navigationController?.navigationBar.tintColor = UIColor.darkGray
         
         // Localize. Try playing with it, so you know how fast it is to traverse through tons of strings [mostly enter, enter, enter, enter..]
         self.tableHeaderLb.text = Localizations.Contributors.Header
@@ -73,7 +73,7 @@ class ContributorsVC : UIViewController {
         
     
     
-    private func loadData() {
+    fileprivate func loadData() {
         
         ContributorAPI.sharedInstance.getContributors { (contributors, error) -> () in
             
@@ -90,11 +90,11 @@ class ContributorsVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Public
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         // Forward contributor object if we are showing profile page
         if segue.identifier! == SEGUE_SHOW_DETAIL {
-            let dvc = segue.destinationViewController as! DetailVC
+            let dvc = segue.destination as! DetailVC
             dvc.contributor = sender as! Contributor
         }
     }
@@ -106,7 +106,7 @@ class ContributorsVC : UIViewController {
 
 extension ContributorsVC : UITableViewDataSource {
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.fetchedContributors.count
     }
 }
@@ -117,26 +117,26 @@ extension ContributorsVC : UITableViewDataSource {
 
 extension ContributorsVC : UITableViewDelegate {
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    @objc(tableView:cellForRowAtIndexPath:) func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         // Get configured cell
-        let cell = table.dequeueReusableCellWithIdentifier(CELL_IDENTIFIER_CONTRIBUTORS) as! ContributorCell
+        let cell = table.dequeueReusableCell(withIdentifier: CELL_IDENTIFIER_CONTRIBUTORS) as! ContributorCell
         self.configureContributorCell(cell, forIndexPath: indexPath)
         return cell
     }
     
     
-    func configureContributorCell(cell: ContributorCell, forIndexPath indexPath: NSIndexPath) {
+    func configureContributorCell(_ cell: ContributorCell, forIndexPath indexPath: IndexPath) {
         
-        let contributor = self.fetchedContributors[indexPath.row]
+        let contributor = self.fetchedContributors[(indexPath as NSIndexPath).row]
         cell.configureWithContributor(contributor)
     }
     
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let contributor = self.fetchedContributors[indexPath.row]
-        self.performSegueWithIdentifier(SEGUE_SHOW_DETAIL, sender: contributor)
+        let contributor = self.fetchedContributors[(indexPath as NSIndexPath).row]
+        self.performSegue(withIdentifier: SEGUE_SHOW_DETAIL, sender: contributor)
     }
 }
 

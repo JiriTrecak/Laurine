@@ -33,31 +33,31 @@ import Foundation
 //MARK: - Enums
 
 public enum WRPPropertyType {
-    case String
-    case Number
-    case Bool
-    case Int
-    case Double
-    case Float
-    case Date
-    case Array
-    case Dictionary
+    case string
+    case number
+    case bool
+    case int
+    case double
+    case float
+    case date
+    case array
+    case dictionary
 }
 
 enum WRPPropertyAssignement {
-    case Int
-    case Double
-    case Float
-    case Any
+    case int
+    case double
+    case float
+    case any
 }
 
 public enum WRPRelationType {
-    case ToOne
-    case ToMany
+    case toOne
+    case toMany
 }
 
 public enum WRPSerializationOption {
-    case None
-    case IncludeNullProperties
+    case none
+    case includeNullProperties
 }
 

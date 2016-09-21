@@ -31,17 +31,17 @@ class DetailVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- tak--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
-    @IBOutlet private weak var contributorProfilePictureIV : UIImageView!
+    @IBOutlet fileprivate weak var contributorProfilePictureIV : UIImageView!
     
-    @IBOutlet private weak var contributorFollowersTitleLb : UILabel!
-    @IBOutlet private weak var contributorFollowingTitleLb : UILabel!
-    @IBOutlet private weak var contributorReposTitleLb : UILabel!
-    @IBOutlet private weak var contributorNameLb : UILabel!
-    @IBOutlet private weak var contributorFollowersLb : UILabel!
-    @IBOutlet private weak var contributorFollowingLb : UILabel!
-    @IBOutlet private weak var contributorReposLb : UILabel!
-    @IBOutlet private weak var contributorLoveNoteLb : UILabel!
-    @IBOutlet private weak var contributorPageBtn : UIButton!
+    @IBOutlet fileprivate weak var contributorFollowersTitleLb : UILabel!
+    @IBOutlet fileprivate weak var contributorFollowingTitleLb : UILabel!
+    @IBOutlet fileprivate weak var contributorReposTitleLb : UILabel!
+    @IBOutlet fileprivate weak var contributorNameLb : UILabel!
+    @IBOutlet fileprivate weak var contributorFollowersLb : UILabel!
+    @IBOutlet fileprivate weak var contributorFollowingLb : UILabel!
+    @IBOutlet fileprivate weak var contributorReposLb : UILabel!
+    @IBOutlet fileprivate weak var contributorLoveNoteLb : UILabel!
+    @IBOutlet fileprivate weak var contributorPageBtn : UIButton!
     
     var contributor : Contributor!
     
@@ -65,21 +65,21 @@ class DetailVC : UIViewController {
         self.contributorFollowingTitleLb.text = Localizations.DetailScreen.Stats.Following
         self.contributorReposLb.text = Localizations.DetailScreen.Stats.Repositories
         self.contributorReposLb.text = Localizations.DetailScreen.Misc.LoveNote
-        self.contributorPageBtn.setTitle(Localizations.DetailScreen.Buttons.GITHubProfile, forState: .Normal)
+        self.contributorPageBtn.setTitle(Localizations.DetailScreen.Buttons.GITHubProfile, for: UIControlState())
     }
     
     
-    func updateWithContributor(contributor : Contributor) {
+    func updateWithContributor(_ contributor : Contributor) {
         
         // Update texts
         self.contributorNameLb.text = self.contributor.username
         self.contributorFollowersLb.text = String(format: "%d", self.contributor.followers)
         self.contributorFollowingLb.text = String(format: "%d", self.contributor.following)
         self.contributorReposLb.text = String(format: "%d", self.contributor.repositories)
-        self.contributorPageBtn.enabled = self.contributor.detailURL != nil
+        self.contributorPageBtn.isEnabled = self.contributor.detailURL != nil
         
         // Set profile pictures
-        if let profilePictureURL = NSURL(string: self.contributor.avatarURL) {
+        if let profilePictureURL = URL(string: self.contributor.avatarURL) {
             self.contributorProfilePictureIV.hnk_setImageFromURL(profilePictureURL)
         }
     }
@@ -111,11 +111,11 @@ class DetailVC : UIViewController {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - IBActions
     
-    @IBAction func githubBtnTouchUpInside(button : UIButton) {
+    @IBAction func githubBtnTouchUpInside(_ button : UIButton) {
     
-        if let githubURLString = self.contributor.githubURL, githubURL = NSURL(string: githubURLString) {
-            let svc = SFSafariViewController(URL: githubURL)
-            self.presentViewController(svc, animated: true, completion: nil)
+        if let githubURLString = self.contributor.githubURL, let githubURL = URL(string: githubURLString) {
+            let svc = SFSafariViewController(url: githubURL)
+            self.present(svc, animated: true, completion: nil)
         }
     }
 }

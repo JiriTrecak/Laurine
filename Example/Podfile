@@ -7,8 +7,8 @@ inhibit_all_warnings!
 # Define CP Specs source
 #source 'https://github.com/CocoaPods/Specs.git'
 
-# Force iOS8+ platform
-platform :ios, '8.3'
+# Force iOS10+ platform
+platform :ios, '10.0'
 
 # Swift frameworks
 use_frameworks!
@@ -17,7 +17,7 @@ use_frameworks!
 def core_pods
 # -------- Frameworks / Networking
 
-pod 'Alamofire'
+pod 'Alamofire' => '4.0'
 pod 'Warp'
 
 
@@ -27,7 +27,7 @@ pod 'Warp'
 
 # -------- Frameworks / UI
 
-pod 'HanekeSwift'
+pod "HanekeSwift", :git => 'https://github.com/Haneke/HanekeSwift.git', :branch => 'feature/swift-3'
 
 
 # -------- Frameworks / Utilities

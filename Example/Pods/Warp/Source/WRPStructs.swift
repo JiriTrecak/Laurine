@@ -154,9 +154,9 @@ public struct WRPRelation {
 
 struct AnyKey: Hashable {
     
-    private let underlying: Any
-    private let hashValueFunc: () -> Int
-    private let equalityFunc: (Any) -> Bool
+    fileprivate let underlying: Any
+    fileprivate let hashValueFunc: () -> Int
+    fileprivate let equalityFunc: (Any) -> Bool
     
     init<T: Hashable>(_ key: T) {
         // Capture the key's hashability and equatability using closures.

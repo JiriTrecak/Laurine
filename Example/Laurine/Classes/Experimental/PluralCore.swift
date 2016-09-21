@@ -14,56 +14,56 @@ class PluralCore {
     
     // Plural groups base on CLDR definition
     enum PluralGroup {
-        case Zero
-        case One
-        case Two
-        case Few
-        case Many
-        case Other
+        case zero
+        case one
+        case two
+        case few
+        case many
+        case other
     }
     
     enum GenderGroup {
-        case Male
-        case Female
-        case Other
+        case male
+        case female
+        case other
     }
     
-    private func arabicRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func arabicRuleForCount(_ count : UInt) -> PluralGroup {
         
         switch count {
-        case 0: return .Zero
-        case 1: return .One
-        case 2: return .Two
+        case 0: return .zero
+        case 1: return .one
+        case 2: return .two
         default:
             let mod100 = count % 100
             if (mod100 >= 3 && mod100 <= 10) {
-                return .Few
+                return .few
             } else if (mod100 >= 11) {
-                return .Many
+                return .many
             } else {
-                return .Other
+                return .other
             }
         }
     }
     
-    private func simplifiedChineseRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func simplifiedChineseRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
-    private func traditionalChineseRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func traditionalChineseRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
-    private func catalanRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func catalanRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func croatianRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func croatianRuleForCount(_ count : UInt) -> PluralGroup {
         let mod10 = count % 10
         let mod100 = count % 100
         
@@ -73,14 +73,14 @@ class PluralCore {
             case 11:
                 break
             default:
-                return .One
+                return .one
             }
         case 2, 3, 4:
             switch (mod100) {
             case 12, 13, 14:
                 break
             default:
-                return .Few
+                return .few
             }
             
             break
@@ -88,188 +88,188 @@ class PluralCore {
             break
         }
         
-        return .Many
+        return .many
     }
     
-    private func czechRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func czechRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         case 2, 3, 4:
-            return .Few
+            return .few
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func englishRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func englishRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func frenchRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func frenchRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 0, 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func germanRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func germanRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func danishRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func danishRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func dutchRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func dutchRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func finnishRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func finnishRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func greekRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func greekRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func hebrewRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func hebrewRuleForCount(_ count : UInt) -> PluralGroup {
         let mod10 = count % 10
         
         switch (count) {
         case 1:
-            return .One
+            return .one
         case 2:
-            return .Two
+            return .two
         case 3...10:
             break
         default:
             switch (mod10) {
             case 0:
-                return .Many
+                return .many
             default:
                 break
             }
         }
         
-        return .Other
+        return .other
     }
     
-    private func hungarianRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func hungarianRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func indonesianRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func indonesianRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
-    private func italianRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func italianRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func japaneseRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func japaneseRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
-    private func koreanRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func koreanRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
-    private func latvianRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func latvianRuleForCount(_ count : UInt) -> PluralGroup {
         let mod10 = count % 10
         let mod100 = count % 100
         
         if (count == 0) {
-            return .Zero
+            return .zero
         }
         
         if (count == 1) {
-            return .One
+            return .one
         }
         
         switch (mod10) {
         case 1:
             if (mod100 != 11) {
-                return .One
+                return .one
             }
             break
         default:
             break
         }
         
-        return .Many
+        return .many
     }
     
-    private func malayRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func malayRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
-    private func norwegianBokamlRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func norwegianBokamlRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func norwegianNynorskRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func norwegianNynorskRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func polishRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func polishRuleForCount(_ count : UInt) -> PluralGroup {
         let mod10 = count % 10
         let mod100 = count % 100
         
         if (count == 1) {
-            return .One
+            return .one
         }
         
         switch mod10 {
@@ -278,7 +278,7 @@ class PluralCore {
             case 12...14:
                 break
             default:
-                return .Few
+                return .few
             }
             
             break
@@ -286,37 +286,37 @@ class PluralCore {
             break
         }
         
-        return .Many
+        return .many
     }
     
-    private func portugeseRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func portugeseRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func romanianRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func romanianRuleForCount(_ count : UInt) -> PluralGroup {
         let mod100 = count % 100
         
         switch (count) {
         case 0:
-            return .Few
+            return .few
         case 1:
-            return .One
+            return .one
         default:
             if (mod100 > 1 && mod100 <= 19) {
-                return .Few
+                return .few
             }
             break
         }
         
-        return .Other
+        return .other
     }
     
-    private func russianRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func russianRuleForCount(_ count : UInt) -> PluralGroup {
         let mod10 = count % 10
         let mod100 = count % 100
         
@@ -327,56 +327,56 @@ class PluralCore {
         default:
             switch mod10 {
             case 1:
-                return .One
+                return .one
             case 2...4:
-                return .Few
+                return .few
             default:
                 break
             }
             
         }
         
-        return .Many
+        return .many
     }
     
-    private func slovakRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func slovakRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         case 2...4:
-            return .Few
+            return .few
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func spanishRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func spanishRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func swedishRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func swedishRuleForCount(_ count : UInt) -> PluralGroup {
         switch (count) {
         case 1:
-            return .One
+            return .one
         default:
-            return .Other
+            return .other
         }
     }
     
-    private func thaiRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func thaiRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
-    private func turkishRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func turkishRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
-    private func ukrainianRuleForCount(count : UInt) -> PluralGroup {
+    fileprivate func ukrainianRuleForCount(_ count : UInt) -> PluralGroup {
         let mod10 = count % 10
         let mod100 = count % 100
         
@@ -387,28 +387,28 @@ class PluralCore {
         default:
             switch (mod10) {
             case 1:
-                return .One
+                return .one
             case 2...4:
-                return .Few
+                return .few
             default:
                 break
             }
             
         }
         
-        return .Many
+        return .many
     }
     
-    private func vietnameseRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func vietnameseRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
     
-    private func unknownRuleForCount(count : UInt) -> PluralGroup {
-        return .Other
+    fileprivate func unknownRuleForCount(_ count : UInt) -> PluralGroup {
+        return .other
     }
     
-    private func ruleForLanguageCode(code : String) -> ((count : UInt) -> PluralGroup) {
+    fileprivate func ruleForLanguageCode(_ code : String) -> ((_ count : UInt) -> PluralGroup) {
         
         switch code {
             case "ar": return self.vietnameseRuleForCount

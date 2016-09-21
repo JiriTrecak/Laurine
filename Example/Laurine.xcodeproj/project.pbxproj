@@ -20,11 +20,10 @@
 		0BF9E6571BF234F80055C0D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E64C1BF234F80055C0D8 /* Assets.xcassets */; };
 		0BF9E65D1BF2356A0055C0D8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E65B1BF2356A0055C0D8 /* LaunchScreen.storyboard */; };
 		0BF9E65E1BF2356A0055C0D8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0BF9E65C1BF2356A0055C0D8 /* Main.storyboard */; };
-		30FE306F1E93A2DFED468249 /* Pods_Laurine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89B215368D701AAAAF9D7F25 /* Pods_Laurine.framework */; };
+		B7212B9056F7FA43F5D01741 /* Pods_Laurine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2049E6E352629EC24DDCE524 /* Pods_Laurine.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		04FA02BD5DB4C9D3D837C775 /* Pods-Laurine.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laurine.release.xcconfig"; path = "Pods/Target Support Files/Pods-Laurine/Pods-Laurine.release.xcconfig"; sourceTree = "<group>"; };
 		07D399D40D89F38AEDB64A47 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B138E2E1C1973160079867B /* DetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailVC.swift; sourceTree = "<group>"; };
 		0B138E321C1973570079867B /* ContributorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContributorCell.swift; sourceTree = "<group>"; };
@@ -41,8 +40,9 @@
 		0BF9E64D1BF234F80055C0D8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0BF9E65B1BF2356A0055C0D8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0BF9E65C1BF2356A0055C0D8 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		89B215368D701AAAAF9D7F25 /* Pods_Laurine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laurine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CD26957F2D120CC284662A04 /* Pods-Laurine.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laurine.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Laurine/Pods-Laurine.debug.xcconfig"; sourceTree = "<group>"; };
+		2049E6E352629EC24DDCE524 /* Pods_Laurine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laurine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		832B86F885B78FDF5C3C063C /* Pods-Laurine.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laurine.release.xcconfig"; path = "Pods/Target Support Files/Pods-Laurine/Pods-Laurine.release.xcconfig"; sourceTree = "<group>"; };
+		8A2CA27C00E9C511F86FFDDC /* Pods-Laurine.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laurine.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Laurine/Pods-Laurine.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30FE306F1E93A2DFED468249 /* Pods_Laurine.framework in Frameworks */,
+				B7212B9056F7FA43F5D01741 /* Pods_Laurine.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,7 +121,7 @@
 				0BF9E6431BF234F80055C0D8 /* Laurine */,
 				0BF9E6291BF2333D0055C0D8 /* Products */,
 				368514CBD199FDB3F54AABCD /* Frameworks */,
-				617C140BADB075D17377E67D /* Pods */,
+				6477EF9780D2AA0AE81F3050 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -204,16 +204,16 @@
 			isa = PBXGroup;
 			children = (
 				07D399D40D89F38AEDB64A47 /* Pods.framework */,
-				89B215368D701AAAAF9D7F25 /* Pods_Laurine.framework */,
+				2049E6E352629EC24DDCE524 /* Pods_Laurine.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		617C140BADB075D17377E67D /* Pods */ = {
+		6477EF9780D2AA0AE81F3050 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				CD26957F2D120CC284662A04 /* Pods-Laurine.debug.xcconfig */,
-				04FA02BD5DB4C9D3D837C775 /* Pods-Laurine.release.xcconfig */,
+				8A2CA27C00E9C511F86FFDDC /* Pods-Laurine.debug.xcconfig */,
+				832B86F885B78FDF5C3C063C /* Pods-Laurine.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -225,13 +225,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0BF9E63A1BF2333D0055C0D8 /* Build configuration list for PBXNativeTarget "Laurine" */;
 			buildPhases = (
-				BEF2A8158D83682FD4A50B7E /* Check Pods Manifest.lock */,
+				6D9A2D3A411D443627E26E25 /* [CP] Check Pods Manifest.lock */,
 				0BF9E6791BF2375E0055C0D8 /* Laurine Generator */,
 				0BF9E6241BF2333D0055C0D8 /* Sources */,
 				0BF9E6251BF2333D0055C0D8 /* Frameworks */,
 				0BF9E6261BF2333D0055C0D8 /* Resources */,
-				EF9A316A0685460E9A7FC6DF /* Embed Pods Frameworks */,
-				EAF153D9BE22E33D110EAC71 /* Copy Pods Resources */,
+				0AC6FC9184E88DE849CB2124 /* [CP] Embed Pods Frameworks */,
+				D9B674EBAAF193F56294A904 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -249,11 +249,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0710;
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Jiri Trecak";
 				TargetAttributes = {
 					0BF9E6271BF2333D0055C0D8 = {
 						CreatedOnToolsVersion = 7.1;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -292,6 +293,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0AC6FC9184E88DE849CB2124 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Laurine/Pods-Laurine-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		0BF9E6791BF2375E0055C0D8 /* Laurine Generator */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -306,14 +322,14 @@
 			shellPath = /bin/sh;
 			shellScript = "set -x\n\n#--------- START OF CONFIGURATION\n\n# Get base path to project\nBASE_PATH=\"$PROJECT_DIR/$PROJECT_NAME\"\n\n# Get path to Laurine Generator script\nLAURINE_PATH=\"$BASE_PATH/../../LaurineGenerator.swift\"\n\n# Get path to main localization file (usually english).\nSOURCE_PATH=\"$BASE_PATH/Resources/Localizations/en.lproj/Localizable.strings\"\n\n# Get path to output. If you use ObjC version of output, set implementation file (.m), as header will be generated automatically\nOUTPUT_PATH=\"$BASE_PATH/Classes/Generated/Localizations.swift\"\n\n#--------- END OF CONFIGURATION\n\n# Add permission to generator for script execution\nchmod 755 $LAURINE_PATH\n\n# Actually generate output. -- CUSTOMIZE -- parameters to your needs (see documentation).\n# Will only re-generate script if something changed\nif [ \"$OUTPUT_PATH\" -ot \"$SOURCE_PATH\" ]; then\n\"$LAURINE_PATH\" -i \"$SOURCE_PATH\" -o \"$OUTPUT_PATH\"\nfi\n\n";
 		};
-		BEF2A8158D83682FD4A50B7E /* Check Pods Manifest.lock */ = {
+		6D9A2D3A411D443627E26E25 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -321,34 +337,19 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		EAF153D9BE22E33D110EAC71 /* Copy Pods Resources */ = {
+		D9B674EBAAF193F56294A904 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Laurine/Pods-Laurine-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EF9A316A0685460E9A7FC6DF /* Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Laurine/Pods-Laurine-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -395,6 +396,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -404,8 +406,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -427,11 +431,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -439,6 +444,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -448,8 +454,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -465,37 +473,43 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 		0BF9E63B1BF2333D0055C0D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CD26957F2D120CC284662A04 /* Pods-Laurine.debug.xcconfig */;
+			baseConfigurationReference = 8A2CA27C00E9C511F86FFDDC /* Pods-Laurine.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/Laurine/Resources/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.Laurine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		0BF9E63C1BF2333D0055C0D8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 04FA02BD5DB4C9D3D837C775 /* Pods-Laurine.release.xcconfig */;
+			baseConfigurationReference = 832B86F885B78FDF5C3C063C /* Pods-Laurine.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "$(SRCROOT)/Laurine/Resources/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.Laurine;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
