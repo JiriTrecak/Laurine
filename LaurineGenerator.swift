@@ -497,10 +497,10 @@ public class CommandLine {
             /* Remove attached argument from flag */
             let splitFlag = flagWithArg.characters.split(separator: ArgumentAttacher, maxSplits: 1)
             let flag = splitFlag[0]
-            let attachedArg: String? = splitFlag.count == 2 ? splitFlag[1] : nil
+            let attachedArg: String? = splitFlag.count == 2 ? "\(splitFlag[1])" : nil
             
             var flagMatched = false
-            for option in _options where option.flagMatch(flag) {
+            for option in _options where option.flagMatch("\(flag)") {
                 let vals = self._getFlagValues(idx, attachedArg)
                 guard option.setValue(vals) else {
                     throw ParseError.InvalidValueForOption(option, vals)
@@ -517,12 +517,12 @@ public class CommandLine {
             }
             
             /* Flags that do not take any arguments can be concatenated */
-            let flagLength = flag.characters.count
+            let flagLength = "\(flag)".characters.count
             if !flagMatched && !arg.hasPrefix(LongOptionPrefix) {
                 #if swift(>=3.0)
-                    let flagCharactersEnumerator = flag.characters.enumerated()
+                    let flagCharactersEnumerator = "\(flag)".characters.enumerated()
                 #else
-                    let flagCharactersEnumerator = flag.characters.enumerate()
+                    let flagCharactersEnumerator = "\(flag)".characters.enumerate()
                 #endif
                 for (i, c) in flagCharactersEnumerator {
                     for option in _options where option.flagMatch(String(c)) {
