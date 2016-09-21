@@ -48,6 +48,8 @@ class CSAppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
+        let str = "x"
+        str.folding(options: .diacriticInsensitive, locale: NSLocale.current)
         return true
     }
     

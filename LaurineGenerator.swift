@@ -254,7 +254,7 @@ public class CommandLine {
                 }
                 
                 if _arguments[i].hasPrefix(ShortOptionPrefix) && Int(_arguments[i]) == nil &&
-                    _arguments[i].toDouble() == nil {
+                    Double(_arguments[i]) == nil {
                     break
                 }
             }
@@ -495,7 +495,7 @@ public class CommandLine {
             }
             
             /* Remove attached argument from flag */
-            let splitFlag = flagWithArg.split(by: ArgumentAttacher, maxSplits: 1)
+            let splitFlag = flagWithArg.characters.split(separator: ArgumentAttacher, maxSplits: 1)
             let flag = splitFlag[0]
             let attachedArg: String? = splitFlag.count == 2 ? splitFlag[1] : nil
             
@@ -718,11 +718,11 @@ public class Option {
     internal init(_ shortFlag: String?, _ longFlag: String?, _ required: Bool, _ helpMessage: String) {
         if let sf = shortFlag {
             assert(sf.characters.count == 1, "Short flag must be a single character")
-            assert(Int(sf) == nil && sf.toDouble() == nil, "Short flag cannot be a numeric value")
+            assert(Int(sf) == nil && Double(sf) == nil, "Short flag cannot be a numeric value")
         }
         
         if let lf = longFlag {
-            assert(Int(lf) == nil && lf.toDouble() == nil, "Long flag cannot be a numeric value")
+            assert(Int(lf) == nil && Double(lf) == nil, "Long flag cannot be a numeric value")
         }
         
         self.shortFlag = shortFlag
@@ -897,7 +897,7 @@ public class DoubleOption: Option {
             return false
         }
         
-        if let val = values[0].toDouble() {
+        if let val = Double(values[0]) {
             _value = val
             return true
         }
@@ -1254,28 +1254,28 @@ internal extension String {
      * - returns: An array of string components.
      */
     func split(by by: Character, maxSplits: Int = 0) -> [String] {
-        var s = [String]()
-        var numSplits = 0
-        
-        var curIdx = self.startIndex
-        for i in self.characters.indices {
-            let c = self[i]
-            if c == by && (maxSplits == 0 || numSplits < maxSplits) {
-                s.append(self[curIdx..<i])
-                curIdx = i.successor()
-                numSplits += 1
-            }
-        }
-        
-        if curIdx != self.endIndex {
-            s.append(self[curIdx..<self.endIndex])
-        }
-        
-        return s
+    var s = [String]()
+    var numSplits = 0
+    
+    var curIdx = self.startIndex
+    for i in self.characters.indices {
+    let c = self[i]
+    if c == by && (maxSplits == 0 || numSplits < maxSplits) {
+    s.append(self[curIdx..<i])
+    curIdx = i.successor()
+    numSplits += 1
     }
+    }
+    
+    if curIdx != self.endIndex {
+    s.append(self[curIdx..<self.endIndex])
+    }
+    
+    return s
+    }
+    
     #endif
-
-
+    
     /**
      * Pads a string to the specified width.
      *
@@ -1356,7 +1356,7 @@ private extension String {
     func alphanumericString(exceptionCharactersFromString: String = "") -> String {
         
         // removes diacritic marks
-        var copy = self.stringByFoldingWithOptions(.DiacriticInsensitiveSearch, locale: NSLocale.currentLocale())
+        var copy = self.folding(options: .diacriticInsensitive, locale: NSLocale.current)
         
         // removes all non alphanumeric characters
         let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet.mutableCopy() as! NSMutableCharacterSet
@@ -1714,14 +1714,14 @@ class Localization {
             
             if let value = value as? String {
                 
-                let comment = (self.flatStructure.objectForKey(value) as! String).nolineString
-                let methodParams = self.methodParamsForString(comment)
+                let comment = (self.flatStructure.object(forKey: value) as! String).nolineString
+                let methodParams = self.methodParamsForString(string: comment)
                 let staticString : String
                 
                 if methodParams.count > 0 {
-                    staticString = self.objcLocalizationFuncFromLocalizationKey(value, methodName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, methodSpecification: methodParams, header: header)
+                    staticString = self.objcLocalizationFuncFromLocalizationKey(key: value, methodName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, methodSpecification: methodParams, header: header)
                 } else {
-                    staticString = self.objcLocalizationStaticVarFromLocalizationKey(value, variableName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, header: header)
+                    staticString = self.objcLocalizationStaticVarFromLocalizationKey(key: value, variableName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, header: header)
                 }
                 
                 contentStructure.append(staticString)
@@ -1732,31 +1732,31 @@ class Localization {
         for (key, value) in expandedStructure {
             
             if let value = value as? NSDictionary {
-                outputStructure.append(self.codifyObjC(value, baseClass : baseClass + self.variableName(key as! String, lang: .ObjC), header: header))
+                outputStructure.append(self.codifyObjC(expandedStructure: value, baseClass : baseClass + self.variableName(string: key as! String, lang: .ObjC), header: header))
                 contentStructure.insert(self.objcClassVarWithName(self.variableName(key as! String, lang: .ObjC), className: baseClass + self.variableName(key as! String, lang: .ObjC), header: header), atIndex: 0)
             }
         }
         
         if baseClass == BASE_CLASS_NAME {
             if header {
-                contentStructure.append(TemplateFactory.templateForObjCBaseClassHeader(OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
+                contentStructure.append(TemplateFactory.templateForObjCBaseClassHeader(name: OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
             } else {
-                contentStructure.append(TemplateFactory.templateForObjCBaseClassImplementation(OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
+                contentStructure.append(TemplateFactory.templateForObjCBaseClassImplementation(name: OBJC_CLASS_PREFIX + BASE_CLASS_NAME))
             }
         }
         
         // Generate class code for current class
-        outputStructure.append(self.objcClassWithContent(contentStructure.joinWithSeparator("\n"), className: OBJC_CLASS_PREFIX + baseClass, header: header))
+        outputStructure.append(self.objcClassWithContent(content: contentStructure.joined(separator: "\n"), className: OBJC_CLASS_PREFIX + baseClass, header: header))
         
         // At the end, return everything merged together
-        return outputStructure.joinWithSeparator("\n")
+        return outputStructure.joined(separator: "\n")
     }
     
     
     private func methodParamsForString(string : String) -> [SpecialCharacter] {
         
         // Split the string into pieces by %
-        let matches = self.matchesForRegexInText("%([0-9]*.[0-9]*(d|i|u|f|ld)|(\\d\\$)?@|d|i|u|f|ld)", text: string)
+        let matches = self.matchesForRegexInText(regex: "%([0-9]*.[0-9]*(d|i|u|f|ld)|(\\d\\$)?@|d|i|u|f|ld)", text: string)
         var characters : [SpecialCharacter] = []
         
         // If there is just one component, no special characters are found
@@ -1764,7 +1764,7 @@ class Localization {
             return []
         } else {
             for match in matches {
-                characters.append(self.propertyTypeForMatch(match))
+                characters.append(self.propertyTypeForMatch(string: match))
             }
             return characters
         }
@@ -1772,13 +1772,13 @@ class Localization {
     
     
     private func propertyTypeForMatch(string : String) -> SpecialCharacter {
-        if string.containsString("ld") {
+        if string.contains("ld") {
             return .Int64
-        } else if string.containsString("d") || string.containsString("i") {
+        } else if string.contains("d") || string.contains("i") {
             return .Int
-        } else if string.containsString("u") {
+        } else if string.contains("u") {
             return .UInt
-        } else if string.containsString("f") {
+        } else if string.contains("f") {
             return .Double
         } else {
             return .String
@@ -1789,12 +1789,12 @@ class Localization {
     private func variableName(string : String, lang : Runtime.ExportLanguage) -> String {
 	
 		// . is not allowed, nested structure expanding must take place before calling this function
-		let legalCharacterString = string.replacedNonAlphaNumericCharacters("_")
+        let legalCharacterString = string.replacedNonAlphaNumericCharacters(replacement: "_")
 		
         if self.autocapitalize {
-            return (legalCharacterString.isFirstLetterDigit() || legalCharacterString.isReservedKeyword(lang) ? "_" + legalCharacterString.camelCasedString : legalCharacterString.camelCasedString)
+            return (legalCharacterString.isFirstLetterDigit() || legalCharacterString.isReservedKeyword(lang: lang) ? "_" + legalCharacterString.camelCasedString : legalCharacterString.camelCasedString)
         } else {
-            return (legalCharacterString.isFirstLetterDigit() || legalCharacterString.isReservedKeyword(lang) ? "_" + string : legalCharacterString)
+            return (legalCharacterString.isFirstLetterDigit() || legalCharacterString.isReservedKeyword(lang: lang) ? "_" + string : legalCharacterString)
         }
     }
     
@@ -1804,9 +1804,8 @@ class Localization {
         do {
             let regex = try NSRegularExpression(pattern: regex, options: [])
             let nsString = text as NSString
-            let results = regex.matchesInString(text,
-                options: [], range: NSMakeRange(0, nsString.length))
-            return results.map { nsString.substringWithRange($0.range)}
+            let results = regex.matches(in: text, options: [], range: NSMakeRange(0, nsString.length))
+            return results.map { nsString.substring(with: $0.range)}
         } catch let error as NSError {
             print("invalid regex: \(error.localizedDescription)")
             return []
@@ -1828,13 +1827,13 @@ class Localization {
     
     private func swiftStructWithContent(content : String, structName : String, contentLevel : Int = 0) -> String {
         
-        return TemplateFactory.templateForSwiftStructWithName(self.variableName(structName, lang: .Swift), content: content, contentLevel: contentLevel)
+        return TemplateFactory.templateForSwiftStructWithName(name: self.variableName(string: structName, lang: .Swift), content: content, contentLevel: contentLevel)
     }
     
     
     private func swiftLocalizationStaticVarFromLocalizationKey(key : String, variableName : String, baseTranslation : String, contentLevel : Int = 0) -> String {
         
-        return TemplateFactory.templateForSwiftStaticVarWithName(self.variableName(variableName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, contentLevel: contentLevel)
+        return TemplateFactory.templateForSwiftStaticVarWithName(name: self.variableName(string: variableName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, contentLevel: contentLevel)
     }
     
     
@@ -1843,26 +1842,26 @@ class Localization {
         var counter = 0
         var methodHeaderParams = methodSpecification.reduce("") { (string, character) -> String in
             counter += 1
-            return "\(string), _ value\(counter) : \(self.dataTypeFromSpecialCharacter(character, language: .Swift))"
+            return "\(string), _ value\(counter) : \(self.dataTypeFromSpecialCharacter(char: character, language: .Swift))"
         }
         
         var methodParams : [String] = []
-        for (index, _) in methodSpecification.enumerate() {
+        for (index, _) in methodSpecification.enumerated() {
             methodParams.append("value\(index + 1)")
         }
-        let methodParamsString = methodParams.joinWithSeparator(", ")
+        let methodParamsString = methodParams.joined(separator: ", ")
         
-        methodHeaderParams = methodHeaderParams.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", _"))
-        return TemplateFactory.templateForSwiftFuncWithName(self.variableName(methodName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
+        methodHeaderParams = methodHeaderParams.trimming(NSCharacterSet(charactersInString: ", _"))
+        return TemplateFactory.templateForSwiftFuncWithName(name: self.variableName(string: methodName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
     }
     
     
     private func objcClassWithContent(content : String, className : String, header : Bool, contentLevel : Int = 0) -> String {
         
         if header {
-            return TemplateFactory.templateForObjCClassHeaderWithName(className, content: content, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCClassHeaderWithName(name: className, content: content, contentLevel: contentLevel)
         } else {
-            return TemplateFactory.templateForObjCClassImplementationWithName(className, content: content, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCClassImplementationWithName(name: className, content: content, contentLevel: contentLevel)
         }
     }
     
@@ -1870,9 +1869,9 @@ class Localization {
     private func objcClassVarWithName(name : String, className : String, header : Bool, contentLevel : Int = 0) -> String {
         
         if header {
-            return TemplateFactory.templateForObjCClassVarHeaderWithName(name, className: className, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCClassVarHeaderWithName(name: name, className: className, contentLevel: contentLevel)
         } else {
-            return TemplateFactory.templateForObjCClassVarImplementationWithName(name, className: className, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCClassVarImplementationWithName(name: name, className: className, contentLevel: contentLevel)
         }
     }
     
@@ -1880,9 +1879,9 @@ class Localization {
     private func objcLocalizationStaticVarFromLocalizationKey(key : String, variableName : String, baseTranslation : String, header : Bool, contentLevel : Int = 0) -> String {
         
         if header {
-            return TemplateFactory.templateForObjCStaticVarHeaderWithName(variableName, key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCStaticVarHeaderWithName(name: variableName, key: key, baseTranslation : baseTranslation, contentLevel: contentLevel)
         } else {
-            return TemplateFactory.templateForObjCStaticVarImplementationWithName(variableName, key: key, table: table, baseTranslation : baseTranslation, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCStaticVarImplementationWithName(name: variableName, key: key, table: table, baseTranslation : baseTranslation, contentLevel: contentLevel)
         }
     }
     
@@ -1892,26 +1891,26 @@ class Localization {
         var counter = 0
         var methodHeader = methodSpecification.reduce("") { (string, character) -> String in
             counter += 1
-            return "\(string), \(self.dataTypeFromSpecialCharacter(character, language: .ObjC))"
+            return "\(string), \(self.dataTypeFromSpecialCharacter(char: character, language: .ObjC))"
         }
         counter = 0
         var blockHeader = methodSpecification.reduce("") { (string, character) -> String in
             counter += 1
-            return "\(string), \(self.dataTypeFromSpecialCharacter(character, language: .ObjC)) value\(counter) "
+            return "\(string), \(self.dataTypeFromSpecialCharacter(char: character, language: .ObjC)) value\(counter) "
         }
         
         var blockParamComponent : [String] = []
         for (index, _) in methodSpecification.enumerate() {
             blockParamComponent.append("value\(index + 1)")
         }
-        let blockParams = blockParamComponent.joinWithSeparator(", ")
+        let blockParams = blockParamComponent.joined(separator: ", ")
         methodHeader = methodHeader.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", "))
         blockHeader = blockHeader.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", "))
         
         if header {
-            return TemplateFactory.templateForObjCMethodHeaderWithName(methodName, key: key, baseTranslation: baseTranslation, methodHeader: methodHeader, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCMethodHeaderWithName(name: methodName, key: key, baseTranslation: baseTranslation, methodHeader: methodHeader, contentLevel: contentLevel)
         } else {
-            return TemplateFactory.templateForObjCMethodImplementationWithName(methodName, key: key, table: table, baseTranslation: baseTranslation, methodHeader: methodHeader, blockHeader: blockHeader, blockParams: blockParams, contentLevel: contentLevel)
+            return TemplateFactory.templateForObjCMethodImplementationWithName(name: methodName, key: key, table: table, baseTranslation: baseTranslation, methodHeader: methodHeader, blockHeader: blockHeader, blockParams: blockParams, contentLevel: contentLevel)
         }
     }
 }
@@ -2035,7 +2034,7 @@ class Runtime {
     private func checkIO() -> Bool {
         
         // Check if we have input file
-        if !NSFileManager.defaultManager().fileExistsAtPath(self.localizationFilePathToRead.path!) {
+        if !FileManager.default.fileExists(atPath: self.localizationFilePathToRead.path!) {
             
             // TODO: Better error handling
             exit(EX_IOERR)
@@ -2045,8 +2044,8 @@ class Runtime {
         if self.localizationExportStream == .File {
             
             // Remove output file first
-            _ = try? NSFileManager.defaultManager().removeItemAtPath(self.localizationFilePathToWriteTo.path!)
-            if !NSFileManager.defaultManager().createFileAtPath(self.localizationFilePathToWriteTo.path!, contents: NSData(), attributes: nil) {
+            _ = try? FileManager.default.removeItem(atPath: self.localizationFilePathToWriteTo.path!)
+            if !FileManager.default.createFile(atPath: self.localizationFilePathToWriteTo.path!, contents: Data(), attributes: nil) {
                 
                 // TODO: Better error handling
                 exit(EX_IOERR)
@@ -2059,8 +2058,8 @@ class Runtime {
                 self.localizationFileHeaderPathToWriteTo = self.localizationFilePathToWriteTo.URLByDeletingPathExtension!.URLByAppendingPathExtension("h")
                 
                 // Remove file at path and replace it with new one
-                _ = try? NSFileManager.defaultManager().removeItemAtPath(self.localizationFileHeaderPathToWriteTo!.path!)
-                if !NSFileManager.defaultManager().createFileAtPath(self.localizationFileHeaderPathToWriteTo!.path!, contents: NSData(), attributes: nil) {
+                _ = try? FileManager.default.removeItem(atPath: self.localizationFileHeaderPathToWriteTo!.path!)
+                if !FileManager.default.createFile(atPath: self.localizationFileHeaderPathToWriteTo!.path!, contents: Data(), attributes: nil) {
                     
                     // TODO: Better error handling
                     exit(EX_IOERR)
@@ -2082,23 +2081,23 @@ class Runtime {
             
             // Write swift file
             if self.localizationExportStream == .Standard {
-                implementation.writeToSTD(true)
+                implementation.writeToSTD(clearBuffer: true)
             } else if self.localizationExportStream == .File {
-                implementation.writeToOutputFileAtPath(self.localizationFilePathToWriteTo)
+                implementation.writeToOutputFileAtPath(path: self.localizationFilePathToWriteTo)
             }
             
         // or write output for objc, based on user configuration
         } else if self.localizationExportLanguage == .ObjC {
-            let implementation = self.localizationCore.writerWithObjCImplementationWithFilename(self.localizationFilePathToWriteTo.URLByDeletingPathExtension!.lastPathComponent!)
+            let implementation = self.localizationCore.writerWithObjCImplementationWithFilename(filename: self.localizationFilePathToWriteTo.deletingPathExtension!.lastPathComponent)
             let header = self.localizationCore.writerWithObjCHeader()
             
             // Write .h and .m file
             if self.localizationExportStream == .Standard {
-                header.writeToSTD(true)
-                implementation.writeToSTD(true)
+                header.writeToSTD(clearBuffer: true)
+                implementation.writeToSTD(clearBuffer: true)
             } else if self.localizationExportStream == .File {
-                implementation.writeToOutputFileAtPath(self.localizationFilePathToWriteTo)
-                header.writeToOutputFileAtPath(self.localizationFileHeaderPathToWriteTo!)
+                implementation.writeToOutputFileAtPath(path: self.localizationFilePathToWriteTo)
+                header.writeToOutputFileAtPath(path: self.localizationFileHeaderPathToWriteTo!)
             }
         }
     }
@@ -2120,10 +2119,10 @@ class StreamWriter {
         // let formatter = NSDateFormatter()
         // formatter.dateFormat = "yyyy-MM-dd 'at' h:mm a"
         
-        self.store("//\n")
-        self.store("// Autogenerated by Laurine - by Jiri Trecak ( http://jiritrecak.com, @jiritrecak )\n")
-        self.store("// Do not change this file manually!\n")
-        self.store("//\n")
+        self.store(string: "//\n")
+        self.store(string: "// Autogenerated by Laurine - by Jiri Trecak ( http://jiritrecak.com, @jiritrecak )\n")
+        self.store(string: "// Do not change this file manually!\n")
+        self.store(string: "//\n")
         // self.store("// \(formatter.stringFromDate(NSDate()))\n")
         // self.store("//\n")
     }
@@ -2132,52 +2131,52 @@ class StreamWriter {
     
     func writeMarkWithName(name : String, contentLevel : Int = 0) {
         
-        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "\n")
-        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "\n")
-        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---\n")
-        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "// MARK: - \(name)\n")
-        self.store(TemplateFactory.contentIndentForLevel(contentLevel) + "\n")
+        self.store(string: TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "\n")
+        self.store(string: TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "\n")
+        self.store(string: TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---\n")
+        self.store(string: TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "// MARK: - \(name)\n")
+        self.store(string: TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "\n")
     }
     
     
     func writeSwiftImports() {
         
-        self.store("import Foundation\n")
+        self.store(string: "import Foundation\n")
     }
     
     
     func writeObjCImportsWithFileName(name : String) {
         
-        self.store("#import \"\(name).h\"\n")
+        self.store(string: "#import \"\(name).h\"\n")
     }
     
     
     func writeObjCHeaderImports() {
         
-        self.store("@import Foundation;\n")
+        self.store(string: "@import Foundation;\n")
         if let csc = OBJC_CUSTOM_SUPERCLASS {
-            self.store("#import \"\(csc).h\"\n")
+            self.store(string: "#import \"\(csc).h\"\n")
         }
     }
     
     
     func writeObjCHeaderMacros() {
         
-        self.store("// Make localization to be easily accessible\n")
-        self.store("#define \(BASE_CLASS_NAME) [\(OBJC_CLASS_PREFIX)\(BASE_CLASS_NAME) sharedInstance]\n")
+        self.store(string: "// Make localization to be easily accessible\n")
+        self.store(string: "#define \(BASE_CLASS_NAME) [\(OBJC_CLASS_PREFIX)\(BASE_CLASS_NAME) sharedInstance]\n")
     }
     
     
     func writeCodeStructure(structure : String) {
         
-        self.store(structure)
+        self.store(string: structure)
         
     }
     
     
     func writeToOutputFileAtPath(path : NSURL, clearBuffer : Bool = true) {
         
-        _ = try? self.outputBuffer.writeToFile(path.path!, atomically: true, encoding: NSUTF8StringEncoding)
+        _ = try? self.outputBuffer.write(toFile: path.path!, atomically: true, encoding: String.Encoding.utf8)
         
         if clearBuffer {
             self.outputBuffer = ""
@@ -2220,26 +2219,26 @@ class TemplateFactory {
     class func templateForSwiftStructWithName(name : String, content : String, contentLevel : Int) -> String {
         
         return "\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "public struct \(name) {\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "public struct \(name) {\n"
              + "\n"
              + "\(content)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "}"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "}"
     }
     
     
     class func templateForSwiftStaticVarWithName(name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
         let tableName = table != nil ? "\"\(table!)\"" : "nil"
-        return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "public static var \(name) : String = NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\")\n"
+        return TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "/// Base translation: \(baseTranslation)\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "public static var \(name) : String = NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\")\n"
     }
     
     
     class func templateForSwiftFuncWithName(name : String, key : String, table: String?, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
         let tableName = table != nil ? "\"\(table!)\"" : "nil"
-        return TemplateFactory.contentIndentForLevel(contentLevel) + "/// Base translation: \(baseTranslation)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "public static func \(name)(\(methodHeader)) -> String {\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel) + "}\n"
+        return TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "/// Base translation: \(baseTranslation)\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "public static func \(name)(\(methodHeader)) -> String {\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "}\n"
     }
     
     
@@ -2257,7 +2256,7 @@ class TemplateFactory {
     class func templateForObjCStaticVarImplementationWithName(name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
         let tableName = table != nil ? "@\"\(table!)\"" : "nil"
         return "- (NSString *)\(name) {\n"
-              + TemplateFactory.contentIndentForLevel(1) + "return NSLocalizedStringFromTable(@\"\(key)\", \(tableName), nil);\n"
+            + TemplateFactory.contentIndentForLevel(contentLevel: 1) + "return NSLocalizedStringFromTable(@\"\(key)\", \(tableName), nil);\n"
             + "}\n"
     }
     
@@ -2265,7 +2264,7 @@ class TemplateFactory {
     class func templateForObjCClassVarImplementationWithName(name : String, className : String, contentLevel : Int) -> String {
         
         return "- (_\(className) *)\(name) {\n"
-             + TemplateFactory.contentIndentForLevel(1) + "return [\(OBJC_CLASS_PREFIX)\(className) new];\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: 1) + "return [\(OBJC_CLASS_PREFIX)\(className) new];\n"
              + "}\n"
     }
     
@@ -2273,9 +2272,9 @@ class TemplateFactory {
     class func templateForObjCMethodImplementationWithName(name : String, key : String, table: String?, baseTranslation : String, methodHeader : String, blockHeader : String, blockParams : String, contentLevel : Int) -> String {
         let tableName = table != nil ? "@\"\(table!)\"" : "nil"
         return "- (NSString *(^)(\(methodHeader)))\(name) {\n"
-             + TemplateFactory.contentIndentForLevel(1) + "return ^(\(blockHeader)) {\n"
-             + TemplateFactory.contentIndentForLevel(2) + "return [NSString stringWithFormat: NSLocalizedStringFromTable(@\"\(key)\", \(tableName), nil), \(blockParams)];\n"
-             + TemplateFactory.contentIndentForLevel(1) + "};\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: 1) + "return ^(\(blockHeader)) {\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: 2) + "return [NSString stringWithFormat: NSLocalizedStringFromTable(@\"\(key)\", \(tableName), nil), \(blockParams)];\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: 1) + "};\n"
              + "}\n"
     }
     
