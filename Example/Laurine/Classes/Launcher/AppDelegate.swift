@@ -48,10 +48,12 @@ class CSAppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
-        let str = "x"
-        let set = CharacterSet.decimalDigits
-        set.hasMember(inPlane: <#T##UInt8#>)
-        str.folding(options: .diacriticInsensitive, locale: NSLocale.current)
+        let directiony = NSMutableDictionary()
+        directiony.setObject("x", forKey: "x")
+        
+        let set = CharacterSet(in: "x")
+        let y = "".trimmingCharacters(in: CharacterSet)(in: <#T##CharacterSet#>)
+        y.replacingOccurrences(of: <#T##String#>, with: <#T##String#>)(separatedBy: <#T##CharacterSet#>)
         return true
     }
     

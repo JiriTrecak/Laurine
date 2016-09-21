@@ -1394,7 +1394,7 @@ private extension NSMutableDictionary {
     
     func setObject(object : AnyObject!, forKeyPath : String, delimiter : String = ".") {
         
-        self.setObject(object, onObject : self, forKeyPath: forKeyPath, createIntermediates: true, replaceIntermediates: true, delimiter: delimiter)
+        self.setObject(object: object, onObject : self, forKeyPath: forKeyPath, createIntermediates: true, replaceIntermediates: true, delimiter: delimiter)
     }
     
     
@@ -1405,16 +1405,16 @@ private extension NSMutableDictionary {
         
         // Replace delimiter with dot delimiter - otherwise key value observing does not work properly
         let baseDelimiter = "."
-        primaryKeypath = primaryKeypath.stringByReplacingOccurrencesOfString(delimiter, withString: baseDelimiter, options: .LiteralSearch, range: nil)
+        primaryKeypath = primaryKeypath.replacingOccurrences(of: delimiter, with: baseDelimiter, options: NSString.CompareOptions.literal, range: nil)
         
         // Create path components separated by delimiter (. by default) and get key for root object
 		// filter empty path components, these can be caused by delimiter at beginning/end, or multiple consecutive delimiters in the middle
-		let pathComponents : Array<String> = primaryKeypath.componentsSeparatedByString(baseDelimiter).filter({ $0.characters.count > 0 })
-		primaryKeypath = pathComponents.joinWithSeparator(baseDelimiter)
+        let pathComponents : Array<String> = primaryKeypath.components(separatedBy: baseDelimiter).filter({ $0.characters.count > 0 })
+        primaryKeypath = pathComponents.joined(separator: baseDelimiter)
         let rootKey : String = pathComponents[0]
 		
 		if pathComponents.count == 1 {
-			onObject.setObject(object, forKey: rootKey)
+			onObject.set(object, forKey: rootKey)
 		}
 		
         let replacementDictionary : NSMutableDictionary = NSMutableDictionary()
@@ -1435,7 +1435,7 @@ private extension NSMutableDictionary {
                 reachedDictionaryLeaf = true;
                 if createIntermediates {
                     let newNode : NSMutableDictionary = NSMutableDictionary()
-                    previousReplacement.setObject(newNode, forKey: path)
+                    previousReplacement.setObject(newNode, forKey: path as NSString)
                     previousReplacement = newNode;
                 } else {
                     return;
@@ -1445,7 +1445,7 @@ private extension NSMutableDictionary {
             } else if currentObject is NSDictionary {
                 
                 let newNode : NSMutableDictionary = NSMutableDictionary(dictionary: currentObject as! [NSObject : AnyObject])
-                previousReplacement.setObject(newNode, forKey: path)
+                previousReplacement.setObject(newNode, forKey: path as NSString)
                 previousReplacement = newNode
                 
             // It exists but it is not NSDictionary, so we replace it, if allowed, or end
@@ -1455,7 +1455,7 @@ private extension NSMutableDictionary {
                 if replaceIntermediates {
                     
                     let newNode : NSMutableDictionary = NSMutableDictionary()
-                    previousReplacement.set(newNode, forKey: path)
+                    previousReplacement.setObject(newNode, forKey: path as NSString)
                     previousReplacement = newNode;
                 } else {
                     return;
@@ -1483,7 +1483,7 @@ private extension FileManager {
             let attribs: [FileAttributeKey : Any]? = try manager.attributesOfItem(atPath: path)
             if let attributes = attribs {
                 let type = attributes[FileAttributeKey.type] as? String
-                return type == NSFileTypeDirectory
+                return type == FileAttributeType.typeDirectory.rawValue
             }
         } catch _ {
             return false
@@ -1565,7 +1565,7 @@ class Localization {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Setup
     
-    convenience init(inputFile : NSURL, delimiter : String, autocapitalize : Bool, table: String? = nil) {
+    convenience init(inputFile : URL, delimiter : String, autocapitalize : Bool, table: String? = nil) {
         
         self.init()
         self.table = table
@@ -1574,9 +1574,9 @@ class Localization {
     }
     
     
-    func processInputFromFile(file : NSURL, delimiter : String, autocapitalize : Bool) {
+    func processInputFromFile(file : URL, delimiter : String, autocapitalize : Bool) {
         
-        guard let path = file.path, let dictionary = NSDictionary(contentsOfFile: path) else {
+        guard let dictionary = NSDictionary(contentsOfFile: file.path) else {
             // TODO: Better error handling
             print("Bad format of input file")
             exit(EX_IOERR)
@@ -1733,7 +1733,7 @@ class Localization {
             
             if let value = value as? NSDictionary {
                 outputStructure.append(self.codifyObjC(expandedStructure: value, baseClass : baseClass + self.variableName(string: key as! String, lang: .ObjC), header: header))
-                contentStructure.insert(self.objcClassVarWithName(name: self.variableName(key as! String, lang: .ObjC), className: baseClass + self.variableName(key as! String, lang: .ObjC), header: header), at: 0)
+                contentStructure.insert(self.objcClassVarWithName(name: self.variableName(string: key as! String, lang: .ObjC), className: baseClass + self.variableName(string: key as! String, lang: .ObjC), header: header), at: 0)
             }
         }
         
@@ -1851,7 +1851,7 @@ class Localization {
         }
         let methodParamsString = methodParams.joined(separator: ", ")
         
-        methodHeaderParams = methodHeaderParams.trimming(NSCharacterSet(charactersInString: ", _"))
+        methodHeaderParams = methodHeaderParams.trimmingCharacters(in: CharacterSet(charactersIn: ", _"))
         return TemplateFactory.templateForSwiftFuncWithName(name: self.variableName(string: methodName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
     }
     
@@ -1900,12 +1900,12 @@ class Localization {
         }
         
         var blockParamComponent : [String] = []
-        for (index, _) in methodSpecification.enumerate() {
+        for (index, _) in methodSpecification.enumerated() {
             blockParamComponent.append("value\(index + 1)")
         }
         let blockParams = blockParamComponent.joined(separator: ", ")
-        methodHeader = methodHeader.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", "))
-        blockHeader = blockHeader.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: ", "))
+        methodHeader = methodHeader.trimmingCharacters(in: CharacterSet(charactersIn: ", "))
+        blockHeader = blockHeader.trimmingCharacters(in: CharacterSet(charactersIn: ", "))
         
         if header {
             return TemplateFactory.templateForObjCMethodHeaderWithName(name: methodName, key: key, baseTranslation: baseTranslation, methodHeader: methodHeader, contentLevel: contentLevel)
@@ -1939,9 +1939,9 @@ class Runtime {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Properties
     
-    var localizationFilePathToRead : NSURL!
-    var localizationFilePathToWriteTo : NSURL!
-    var localizationFileHeaderPathToWriteTo : NSURL?
+    var localizationFilePathToRead : URL!
+    var localizationFilePathToWriteTo : URL!
+    var localizationFileHeaderPathToWriteTo : URL?
     var localizationDelimiter = "."
     var localizationDebug = false
     var localizationCore : Localization!
@@ -2001,13 +2001,13 @@ class Runtime {
             try cli.parse()
             
             // It passed, now process input
-            self.localizationFilePathToRead = NSURL(fileURLWithPath: inputFilePath.value!)
+            self.localizationFilePathToRead = URL(fileURLWithPath: inputFilePath.value!)
             
             if let value = delimiter.value { self.localizationDelimiter = value }
             self.localizationAutocapitalize = autocapitalize.wasSet ? true : false
-            if let value = outputLanguage.value, type = ExportLanguage(rawValue: value) { self.localizationExportLanguage = type }
+            if let value = outputLanguage.value, let type = ExportLanguage(rawValue: value) { self.localizationExportLanguage = type }
             if let value = outputFilePath.value {
-                self.localizationFilePathToWriteTo = NSURL(fileURLWithPath: value)
+                self.localizationFilePathToWriteTo = URL(fileURLWithPath: value)
                 self.localizationExportStream = .File
             } else {
                 self.localizationExportStream = .Standard
@@ -2034,7 +2034,7 @@ class Runtime {
     private func checkIO() -> Bool {
         
         // Check if we have input file
-        if !FileManager.default.fileExists(atPath: self.localizationFilePathToRead.path!) {
+        if !FileManager.default.fileExists(atPath: self.localizationFilePathToRead.path) {
             
             // TODO: Better error handling
             exit(EX_IOERR)
@@ -2044,8 +2044,8 @@ class Runtime {
         if self.localizationExportStream == .File {
             
             // Remove output file first
-            _ = try? FileManager.default.removeItem(atPath: self.localizationFilePathToWriteTo.path!)
-            if !FileManager.default.createFile(atPath: self.localizationFilePathToWriteTo.path!, contents: Data(), attributes: nil) {
+            _ = try? FileManager.default.removeItem(atPath: self.localizationFilePathToWriteTo.path)
+            if !FileManager.default.createFile(atPath: self.localizationFilePathToWriteTo.path, contents: Data(), attributes: nil) {
                 
                 // TODO: Better error handling
                 exit(EX_IOERR)
@@ -2055,11 +2055,11 @@ class Runtime {
             if self.localizationExportLanguage == .ObjC {
                 
                 // Create header file name
-                self.localizationFileHeaderPathToWriteTo = self.localizationFilePathToWriteTo.URLByDeletingPathExtension!.URLByAppendingPathExtension("h")
+                self.localizationFileHeaderPathToWriteTo = self.localizationFilePathToWriteTo.deletingPathExtension().appendingPathExtension("h")
                 
                 // Remove file at path and replace it with new one
-                _ = try? FileManager.default.removeItem(atPath: self.localizationFileHeaderPathToWriteTo!.path!)
-                if !FileManager.default.createFile(atPath: self.localizationFileHeaderPathToWriteTo!.path!, contents: Data(), attributes: nil) {
+                _ = try? FileManager.default.removeItem(atPath: self.localizationFileHeaderPathToWriteTo!.path)
+                if !FileManager.default.createFile(atPath: self.localizationFileHeaderPathToWriteTo!.path, contents: Data(), attributes: nil) {
                     
                     // TODO: Better error handling
                     exit(EX_IOERR)
@@ -2088,7 +2088,7 @@ class Runtime {
             
         // or write output for objc, based on user configuration
         } else if self.localizationExportLanguage == .ObjC {
-            let implementation = self.localizationCore.writerWithObjCImplementationWithFilename(filename: self.localizationFilePathToWriteTo.deletingPathExtension!.lastPathComponent)
+            let implementation = self.localizationCore.writerWithObjCImplementationWithFilename(filename: self.localizationFilePathToWriteTo.deletingPathExtension().lastPathComponent)
             let header = self.localizationCore.writerWithObjCHeader()
             
             // Write .h and .m file
@@ -2174,9 +2174,9 @@ class StreamWriter {
     }
     
     
-    func writeToOutputFileAtPath(path : NSURL, clearBuffer : Bool = true) {
+    func writeToOutputFileAtPath(path : URL, clearBuffer : Bool = true) {
         
-        _ = try? self.outputBuffer.write(toFile: path.path!, atomically: true, encoding: String.Encoding.utf8)
+        _ = try? self.outputBuffer.write(toFile: path.path, atomically: true, encoding: String.Encoding.utf8)
         
         if clearBuffer {
             self.outputBuffer = ""
