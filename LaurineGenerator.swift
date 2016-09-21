@@ -1359,35 +1359,47 @@ private extension String {
         var copy = self.folding(options: .diacriticInsensitive, locale: NSLocale.current)
         
         // removes all non alphanumeric characters
-        let characterSet = CharacterSet.alphanumerics.inverted.mutableCopy() as! NSMutableCharacterSet
+        var characterSet = CharacterSet.alphanumerics.inverted
         
         // don't remove the characters that are given
-        characterSet.removeCharactersInString(exceptionCharactersFromString)
-        copy = copy.componentsSeparatedByCharactersInSet(characterSet).reduce("") { $0 + $1 }
+        characterSet.remove(charactersIn: exceptionCharactersFromString)
+        copy = copy.components(separatedBy: characterSet).reduce("") { $0 + $1 }
         
         return copy
     }
 	
-	func replacedNonAlphaNumericCharacters(replacement: Character) -> String {
-		
-        return String( self.characters.map { CharacterSet.alphanumerics.contains($0) ? $0 : replacement } )
-	}
-	
+    func replacedNonAlphaNumericCharacters(replacement: Character) -> String {
+        
+        let alphanumerics = CharacterSet.alphanumerics
+        let map = self.characters.map { (char) -> Character in
+            return isChar(char: char, inSet: alphanumerics as NSCharacterSet) ? char : replacement
+        }
+        
+        return String(map)
+    }
+    
+    func isChar(char: Character, inSet set: NSCharacterSet) -> Bool {
+        var found = true
+        for ch in String(char).utf16 {
+            if !set.characterIsMember(ch) { found = false }
+        }
+        return found
+    }
 }
 
 private extension NSCharacterSet {
-	
-	// thanks to http://stackoverflow.com/a/27698155/354018
-	func containsCharacter(c: Character) -> Bool {
-		
-		let s = String(c)
-		let ix = s.startIndex
-		let ix2 = s.endIndex
-		let result = s.rangeOfCharacterFromSet(self, options: [], range: ix..<ix2)
-		return result != nil
-	}
-	
+    
+    // thanks to http://stackoverflow.com/a/27698155/354018
+    func containsCharacter(c: Character) -> Bool {
+        
+        let s = String(c)
+        let ix = s.startIndex
+        let ix2 = s.endIndex
+        let result = s.rangeOfCharacter(from: self as CharacterSet, options: [], range: ix..<ix2)
+        return result != nil
+    }
 }
+
 
 private extension NSMutableDictionary {
     
@@ -1427,7 +1439,7 @@ private extension NSMutableDictionary {
         // Traverse through path from root to deepest level
         for path : String in pathComponents {
             
-            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : previousObject?.objectForKey(path)
+            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : previousObject?.object(forKey: path) as AnyObject?
             
             // Check if object already exists. If not, create new level, if allowed, or end
             if currentObject == nil {
@@ -1660,7 +1672,7 @@ class Localization {
         // Writes values to dictionary and also
         for (key, _) in flatStructure {
             guard let key = key as? String else { continue }
-            objectStructure.setObject(object: key, forKeyPath: key, delimiter: delimiter)
+            objectStructure.setObject(object: key as NSString, forKeyPath: key, delimiter: delimiter)
         }
     }
     
