@@ -1359,7 +1359,7 @@ private extension String {
         var copy = self.folding(options: .diacriticInsensitive, locale: NSLocale.current)
         
         // removes all non alphanumeric characters
-        let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet.mutableCopy() as! NSMutableCharacterSet
+        let characterSet = CharacterSet.alphanumerics.inverted.mutableCopy() as! NSMutableCharacterSet
         
         // don't remove the characters that are given
         characterSet.removeCharactersInString(exceptionCharactersFromString)
@@ -1370,7 +1370,7 @@ private extension String {
 	
 	func replacedNonAlphaNumericCharacters(replacement: Character) -> String {
 		
-		return String( self.characters.map { NSCharacterSet.alphanumericCharacterSet().containsCharacter($0) ? $0 : replacement } )
+        return String( self.characters.map { CharacterSet.alphanumerics.contains($0) ? $0 : replacement } )
 	}
 	
 }
@@ -1417,25 +1417,25 @@ private extension NSMutableDictionary {
 			onObject.setObject(object, forKey: rootKey)
 		}
 		
-        let replacementDictionary : NSMutableDictionary = NSMutableDictionary();
+        let replacementDictionary : NSMutableDictionary = NSMutableDictionary()
         
         // Store current state for further replacement
         var previousObject : AnyObject? = onObject;
-        var previousReplacement : NSMutableDictionary = replacementDictionary;
+        var previousReplacement : NSMutableDictionary = replacementDictionary
         var reachedDictionaryLeaf : Bool = false;
         
         // Traverse through path from root to deepest level
         for path : String in pathComponents {
             
-            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : previousObject?.objectForKey(path);
+            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : previousObject?.objectForKey(path)
             
             // Check if object already exists. If not, create new level, if allowed, or end
             if currentObject == nil {
                 
                 reachedDictionaryLeaf = true;
                 if createIntermediates {
-                    let newNode : NSMutableDictionary = NSMutableDictionary();
-                    previousReplacement.setObject(newNode, forKey: path);
+                    let newNode : NSMutableDictionary = NSMutableDictionary()
+                    previousReplacement.setObject(newNode, forKey: path)
                     previousReplacement = newNode;
                 } else {
                     return;
@@ -1444,9 +1444,9 @@ private extension NSMutableDictionary {
             // If it does and it is dictionary, create mutable copy and assign new node there
             } else if currentObject is NSDictionary {
                 
-                let newNode : NSMutableDictionary = NSMutableDictionary(dictionary: currentObject as! [NSObject : AnyObject]);
-                previousReplacement.setObject(newNode, forKey: path);
-                previousReplacement = newNode;
+                let newNode : NSMutableDictionary = NSMutableDictionary(dictionary: currentObject as! [NSObject : AnyObject])
+                previousReplacement.setObject(newNode, forKey: path)
+                previousReplacement = newNode
                 
             // It exists but it is not NSDictionary, so we replace it, if allowed, or end
             } else {
@@ -1454,8 +1454,8 @@ private extension NSMutableDictionary {
                 reachedDictionaryLeaf = true;
                 if replaceIntermediates {
                     
-                    let newNode : NSMutableDictionary = NSMutableDictionary();
-                    previousReplacement.setObject(newNode, forKey: path);
+                    let newNode : NSMutableDictionary = NSMutableDictionary()
+                    previousReplacement.set(newNode, forKey: path)
                     previousReplacement = newNode;
                 } else {
                     return;
@@ -1468,21 +1468,21 @@ private extension NSMutableDictionary {
         
         // Replace root object with newly created n-level dictionary
         replacementDictionary.setValue(object, forKeyPath: primaryKeypath);
-        onObject.setObject(replacementDictionary.objectForKey(rootKey), forKey: rootKey);
+        onObject.set(replacementDictionary.object(forKey: rootKey), forKey: rootKey);
     }
 }
 
 
-private extension NSFileManager {
+private extension FileManager {
     
     func isDirectoryAtPath(path : String) -> Bool {
         
-        let manager = NSFileManager.defaultManager()
+        let manager = FileManager.default
         
         do {
-            let attribs: NSDictionary? = try manager.attributesOfItemAtPath(path)
+            let attribs: [FileAttributeKey : Any]? = try manager.attributesOfItem(atPath: path)
             if let attributes = attribs {
-                let type = attributes["NSFileType"] as? String
+                let type = attributes[FileAttributeKey.type] as? String
                 return type == NSFileTypeDirectory
             }
         } catch _ {
@@ -1496,15 +1496,15 @@ private extension String {
     
     var camelCasedString: String {
         
-        let inputArray = self.componentsSeparatedByCharactersInSet(NSCharacterSet.alphanumericCharacterSet().invertedSet)
-        return inputArray.reduce("", combine:{$0 + $1.capitalizedString})
+        let inputArray = self.components(separatedBy: (CharacterSet.alphanumerics.inverted))
+        return inputArray.reduce("", {$0 + $1.capitalized})
     }
     
     
     var nolineString: String {
-        return self.componentsSeparatedByCharactersInSet(NSCharacterSet.newlineCharacterSet())
+        return self.components(separatedBy: (CharacterSet.newlines.inverted))
             .filter { !$0.isEmpty }
-            .joinWithSeparator(" ")
+            .joined(separator: " ")
     }
     
     
@@ -1517,8 +1517,8 @@ private extension String {
         let s = String(c).unicodeScalars
         let uni = s[s.startIndex]
         
-        let digits = NSCharacterSet.decimalDigitCharacterSet()
-        return digits.longCharacterIsMember(uni.value)
+        let digits = CharacterSet.decimalDigits
+        return digits.hasMember(inPlane: UInt8(uni.value))
     }
     
     
@@ -1535,7 +1535,7 @@ private extension String {
         }
         
         // Check if it contains that keyword
-        return keywords.indexOf(self) != nil
+        return keywords.index(of: self) != nil
     }
 }
 
@@ -1570,7 +1570,7 @@ class Localization {
         self.init()
         self.table = table
         // Load localization file
-        self.processInputFromFile(inputFile, delimiter: delimiter, autocapitalize: autocapitalize)
+        self.processInputFromFile(file: inputFile, delimiter: delimiter, autocapitalize: autocapitalize)
     }
     
     
@@ -1584,7 +1584,7 @@ class Localization {
         
         self.flatStructure = dictionary
         self.autocapitalize = autocapitalize
-        self.expandFlatStructure(dictionary, delimiter: delimiter)
+        self.expandFlatStructure(flatStructure: dictionary, delimiter: delimiter)
     }
 
     
@@ -1599,12 +1599,12 @@ class Localization {
         writer.writeHeader()
         
         // Imports
-        writer.writeMarkWithName("Imports")
+        writer.writeMarkWithName(name: "Imports")
         writer.writeSwiftImports()
                 
         // Generate actual localization structures
-        writer.writeMarkWithName("Localizations")
-        writer.writeCodeStructure(self.swiftStructWithContent(self.codifySwift(self.objectStructure), structName: BASE_CLASS_NAME, contentLevel: 0))
+        writer.writeMarkWithName(name: "Localizations")
+        writer.writeCodeStructure(structure: self.swiftStructWithContent(content: self.codifySwift(expandedStructure: self.objectStructure), structName: BASE_CLASS_NAME, contentLevel: 0))
         
         return writer
     }
@@ -1618,12 +1618,12 @@ class Localization {
         writer.writeHeader()
         
         // Imports
-        writer.writeMarkWithName("Imports")
-        writer.writeObjCImportsWithFileName(filename)
+        writer.writeMarkWithName(name: "Imports")
+        writer.writeObjCImportsWithFileName(name: filename)
         
         // Generate actual localization structures
-        writer.writeMarkWithName("Header")
-        writer.writeCodeStructure(self.codifyObjC(self.objectStructure, baseClass: BASE_CLASS_NAME, header: false))
+        writer.writeMarkWithName(name: "Header")
+        writer.writeCodeStructure(structure: self.codifyObjC(expandedStructure: self.objectStructure, baseClass: BASE_CLASS_NAME, header: false))
         
         return writer
     }
@@ -1637,15 +1637,15 @@ class Localization {
         writer.writeHeader()
         
         // Imports
-        writer.writeMarkWithName("Imports")
+        writer.writeMarkWithName(name: "Imports")
         writer.writeObjCHeaderImports()
         
         // Generate actual localization structures
-        writer.writeMarkWithName("Header")
-        writer.writeCodeStructure(self.codifyObjC(self.objectStructure, baseClass: BASE_CLASS_NAME, header: true))
+        writer.writeMarkWithName(name: "Header")
+        writer.writeCodeStructure(structure: self.codifyObjC(expandedStructure: self.objectStructure, baseClass: BASE_CLASS_NAME, header: true))
         
         // Generate macros
-        writer.writeMarkWithName("Macros")
+        writer.writeMarkWithName(name: "Macros")
         writer.writeObjCHeaderMacros()
         
         return writer
@@ -1660,7 +1660,7 @@ class Localization {
         // Writes values to dictionary and also
         for (key, _) in flatStructure {
             guard let key = key as? String else { continue }
-            objectStructure.setObject(key, forKeyPath: key, delimiter: delimiter)
+            objectStructure.setObject(object: key, forKeyPath: key, delimiter: delimiter)
         }
     }
     
@@ -1677,14 +1677,14 @@ class Localization {
         for (key, value) in expandedStructure {
             
             if let value = value as? String {
-                let comment = (self.flatStructure.objectForKey(value) as! String).nolineString
-                let methodParams = self.methodParamsForString(comment)
+                let comment = (self.flatStructure.object(forKey: value) as! String).nolineString
+                let methodParams = self.methodParamsForString(string: comment)
                 let staticString: String
                 
                 if methodParams.count > 0 {
-                    staticString = self.swiftLocalizationFuncFromLocalizationKey(value, methodName: key as! String, baseTranslation: comment, methodSpecification: methodParams, contentLevel: contentLevel)
+                    staticString = self.swiftLocalizationFuncFromLocalizationKey(key: value, methodName: key as! String, baseTranslation: comment, methodSpecification: methodParams, contentLevel: contentLevel)
                 } else {
-                    staticString = self.swiftLocalizationStaticVarFromLocalizationKey(value, variableName: key as! String, baseTranslation: comment, contentLevel: contentLevel)
+                    staticString = self.swiftLocalizationStaticVarFromLocalizationKey(key: value, variableName: key as! String, baseTranslation: comment, contentLevel: contentLevel)
                 }
                 outputStructure.append(staticString)
             }
@@ -1694,12 +1694,12 @@ class Localization {
         for (key, value) in expandedStructure {
             
             if let value = value as? NSDictionary {
-                outputStructure.append(self.swiftStructWithContent(self.codifySwift(value, contentLevel: contentLevel), structName: key as! String, contentLevel: contentLevel))
+                outputStructure.append(self.swiftStructWithContent(content: self.codifySwift(expandedStructure: value, contentLevel: contentLevel), structName: key as! String, contentLevel: contentLevel))
             }
         }
         
         // At the end, return everything merged together
-        return outputStructure.joinWithSeparator("\n")
+        return outputStructure.joined(separator: "\n")
     }
     
     
@@ -1719,9 +1719,9 @@ class Localization {
                 let staticString : String
                 
                 if methodParams.count > 0 {
-                    staticString = self.objcLocalizationFuncFromLocalizationKey(key: value, methodName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, methodSpecification: methodParams, header: header)
+                    staticString = self.objcLocalizationFuncFromLocalizationKey(key: value, methodName: self.variableName(string: key as! String, lang: .ObjC), baseTranslation: comment, methodSpecification: methodParams, header: header)
                 } else {
-                    staticString = self.objcLocalizationStaticVarFromLocalizationKey(key: value, variableName: self.variableName(key as! String, lang: .ObjC), baseTranslation: comment, header: header)
+                    staticString = self.objcLocalizationStaticVarFromLocalizationKey(key: value, variableName: self.variableName(string: key as! String, lang: .ObjC), baseTranslation: comment, header: header)
                 }
                 
                 contentStructure.append(staticString)
@@ -1733,7 +1733,7 @@ class Localization {
             
             if let value = value as? NSDictionary {
                 outputStructure.append(self.codifyObjC(expandedStructure: value, baseClass : baseClass + self.variableName(string: key as! String, lang: .ObjC), header: header))
-                contentStructure.insert(self.objcClassVarWithName(self.variableName(key as! String, lang: .ObjC), className: baseClass + self.variableName(key as! String, lang: .ObjC), header: header), atIndex: 0)
+                contentStructure.insert(self.objcClassVarWithName(name: self.variableName(key as! String, lang: .ObjC), className: baseClass + self.variableName(key as! String, lang: .ObjC), header: header), at: 0)
             }
         }
         
