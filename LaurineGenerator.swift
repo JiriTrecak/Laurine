@@ -577,7 +577,7 @@ public class CommandLine {
         case .Error:
             return "\(s)\n\n"
         case .OptionFlag:
-            return "  \(s.padded(toWidth: maxFlagDescriptionWidth)):\n"
+            return "  \(s.padding(toLength: maxFlagDescriptionWidth, withPad: " ", startingAt: 0)):\n"
         case .OptionHelp:
             return "      \(s)\n"
         }
@@ -1368,22 +1368,8 @@ private extension String {
         return copy
     }
 	
-    func replacedNonAlphaNumericCharacters(replacement: Character) -> String {
-        
-        let alphanumerics = CharacterSet.alphanumerics
-        let map = self.characters.map { (char) -> Character in
-            return isChar(char: char, inSet: alphanumerics as NSCharacterSet) ? char : replacement
-        }
-        
-        return String(map)
-    }
-    
-    func isChar(char: Character, inSet set: NSCharacterSet) -> Bool {
-        var found = true
-        for ch in String(char).utf16 {
-            if !set.characterIsMember(ch) { found = false }
-        }
-        return found
+    func replacedNonAlphaNumericCharacters(replacement: UnicodeScalar) -> String {
+        return String(describing: UnicodeScalarView(self.unicodeScalars.map { CharacterSet.alphanumerics.contains(($0)) ? $0 : replacement }))
     }
 }
 
