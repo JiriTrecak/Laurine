@@ -1140,8 +1140,9 @@ private extension String {
         let s = String(c).unicodeScalars
         let uni = s[s.startIndex]
         
-        let digits = CharacterSet.decimalDigits
-        return digits.hasMember(inPlane: UInt8(uni.value))
+        return (uni.value >= 48 && uni.value <= 57)
+        // return String(describing: UnicodeScalarView(self.unicodeScalars.map { CharacterSet.alphanumerics.contains(($0)) ? $0 : replacement }))
+        
     }
     
     

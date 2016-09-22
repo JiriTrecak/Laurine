@@ -99,7 +99,7 @@ public struct Localizations {
             public struct Errors {
 
                 /// Base translation: 
-                public static var 1StartWithNumber : String = NSLocalizedString("SpecialCases.General.Errors.1StartWithNumber", tableName: nil, bundle: Bundle.main, value: "", comment: "")
+                public static var _1StartWithNumber : String = NSLocalizedString("SpecialCases.General.Errors.1StartWithNumber", tableName: nil, bundle: Bundle.main, value: "", comment: "")
 
             }
         }
