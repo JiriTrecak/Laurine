@@ -65,21 +65,12 @@ let ArgumentStopper = "--"
 let ArgumentAttacher: Character = "="
 
 /* An output stream to stderr; used by CommandLine.printUsage(). */
-#if swift(>=3.0)
-    private struct StderrOutputStream: TextOutputStream {
-        static let stream = StderrOutputStream()
-        func write(_ s: String) {
-            fputs(s, stderr)
-        }
-    }
-#else
-    private struct StderrOutputStream: OutputStreamType {
+private struct StderrOutputStream: TextOutputStream {
     static let stream = StderrOutputStream()
-    func write(s: String) {
-    fputs(s, stderr)
+    func write(_ s: String) {
+        fputs(s, stderr)
     }
-    }
-#endif
+}
 
 /**
  * The CommandLine class implements a command-line interface for your app.
@@ -92,11 +83,11 @@ let ArgumentAttacher: Character = "="
  * a `ParseError`. You can then call `printUsage()` to output an automatically-generated usage
  * message.
  */
-public class CommandLine {
-    private var _arguments: [String]
-    private var _options: [Option] = [Option]()
-    private var _maxFlagDescriptionWidth: Int = 0
-    private var _usedFlags: Set<String> {
+open class CommandLine {
+    fileprivate var _arguments: [String]
+    fileprivate var _options: [Option] = [Option]()
+    fileprivate var _maxFlagDescriptionWidth: Int = 0
+    fileprivate var _usedFlags: Set<String> {
         var usedFlags = Set<String>(minimumCapacity: _options.count * 2)
         
         for option in _options {
@@ -130,7 +121,7 @@ public class CommandLine {
      * File type is pdf, files are ["~/file1.pdf", "~/file2.pdf"]
      * ```
      */
-    public private(set) var unparsedArguments: [String] = [String]()
+    open fileprivate(set) var unparsedArguments: [String] = [String]()
     
     /**
      * If supplied, this function will be called when printing usage messages.
@@ -157,7 +148,7 @@ public class CommandLine {
      * - note: Newlines are not appended to the result of this function. If you don't use
      * `defaultFormat()`, be sure to add them before returning.
      */
-    public var formatOutput: ((String, OutputType) -> String)?
+    open var formatOutput: ((String, OutputType) -> String)?
     
     /**
      * The maximum width of all options' `flagDescription` properties; provided for use by
@@ -165,13 +156,9 @@ public class CommandLine {
      *
      * - seealso: `defaultFormat`, `formatOutput`
      */
-    public var maxFlagDescriptionWidth: Int {
+    open var maxFlagDescriptionWidth: Int {
         if _maxFlagDescriptionWidth == 0 {
-            #if swift(>=3.0)
-                _maxFlagDescriptionWidth = _options.map { $0.flagDescription.characters.count }.sorted().first ?? 0
-            #else
-                _maxFlagDescriptionWidth = _options.map { $0.flagDescription.characters.count }.sort().first ?? 0
-            #endif
+            _maxFlagDescriptionWidth = _options.map { $0.flagDescription.characters.count }.sorted().first ?? 0
         }
         
         return _maxFlagDescriptionWidth
@@ -184,19 +171,18 @@ public class CommandLine {
      */
     public enum OutputType {
         /** About text: `Usage: command-example [options]` and the like */
-        case About
+        case about
         
         /** An error message: `Missing required option --extract`  */
-        case Error
+        case error
         
         /** An Option's `flagDescription`: `-h, --help:` */
-        case OptionFlag
+        case optionFlag
         
         /** An Option's help message */
-        case OptionHelp
+        case optionHelp
     }
     
-    #if swift(>=3.0)
     
     /** A ParseError is thrown if the `parse()` method fails. */
     public enum ParseError: Error, CustomStringConvertible {
@@ -322,134 +308,6 @@ public class CommandLine {
         addOptions(options)
     }
     
-    #else
-    
-    /** A ParseError is thrown if the `parse()` method fails. */
-    public enum ParseError: ErrorType, CustomStringConvertible {
-    /** Thrown if an unrecognized argument is passed to `parse()` in strict mode */
-    case InvalidArgument(String)
-    
-    /** Thrown if the value for an Option is invalid (e.g. a string is passed to an IntOption) */
-    case InvalidValueForOption(Option, [String])
-    
-    /** Thrown if an Option with required: true is missing */
-    case MissingRequiredOptions([Option])
-    
-    public var description: String {
-    switch self {
-    case let .InvalidArgument(arg):
-    return "Invalid argument: \(arg)"
-    case let .InvalidValueForOption(opt, vals):
-    let vs = vals.joinWithSeparator(", ")
-    return "Invalid value(s) for option \(opt.flagDescription): \(vs)"
-    case let .MissingRequiredOptions(opts):
-    return "Missing required options: \(opts.map { return $0.flagDescription })"
-    }
-    }
-    }
-    
-    /**
-     * Initializes a CommandLine object.
-     *
-     * - parameter arguments: Arguments to parse. If omitted, the arguments passed to the app
-     *   on the command line will automatically be used.
-     *
-     * - returns: An initalized CommandLine object.
-     */
-    public init(arguments: [String] = Process.arguments) {
-    self._arguments = arguments
-    
-    /* Initialize locale settings from the environment */
-    setlocale(LC_ALL, "")
-    }
-    
-    /* Returns all argument values from flagIndex to the next flag or the end of the argument array. */
-    private func _getFlagValues(flagIndex: Int, _ attachedArg: String? = nil) -> [String] {
-    var args: [String] = [String]()
-    var skipFlagChecks = false
-    
-    if let a = attachedArg {
-    args.append(a)
-    }
-    
-    for i in flagIndex + 1 ..< _arguments.count {
-    if !skipFlagChecks {
-    if _arguments[i] == ArgumentStopper {
-    skipFlagChecks = true
-    continue
-    }
-    
-    if _arguments[i].hasPrefix(ShortOptionPrefix) && Int(_arguments[i]) == nil &&
-    _arguments[i].toDouble() == nil {
-    break
-    }
-    }
-    
-    args.append(_arguments[i])
-    }
-    
-    return args
-    }
-    
-    /**
-     * Adds an Option to the command line.
-     *
-     * - parameter option: The option to add.
-     */
-    public func addOption(option: Option) {
-    let uf = _usedFlags
-    for case let flag? in [option.shortFlag, option.longFlag] {
-    assert(!uf.contains(flag), "Flag '\(flag)' already in use")
-    }
-    
-    _options.append(option)
-    _maxFlagDescriptionWidth = 0
-    }
-    
-    /**
-     * Adds one or more Options to the command line.
-     *
-     * - parameter options: An array containing the options to add.
-     */
-    public func addOptions(options: [Option]) {
-    for o in options {
-    addOption(o)
-    }
-    }
-    
-    /**
-     * Adds one or more Options to the command line.
-     *
-     * - parameter options: The options to add.
-     */
-    public func addOptions(options: Option...) {
-    for o in options {
-    addOption(o)
-    }
-    }
-    
-    /**
-     * Sets the command line Options. Any existing options will be overwritten.
-     *
-     * - parameter options: An array containing the options to set.
-     */
-    public func setOptions(options: [Option]) {
-    _options = [Option]()
-    addOptions(options)
-    }
-    
-    /**
-     * Sets the command line Options. Any existing options will be overwritten.
-     *
-     * - parameter options: The options to set.
-     */
-    public func setOptions(options: Option...) {
-    _options = [Option]()
-    addOptions(options)
-    }
-    
-    #endif
-    
     /**
      * Parses command-line arguments into their matching Option values.
      *
@@ -461,17 +319,14 @@ public class CommandLine {
      *     example, a string is supplied for an IntOption)
      *   - `.MissingRequiredOptions` if a required option isn't present
      */
-    public func parse(strict: Bool = false) throws {
+    open func parse(strict: Bool = false) throws {
         var strays = _arguments
         
         /* Nuke executable name */
         strays[0] = ""
         
-        #if swift(>=3.0)
-            let argumentsEnumerator = _arguments.enumerated()
-        #else
-            let argumentsEnumerator = _arguments.enumerate()
-        #endif
+        let argumentsEnumerator = _arguments.enumerated()
+        
         for (idx, arg) in argumentsEnumerator {
             if arg == ArgumentStopper {
                 break
@@ -483,11 +338,8 @@ public class CommandLine {
             
             let skipChars = arg.hasPrefix(LongOptionPrefix) ?
                 LongOptionPrefix.characters.count : ShortOptionPrefix.characters.count
-            #if swift(>=3.0)
-                let flagWithArg = arg[arg.index(arg.startIndex, offsetBy: skipChars)..<arg.endIndex]
-            #else
-                let flagWithArg = arg[arg.startIndex.advancedBy(skipChars)..<arg.endIndex]
-            #endif
+           
+            let flagWithArg = arg[arg.index(arg.startIndex, offsetBy: skipChars)..<arg.endIndex]
             
             /* The argument contained nothing but ShortOptionPrefix or LongOptionPrefix */
             if flagWithArg.isEmpty {
@@ -495,12 +347,12 @@ public class CommandLine {
             }
             
             /* Remove attached argument from flag */
-            let splitFlag = flagWithArg.characters.split(separator: ArgumentAttacher, maxSplits: 1)
+            let splitFlag = flagWithArg.split(by: ArgumentAttacher, maxSplits: 1)
             let flag = splitFlag[0]
-            let attachedArg: String? = splitFlag.count == 2 ? "\(splitFlag[1])" : nil
+            let attachedArg: String? = splitFlag.count == 2 ? splitFlag[1] : nil
             
             var flagMatched = false
-            for option in _options where option.flagMatch("\(flag)") {
+            for option in _options where option.flagMatch(flag) {
                 let vals = self._getFlagValues(idx, attachedArg)
                 guard option.setValue(vals) else {
                     throw ParseError.InvalidValueForOption(option, vals)
@@ -517,13 +369,10 @@ public class CommandLine {
             }
             
             /* Flags that do not take any arguments can be concatenated */
-            let flagLength = "\(flag)".characters.count
+            let flagLength = flag.characters.count
             if !flagMatched && !arg.hasPrefix(LongOptionPrefix) {
-                #if swift(>=3.0)
-                    let flagCharactersEnumerator = "\(flag)".characters.enumerated()
-                #else
-                    let flagCharactersEnumerator = "\(flag)".characters.enumerate()
-                #endif
+                
+                let flagCharactersEnumerator = flag.characters.enumerated()
                 for (i, c) in flagCharactersEnumerator {
                     for option in _options where option.flagMatch(String(c)) {
                         /* Values are allowed at the end of the concatenated flags, e.g.
@@ -570,15 +419,15 @@ public class CommandLine {
      * - returns: The formatted string.
      * - seealso: `formatOutput`
      */
-    public func defaultFormat(s: String, type: OutputType) -> String {
+    open func defaultFormat(_ s: String, type: OutputType) -> String {
         switch type {
-        case .About:
+        case .about:
             return "\(s)\n"
-        case .Error:
+        case .error:
             return "\(s)\n\n"
-        case .OptionFlag:
+        case .optionFlag:
             return "  \(s.padding(toLength: maxFlagDescriptionWidth, withPad: " ", startingAt: 0)):\n"
-        case .OptionHelp:
+        case .optionHelp:
             return "      \(s)\n"
         }
     }
@@ -592,33 +441,18 @@ public class CommandLine {
      *
      * - parameter to: An OutputStreamType to write the error message to.
      */
-    #if swift(>=3.0)
     public func printUsage<TargetStream: TextOutputStream>(_ to: inout TargetStream) {
         /* Nil coalescing operator (??) doesn't work on closures :( */
         let format = formatOutput != nil ? formatOutput! : defaultFormat
         
         let name = _arguments[0]
-        print(format("Usage: \(name) [options]", .About), terminator: "", to: &to)
+        print(format("Usage: \(name) [options]", .about), terminator: "", to: &to)
         
         for opt in _options {
-            print(format(opt.flagDescription, .OptionFlag), terminator: "", to: &to)
-            print(format(opt.helpMessage, .OptionHelp), terminator: "", to: &to)
+            print(format(opt.flagDescription, .optionFlag), terminator: "", to: &to)
+            print(format(opt.helpMessage, .optionHelp), terminator: "", to: &to)
         }
     }
-    #else
-    public func printUsage<TargetStream: OutputStreamType>(inout to: TargetStream) {
-    /* Nil coalescing operator (??) doesn't work on closures :( */
-    let format = formatOutput != nil ? formatOutput! : defaultFormat
-    
-    let name = _arguments[0]
-    print(format("Usage: \(name) [options]", .About), terminator: "", toStream: &to)
-    
-    for opt in _options {
-    print(format(opt.flagDescription, .OptionFlag), terminator: "", toStream: &to)
-    print(format(opt.helpMessage, .OptionHelp), terminator: "", toStream: &to)
-    }
-    }
-    #endif
     
     /**
      * Prints a usage message.
@@ -627,19 +461,11 @@ public class CommandLine {
      *   (e.g. "Missing required option --extract") will be printed before the usage message.
      * - parameter to: An OutputStreamType to write the error message to.
      */
-    #if swift(>=3.0)
     public func printUsage<TargetStream: TextOutputStream>(_ error: Error, to: inout TargetStream) {
         let format = formatOutput != nil ? formatOutput! : defaultFormat
-        print(format("\(error)", .Error), terminator: "", to: &to)
+        print(format("\(error)", .error), terminator: "", to: &to)
         printUsage(&to)
     }
-    #else
-    public func printUsage<TargetStream: OutputStreamType>(error: ErrorType, inout to: TargetStream) {
-    let format = formatOutput != nil ? formatOutput! : defaultFormat
-    print(format("\(error)", .Error), terminator: "", toStream: &to)
-    printUsage(&to)
-    }
-    #endif
     
     /**
      * Prints a usage message.
@@ -647,27 +473,19 @@ public class CommandLine {
      * - parameter error: An error thrown from `parse()`. A description of the error
      *   (e.g. "Missing required option --extract") will be printed before the usage message.
      */
-    #if swift(>=3.0)
     public func printUsage(_ error: Error) {
         var out = StderrOutputStream.stream
         printUsage(error, to: &out)
     }
-    #else
-    public func printUsage(error: ErrorType) {
-    var out = StderrOutputStream.stream
-    printUsage(error, to: &out)
-    }
-    #endif
     
     /**
      * Prints a usage message.
      */
-    public func printUsage() {
+    open func printUsage() {
         var out = StderrOutputStream.stream
         printUsage(&out)
     }
 }
-
 
 /*
  * Option.swift
@@ -689,20 +507,20 @@ public class CommandLine {
 /**
  * The base class for a command-line option.
  */
-public class Option {
-    public let shortFlag: String?
-    public let longFlag: String?
-    public let required: Bool
-    public let helpMessage: String
+open class Option {
+    open let shortFlag: String?
+    open let longFlag: String?
+    open let required: Bool
+    open let helpMessage: String
     
     /** True if the option was set when parsing command-line arguments */
-    public var wasSet: Bool {
+    open var wasSet: Bool {
         return false
     }
     
-    public var claimedValues: Int { return 0 }
+    open var claimedValues: Int { return 0 }
     
-    public var flagDescription: String {
+    open var flagDescription: String {
         switch (shortFlag, longFlag) {
         case let (sf?, lf?):
             return "\(ShortOptionPrefix)\(sf), \(LongOptionPrefix)\(lf)"
@@ -750,7 +568,6 @@ public class Option {
         self.init(nil, longFlag as String?, required, helpMessage)
     }
     
-    #if swift(>=3.0)
     func flagMatch(_ flag: String) -> Bool {
         return flag == shortFlag || flag == longFlag
     }
@@ -758,62 +575,45 @@ public class Option {
     func setValue(_ values: [String]) -> Bool {
         return false
     }
-    #else
-    func flagMatch(flag: String) -> Bool {
-    return flag == shortFlag || flag == longFlag
-    }
-    
-    func setValue(values: [String]) -> Bool {
-    return false
-    }
-    #endif
 }
 
 /**
  * A boolean option. The presence of either the short or long flag will set the value to true;
  * absence of the flag(s) is equivalent to false.
  */
-public class BoolOption: Option {
-    private var _value: Bool = false
+open class BoolOption: Option {
+    fileprivate var _value: Bool = false
     
-    public var value: Bool {
+    open var value: Bool {
         return _value
     }
     
-    override public var wasSet: Bool {
+    override open var wasSet: Bool {
         return _value
     }
     
-    #if swift(>=3.0)
     override func setValue(_ values: [String]) -> Bool {
         _value = true
         return true
     }
-    #else
-    override func setValue(values: [String]) -> Bool {
-    _value = true
-    return true
-    }
-    #endif
 }
 
 /**  An option that accepts a positive or negative integer value. */
-public class IntOption: Option {
-    private var _value: Int?
+open class IntOption: Option {
+    fileprivate var _value: Int?
     
-    public var value: Int? {
+    open var value: Int? {
         return _value
     }
     
-    override public var wasSet: Bool {
+    override open var wasSet: Bool {
         return _value != nil
     }
     
-    override public var claimedValues: Int {
+    override open var claimedValues: Int {
         return _value != nil ? 1 : 0
     }
     
-    #if swift(>=3.0)
     override func setValue(_ values: [String]) -> Bool {
         if values.count == 0 {
             return false
@@ -826,120 +626,78 @@ public class IntOption: Option {
         
         return false
     }
-    #else
-    override func setValue(values: [String]) -> Bool {
-    if values.count == 0 {
-    return false
-    }
-    
-    if let val = Int(values[0]) {
-    _value = val
-    return true
-    }
-    
-    return false
-    }
-    #endif
 }
 
 /**
  * An option that represents an integer counter. Each time the short or long flag is found
  * on the command-line, the counter will be incremented.
  */
-public class CounterOption: Option {
-    private var _value: Int = 0
+open class CounterOption: Option {
+    fileprivate var _value: Int = 0
     
-    public var value: Int {
+    open var value: Int {
         return _value
     }
     
-    override public var wasSet: Bool {
+    override open var wasSet: Bool {
         return _value > 0
     }
     
-    public func reset() {
+    open func reset() {
         _value = 0
     }
     
-    #if swift(>=3.0)
     override func setValue(_ values: [String]) -> Bool {
         _value += 1
         return true
     }
-    #else
-    override func setValue(values: [String]) -> Bool {
-    _value += 1
-    return true
-    }
-    #endif
 }
 
 /**  An option that accepts a positive or negative floating-point value. */
-public class DoubleOption: Option {
-    private var _value: Double?
+open class DoubleOption: Option {
+    fileprivate var _value: Double?
     
-    public var value: Double? {
+    open var value: Double? {
         return _value
     }
     
-    override public var wasSet: Bool {
+    override open var wasSet: Bool {
         return _value != nil
     }
     
-    override public var claimedValues: Int {
+    override open var claimedValues: Int {
         return _value != nil ? 1 : 0
     }
-    
-    #if swift(>=3.0)
     
     override func setValue(_ values: [String]) -> Bool {
         if values.count == 0 {
             return false
         }
         
-        if let val = Double(values[0]) {
+        if let val = values[0].toDouble() {
             _value = val
             return true
         }
         
         return false
     }
-    
-    #else
-    
-    override func setValue(values: [String]) -> Bool {
-    if values.count == 0 {
-    return false
-    }
-    
-    if let val = values[0].toDouble() {
-    _value = val
-    return true
-    }
-    
-    return false
-    }
-    
-    #endif
 }
 
 /**  An option that accepts a string value. */
-public class StringOption: Option {
-    private var _value: String? = nil
+open class StringOption: Option {
+    fileprivate var _value: String? = nil
     
-    public var value: String? {
+    open var value: String? {
         return _value
     }
     
-    override public var wasSet: Bool {
+    override open var wasSet: Bool {
         return _value != nil
     }
     
-    override public var claimedValues: Int {
+    override open var claimedValues: Int {
         return _value != nil ? 1 : 0
     }
-    
-    #if swift(>=3.0)
     
     override func setValue(_ values: [String]) -> Bool {
         if values.count == 0 {
@@ -949,42 +707,27 @@ public class StringOption: Option {
         _value = values[0]
         return true
     }
-    
-    #else
-    
-    override func setValue(values: [String]) -> Bool {
-    if values.count == 0 {
-    return false
-    }
-    
-    _value = values[0]
-    return true
-    }
-    
-    #endif
 }
 
 /**  An option that accepts one or more string values. */
-public class MultiStringOption: Option {
-    private var _value: [String]?
+open class MultiStringOption: Option {
+    fileprivate var _value: [String]?
     
-    public var value: [String]? {
+    open var value: [String]? {
         return _value
     }
     
-    override public var wasSet: Bool {
+    override open var wasSet: Bool {
         return _value != nil
     }
     
-    override public var claimedValues: Int {
+    override open var claimedValues: Int {
         if let v = _value {
             return v.count
         }
         
         return 0
     }
-    
-    #if swift(>=3.0)
     
     override func setValue(_ values: [String]) -> Bool {
         if values.count == 0 {
@@ -994,131 +737,61 @@ public class MultiStringOption: Option {
         _value = values
         return true
     }
-    
-    #else
-    
-    override func setValue(values: [String]) -> Bool {
-    if values.count == 0 {
-    return false
-    }
-    
-    _value = values
-    return true
-    }
-    
-    #endif
 }
 
-#if swift(>=3.0)
     
-    /** An option that represents an enum value. */
-    public class EnumOption<T:RawRepresentable>: Option where T.RawValue == String {
-        private var _value: T?
-        public var value: T? {
-            return _value
-        }
-        
-        override public var wasSet: Bool {
-            return _value != nil
-        }
-        
-        override public var claimedValues: Int {
-            return _value != nil ? 1 : 0
-        }
-        
-        /* Re-defining the intializers is necessary to make the Swift 2 compiler happy, as
-         * of Xcode 7 beta 2.
-         */
-        
-        internal override init(_ shortFlag: String?, _ longFlag: String?, _ required: Bool, _ helpMessage: String) {
-            super.init(shortFlag, longFlag, required, helpMessage)
-        }
-        
-        /** Initializes a new Option that has both long and short flags. */
-        public convenience init(shortFlag: String, longFlag: String, required: Bool = false, helpMessage: String) {
-            self.init(shortFlag as String?, longFlag, required, helpMessage)
-        }
-        
-        /** Initializes a new Option that has only a short flag. */
-        public convenience init(shortFlag: String, required: Bool = false, helpMessage: String) {
-            self.init(shortFlag as String?, nil, required, helpMessage)
-        }
-        
-        /** Initializes a new Option that has only a long flag. */
-        public convenience init(longFlag: String, required: Bool = false, helpMessage: String) {
-            self.init(nil, longFlag as String?, required, helpMessage)
-        }
-        
-        override func setValue(_ values: [String]) -> Bool {
-            if values.count == 0 {
-                return false
-            }
-            
-            if let v = T(rawValue: values[0]) {
-                _value = v
-                return true
-            }
-            
-            return false
-        }
-        
-    }
-    
-#else
-    
-    public class EnumOption<T:RawRepresentable where T.RawValue == String>: Option {
+/** An option that represents an enum value. */
+public class EnumOption<T:RawRepresentable>: Option where T.RawValue == String {
     private var _value: T?
     public var value: T? {
-    return _value
+        return _value
     }
     
     override public var wasSet: Bool {
-    return _value != nil
+        return _value != nil
     }
     
     override public var claimedValues: Int {
-    return _value != nil ? 1 : 0
+        return _value != nil ? 1 : 0
     }
     
     /* Re-defining the intializers is necessary to make the Swift 2 compiler happy, as
      * of Xcode 7 beta 2.
      */
     
-    private override init(_ shortFlag: String?, _ longFlag: String?, _ required: Bool, _ helpMessage: String) {
-    super.init(shortFlag, longFlag, required, helpMessage)
+    internal override init(_ shortFlag: String?, _ longFlag: String?, _ required: Bool, _ helpMessage: String) {
+        super.init(shortFlag, longFlag, required, helpMessage)
     }
     
     /** Initializes a new Option that has both long and short flags. */
     public convenience init(shortFlag: String, longFlag: String, required: Bool = false, helpMessage: String) {
-    self.init(shortFlag as String?, longFlag, required, helpMessage)
+        self.init(shortFlag as String?, longFlag, required, helpMessage)
     }
     
     /** Initializes a new Option that has only a short flag. */
     public convenience init(shortFlag: String, required: Bool = false, helpMessage: String) {
-    self.init(shortFlag as String?, nil, required, helpMessage)
+        self.init(shortFlag as String?, nil, required, helpMessage)
     }
     
     /** Initializes a new Option that has only a long flag. */
     public convenience init(longFlag: String, required: Bool = false, helpMessage: String) {
-    self.init(nil, longFlag as String?, required, helpMessage)
+        self.init(nil, longFlag as String?, required, helpMessage)
     }
     
-    override func setValue(values: [String]) -> Bool {
-    if values.count == 0 {
-    return false
+    override func setValue(_ values: [String]) -> Bool {
+        if values.count == 0 {
+            return false
+        }
+        
+        if let v = T(rawValue: values[0]) {
+            _value = v
+            return true
+        }
+        
+        return false
     }
     
-    if let v = T(rawValue: values[0]) {
-    _value = v
-    return true
-    }
-    
-    return false
-    }
-    
-    }
-    
-#endif
+}
 
 
 /*
@@ -1138,30 +811,16 @@ public class MultiStringOption: Option {
  * limitations under the License.
  */
 
-/* Required for localeconv(3) */
-#if os(OSX)
-    import Darwin
-#elseif os(Linux)
-    import Glibc
-#endif
-
 internal extension String {
     /* Retrieves locale-specified decimal separator from the environment
      * using localeconv(3).
      */
-    private func _localDecimalPoint() -> Character {
+    fileprivate func _localDecimalPoint() -> Character {
         let locale = localeconv()
         if locale != nil {
-            #if swift(>=3.0)
-                if let decimalPoint = locale?.pointee.decimal_point {
-                    return Character(UnicodeScalar(UInt32(decimalPoint.pointee))!)
-                }
-            #else
-                let decimalPoint = locale.memory.decimal_point
-                if decimalPoint != nil {
-                return Character(UnicodeScalar(UInt32(decimalPoint.memory)))
-                }
-            #endif
+            if let decimalPoint = locale?.pointee.decimal_point {
+                return Character(UnicodeScalar(UInt32(decimalPoint.pointee))!)
+            }
         }
         
         return "."
@@ -1182,7 +841,7 @@ internal extension String {
         #if swift(>=3.0)
             let charactersEnumerator = self.characters.enumerated()
         #else
-            let charactersEnumerator = self.characters.enumerate()
+            let charactersEnumerator = self.characters.enumerated()
         #endif
         for (i, c) in charactersEnumerator {
             if i == 0 && c == "-" {
@@ -1213,7 +872,6 @@ internal extension String {
             (isNegative ? -1 : 1)
     }
     
-    #if swift(>=3.0)
     /**
      * Splits a string into an array of string components.
      *
@@ -1242,39 +900,6 @@ internal extension String {
         
         return s
     }
-    
-    #else
-    
-    /**
-     * Splits a string into an array of string components.
-     *
-     * - parameter by:        The character to split on.
-     * - parameter maxSplits: The maximum number of splits to perform. If 0, all possible splits are made.
-     *
-     * - returns: An array of string components.
-     */
-    func split(by by: Character, maxSplits: Int = 0) -> [String] {
-    var s = [String]()
-    var numSplits = 0
-    
-    var curIdx = self.startIndex
-    for i in self.characters.indices {
-    let c = self[i]
-    if c == by && (maxSplits == 0 || numSplits < maxSplits) {
-    s.append(self[curIdx..<i])
-    curIdx = i.successor()
-    numSplits += 1
-    }
-    }
-    
-    if curIdx != self.endIndex {
-    s.append(self[curIdx..<self.endIndex])
-    }
-    
-    return s
-    }
-    
-    #endif
     
     /**
      * Pads a string to the specified width.
@@ -1996,7 +1621,7 @@ class Runtime {
         do {
             
             // Parse user input
-            try cli.parse()
+            try cli.parse(strict: true)
             
             // It passed, now process input
             self.localizationFilePathToRead = URL(fileURLWithPath: inputFilePath.value!)
@@ -2227,7 +1852,7 @@ class TemplateFactory {
     class func templateForSwiftStaticVarWithName(name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
         let tableName = table != nil ? "\"\(table!)\"" : "nil"
         return TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "/// Base translation: \(baseTranslation)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "public static var \(name) : String = NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\")\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "public static var \(name) : String = NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: Bundle.main, value: \"\", comment: \"\")\n"
     }
     
     
@@ -2235,7 +1860,7 @@ class TemplateFactory {
         let tableName = table != nil ? "\"\(table!)\"" : "nil"
         return TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "/// Base translation: \(baseTranslation)\n"
              + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "public static func \(name)(\(methodHeader)) -> String {\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: NSBundle.mainBundle(), value: \"\", comment: \"\"), \(params))\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", tableName: \(tableName), bundle: Bundle.main, value: \"\", comment: \"\"), \(params))\n"
              + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "}\n"
     }
     
