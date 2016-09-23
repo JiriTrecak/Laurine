@@ -1125,9 +1125,9 @@ private extension String {
     
     
     var nolineString: String {
-        return self.components(separatedBy: (CharacterSet.newlines.inverted))
-            .filter { !$0.isEmpty }
-            .joined(separator: " ")
+        let set = CharacterSet.newlines
+        let components = self.components(separatedBy: set)
+        return components.joined(separator: " ")
     }
     
     
@@ -1383,15 +1383,10 @@ class Localization {
         let matches = self.matchesForRegexInText(regex: "%([0-9]*.[0-9]*(d|i|u|f|ld)|(\\d\\$)?@|d|i|u|f|ld)", text: string)
         var characters : [SpecialCharacter] = []
         
-        // If there is just one component, no special characters are found
-        if matches.count == 0 {
-            return []
-        } else {
-            for match in matches {
-                characters.append(self.propertyTypeForMatch(string: match))
-            }
-            return characters
+        for match in matches {
+            characters.append(self.propertyTypeForMatch(string: match))
         }
+        return characters
     }
     
     

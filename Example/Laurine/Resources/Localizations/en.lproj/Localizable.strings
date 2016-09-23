@@ -40,5 +40,6 @@
 
 ".SpecialCases.DotAtBeginning" = ".SpecialCases.DotAtBeginning"; 
 "SpecialCases.DotAtEnd." = "SpecialCases.DotAtEnd.";
-".SpecialCases.DotAtBeginningAndEnd." = ".SpecialCases.DotAtBeginningAndEnd.";
-"SpecialCases...SeveralDotsInTheMiddle" = "SpecialCases...SeveralDotsInTheMiddle";
+".SpecialCases.DotAtBeginningAndEnd." = "Special Cases - DotAtBeginningAndEnd";
+"SpecialCases...SeveralDotsInTheMiddle" = "Special Cases - Several Dots In The Middle";
+"SpecialCases.TextWithNewLine" = "Special Cases\nText With New Line";
