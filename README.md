@@ -10,7 +10,10 @@
 
 > Too tired to read? That is understandable. That is why I made this example. You will find it little bit different from what you usually see - [check it out](https://github.com/JiriTrecak/Laurine/tree/master/Example). Just download and run in XCode.
 
+ 
+#Swift 2.2
 
+This branch contains legacy version for Swift 2.2. If you are still using this version of Swift in your project, please download this instead of version for master, which only supports Swift 3.0+. The example project in this branch can also be run only under Swift 2.2 (XCode 7). This version is no longer being developed but is still absolutely ready for production.
 
 ## Do I need it? (yes you do)
 
