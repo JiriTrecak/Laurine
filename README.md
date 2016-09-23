@@ -1,4 +1,9 @@
-[![Swift 2.2](https://img.shields.io/badge/Swift-2.2-orange.svg?style=flat)](https://developer.apple.com/swift/)
+> Author's note: Thanks everyone for making Laurine **TOP trending** Swift repository in the world - this is amazing and very heart-warming! But this is just the beginning. 
+
+> For last few years, me and my team worked on a tool to **completely change mobile programming** - make it way **faster** and **more fun** for everyone - and we are nearly ready to release it to the world. If you are interested, head over to **[Supernova Website](http://supernova.studio/coming-soon/)** and sign up for private beta. Vive la Revolution.
+
+
+[![Swift 3.0](https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat)](https://developer.apple.com/swift/)
 [![Platforms OS X | iOS | tvos](https://img.shields.io/badge/Platforms-OS%20X%20%7C%20iOS-green.svg?style=flat)](https://developer.apple.com/swift/)
 [![License](http://img.shields.io/:License-MIT-green.svg)](http://doge.mit-license.org)
 [![Contact Me](http://img.shields.io/:Contact_Me-jiritrecak.com-blue.svg)](http://jiritrecak.com)
@@ -9,6 +14,10 @@
 **Localization code generator** written (with love) for Swift, **intended to end the constant problems** that localizations present for developers.
 
 > Too tired to read? That is understandable. That is why I made this example. You will find it little bit different from what you usually see - [check it out](https://github.com/JiriTrecak/Laurine/tree/master/Example). Just download and run in XCode.
+
+
+> Laurine now supports Swift 3.0 and higher. Looking for version compatible with Swift 2.2? We have that as well - [switch to 2.2 branch](https://github.com/JiriTrecak/Laurine/tree/Swift-2.2).
+
 
 
 
@@ -231,10 +240,6 @@ If you liked it, check out my [other library - Warp](https://github.com/JiriTrec
 Or, if you would like to know me better, check out my portfolio.
 
 - [jiritrecak.com](http://jiritrecak.com/ "My personal website") 
-
-##Achievements
-
-2015-12-10: **Laurine is now #1 trending swift repo in the world**. To everyone who liked it, here, have a beer with me. :beer:
 
 
 ##Licence
