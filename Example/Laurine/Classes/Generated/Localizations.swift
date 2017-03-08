@@ -35,7 +35,7 @@ public struct Localizations {
                 public static var Singular : String = NSLocalizedString("Contributors.Contributor.Contributed.Singular", tableName: nil, bundle: Bundle.main, value: "", comment: "")
 
                 /// Base translation: %d contributions
-                public static func Plural(value1 : Int) -> String {
+                public static func Plural(_ value1 : Int) -> String {
                     return String(format: NSLocalizedString("Contributors.Contributor.Contributed.Plural", tableName: nil, bundle: Bundle.main, value: "", comment: ""), value1)
                 }
 

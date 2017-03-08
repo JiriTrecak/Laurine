@@ -1470,7 +1470,7 @@ class Localization {
         }
         let methodParamsString = methodParams.joined(separator: ", ")
         
-        methodHeaderParams = methodHeaderParams.trimmingCharacters(in: CharacterSet(charactersIn: ", _"))
+        methodHeaderParams = methodHeaderParams.trimmingCharacters(in: CharacterSet(charactersIn: ", "))
         return TemplateFactory.templateForSwiftFuncWithName(name: self.variableName(string: methodName, lang: .Swift), key: key, table: table, baseTranslation : baseTranslation, methodHeader: methodHeaderParams, params: methodParamsString, contentLevel: contentLevel)
     }
     
