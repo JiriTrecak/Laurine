@@ -1,6 +1,6 @@
-> Author's note: Thanks everyone for making Laurine **TOP trending** Swift repository in the world - this is amazing and very heart-warming! But this is just the beginning. 
+> Author's note: Thanks everyone for making Laurine the **TOP trending** Swift repository in the world - this is amazing and very heart-warming! But this is just the beginning. 
 
-> For last few years, me and my team worked on a tool to **completely change mobile programming** - make it way **faster** and **more fun** for everyone - and we are nearly ready to release it to the world. If you are interested, head over to **[Supernova Website](http://supernova.studio/coming-soon/)** and sign up for private beta. Vive la Revolution.
+> For the last few years, my team and I worked on a tool to **completely change mobile programming** - make it way **faster** and **more fun** for everyone - and we are nearly ready to release it to the world. If you are interested, head over to **[Supernova Website](http://supernova.studio/coming-soon/)** and sign up for private beta. Vive la Revolution.
 
 
 [![Swift 3.0](https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat)](https://developer.apple.com/swift/)
@@ -11,9 +11,9 @@
 
 # Laurine
 
-**Localization code generator** written (with love) for Swift, **intended to end the constant problems** that localizations present for developers.
+**Localization code generator** written (with love) for Swift, **intended to end the constant problems** that localizations present developers.
 
-> Too tired to read? That is understandable. That is why I made this example. You will find it little bit different from what you usually see - [check it out](https://github.com/JiriTrecak/Laurine/tree/master/Example). Just download and run in XCode.
+> Too tired to read? That is understandable. That is why I made this example. You will find it little bit different from what you usually see - [check it out](https://github.com/JiriTrecak/Laurine/tree/master/Example). Just download and run in Xcode.
 
 
 > Laurine now supports Swift 3.0 and higher. Looking for version compatible with Swift 2.2? We have that as well - [switch to 2.2 branch](https://github.com/JiriTrecak/Laurine/tree/Swift-2.2).
@@ -21,7 +21,7 @@
 
 
 
-## Do I need it? (yes you do)
+## Do I need it? (Yes, you do)
 
 Laurine is a clever Swift script that scans your localization file and generates structured, high-performance code out of it (in both ObjC or Swift, your call), thereby making the usage of localization strings much easier and safer. 
 
@@ -46,9 +46,9 @@ can be then used like this:
 ```swift
 self.labelToLocalize.text = Localizations.ProfilePhoneNumber
 ```
-in XCode, autocomplete is actually, for once, really helpful! Madness.
+in Xcode, autocomplete is actually, for once, really helpful! Madness.
 
-![Image : XCode help for variables](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-1.png?raw=true "Xcode autocomplete")
+![Image : Xcode help for variables](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-1.png?raw=true "Xcode autocomplete")
 
 **Methods**
 
@@ -67,9 +67,9 @@ self.labelToLocalize.text = Localizations.ProfileInfo("Jiri", 25, 1.75)
 Once again, Xcode autocomplete for the win! Insanity.
 
 ![Image : XCode help for methods](https://github.com/JiriTrecak/Laurine/blob/master/Help/help-2.png?raw=true "Xcode autocomplete")
- 
+
 **Swift support**
- 
+
  Swift-written application is recommended Laurine usecase. Internally, it uses nested structures to make your life much easier. Also, it is extremely performant and will have no impact on your current codebase.
 
 **ObjC support**
@@ -102,7 +102,7 @@ This way, you can easily traverse through thousands of strings without even thin
 You can use `-d "delimiter"` option to specify which character you would like to use for nesting, defaults to `-` (slash). 
 
 Use `_` (underscore) to make camel case strings (`MY_AWESOME_WORD` to `MyAwesomeKey`), or omit "c" option to disable this feature.
- 
+
 Note: Language-specific keywords (such as Swift: `func` and ObjC: `YES`) and names starting with numbers (`Profile.1stButton`) will get prefixed with `_` to prevent build errors.
 
 
