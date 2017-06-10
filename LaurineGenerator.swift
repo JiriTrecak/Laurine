@@ -1846,17 +1846,27 @@ class TemplateFactory {
     
     
     class func templateForSwiftStaticVarWithName(name : String, key : String, table: String?, baseTranslation : String, contentLevel : Int) -> String {
-        let tableName = table != nil ? "\"\(table!)\"" : "nil"
+        let tableName: String
+        if let table = table {
+            tableName = "tableName: \"\(table)\", "
+        } else {
+            tableName = ""
+        }
         return TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "/// Base translation: \(baseTranslation)\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "public static var \(name) : String = NSLocalizedString(\"\(key)\", comment: \"\")\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "public static var \(name) : String = NSLocalizedString(\"\(key)\", \(tableName)comment: \"\")\n"
     }
     
     
     class func templateForSwiftFuncWithName(name : String, key : String, table: String?, baseTranslation : String, methodHeader : String, params : String, contentLevel : Int) -> String {
-        let tableName = table != nil ? "\"\(table!)\"" : "nil"
+        let tableName: String
+        if let table = table {
+            tableName = "tableName: \"\(table)\", "
+        } else {
+            tableName = ""
+        }
         return TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "/// Base translation: \(baseTranslation)\n"
              + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "public static func \(name)(\(methodHeader)) -> String {\n"
-             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", comment: \"\"), \(params))\n"
+             + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel + 1) + "return String(format: NSLocalizedString(\"\(key)\", \(tableName)comment: \"\"), \(params))\n"
              + TemplateFactory.contentIndentForLevel(contentLevel: contentLevel) + "}\n"
     }
     
