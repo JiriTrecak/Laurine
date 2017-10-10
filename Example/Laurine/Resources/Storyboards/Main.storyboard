@@ -27,7 +27,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="86" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lmf-z8-aPb">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="76" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lmf-z8-aPb">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 <color key="separatorColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -52,15 +52,15 @@
                                     </constraints>
                                 </view>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="16" reuseIdentifier="ContributorCell" rowHeight="86" id="z49-Bb-cKv" customClass="ContributorCell" customModule="Laurine" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="108" width="375" height="86"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="16" reuseIdentifier="ContributorCell" rowHeight="76" id="z49-Bb-cKv" customClass="ContributorCell" customModule="Laurine" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="108" width="375" height="76"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="z49-Bb-cKv" id="WmU-LW-fgr">
-                                            <rect key="frame" x="0.0" y="0.0" width="342" height="86"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="76"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BkC-8g-NOX">
-                                                    <rect key="frame" x="16" y="16" width="60" height="60"/>
+                                                    <rect key="frame" x="16" y="8" width="60" height="60"/>
                                                     <color key="backgroundColor" red="0.89634615182876587" green="0.89634615182876587" blue="0.89634615182876587" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="60" id="3Uj-gd-81w"/>
@@ -74,14 +74,14 @@
                                                     </userDefinedRuntimeAttributes>
                                                 </imageView>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="m6P-Eq-2Cw" userLabel="Separator">
-                                                    <rect key="frame" x="16" y="91" width="326" height="1"/>
+                                                    <rect key="frame" x="16" y="75" width="326" height="1"/>
                                                     <color key="backgroundColor" red="0.95686274510000002" green="0.95686274510000002" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="1" id="o82-Je-Set"/>
                                                     </constraints>
                                                 </view>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tts-Sn-eyP" userLabel="Text Content">
-                                                    <rect key="frame" x="92" y="26.5" width="242" height="39"/>
+                                                    <rect key="frame" x="92" y="18.5" width="242" height="39"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="JiriTrecak" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WeK-KK-skF">
                                                             <rect key="frame" x="0.0" y="0.0" width="75" height="20"/>
@@ -112,8 +112,8 @@
                                                 <constraint firstItem="Tts-Sn-eyP" firstAttribute="centerY" secondItem="WmU-LW-fgr" secondAttribute="centerY" id="4lH-a2-dXD"/>
                                                 <constraint firstItem="Tts-Sn-eyP" firstAttribute="leading" secondItem="BkC-8g-NOX" secondAttribute="trailing" constant="16" id="Ksw-32-dOh"/>
                                                 <constraint firstItem="BkC-8g-NOX" firstAttribute="leading" secondItem="WmU-LW-fgr" secondAttribute="leading" constant="16" id="Rax-kc-vhg"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="BkC-8g-NOX" secondAttribute="bottom" constant="8" id="Uai-Np-quI"/>
-                                                <constraint firstItem="BkC-8g-NOX" firstAttribute="top" secondItem="WmU-LW-fgr" secondAttribute="topMargin" constant="8" id="bX6-y5-sww"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="BkC-8g-NOX" secondAttribute="bottom" id="Uai-Np-quI"/>
+                                                <constraint firstItem="BkC-8g-NOX" firstAttribute="top" secondItem="WmU-LW-fgr" secondAttribute="topMargin" id="bX6-y5-sww"/>
                                                 <constraint firstItem="m6P-Eq-2Cw" firstAttribute="leading" secondItem="WmU-LW-fgr" secondAttribute="leading" constant="16" id="cll-3o-1Pa"/>
                                                 <constraint firstItem="BkC-8g-NOX" firstAttribute="centerY" secondItem="WmU-LW-fgr" secondAttribute="centerY" id="vxK-jj-yLa"/>
                                                 <constraint firstAttribute="trailing" secondItem="m6P-Eq-2Cw" secondAttribute="trailing" id="zCW-gp-hdw"/>
