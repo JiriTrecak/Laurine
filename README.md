@@ -15,10 +15,9 @@
 
 > Too tired to read? That is understandable. That is why I made this example. You will find it little bit different from what you usually see - [check it out](https://github.com/JiriTrecak/Laurine/tree/master/Example). Just download and run in Xcode.
 
+# Swift 3
 
-> Laurine now supports Swift 3.0 and higher. Looking for version compatible with Swift 2.2? We have that as well - [switch to 2.2 branch](https://github.com/JiriTrecak/Laurine/tree/Swift-2.2).
-
-
+This branch contains legacy version for Swift 3. If you are still using this version of Swift in your project, please download this instead of version for master, which only supports Swift 4.0+. The example project in this branch can also be run only under Swift 3 (XCode 8). This version is no longer being developed but is still absolutely ready for production.
 
 
 ## Do I need it? (Yes, you do)
