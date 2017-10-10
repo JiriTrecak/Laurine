@@ -117,7 +117,7 @@ extension ContributorsVC : UITableViewDataSource {
 
 extension ContributorsVC : UITableViewDelegate {
     
-    @objc(tableView:cellForRowAtIndexPath:) func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         // Get configured cell
         let cell = table.dequeueReusableCell(withIdentifier: CELL_IDENTIFIER_CONTRIBUTORS) as! ContributorCell

@@ -22,14 +22,14 @@ class Contributor : WRPObject {
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
     // MARK: - Data object properties
     
-    var username : String!
-    var avatarURL : String!
-    var detailURL : String!
-    var githubURL : String? = nil
-    var contributions : Int = 0
-    var followers : Int = 0
-    var following : Int = 0
-    var repositories : Int = 0
+    @objc dynamic var username : String!
+    @objc dynamic var avatarURL : String!
+    @objc dynamic var detailURL : String!
+    @objc dynamic var githubURL : String? = nil
+    @objc dynamic var contributions : Int = 0
+    @objc dynamic var followers : Int = 0
+    @objc dynamic var following : Int = 0
+    @objc dynamic var repositories : Int = 0
     
     
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

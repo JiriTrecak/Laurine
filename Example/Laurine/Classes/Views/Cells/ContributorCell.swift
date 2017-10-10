@@ -57,7 +57,7 @@ class ContributorCell: UITableViewCell {
         // Set number of contribution
         self.personContributions.text = contributor.contributions == 1 ?
                                         Localizations.Contributors.Contributor.Contributed.Singular :
-                                         Localizations.Contributors.Contributor.Contributed.Plural(contributor.contributions)
+            Localizations.Contributors.Contributor.Contributed.Plural(value1: contributor.contributions)
         
         // Set profile picture, if available
         if let profilePictureURL = URL(string: contributor.avatarURL) {

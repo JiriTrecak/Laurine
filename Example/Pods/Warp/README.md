@@ -1,4 +1,4 @@
-[![Swift 2.1](https://img.shields.io/badge/Swift-2.1-orange.svg?style=flat)](https://developer.apple.com/swift/)
+[![Swift 3.0](https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat)](https://developer.apple.com/swift/)
 [![Platforms OS X | iOS | tvos](https://img.shields.io/badge/Platforms-OS%20X%20%7C%20iOS-lightgray.svg?style=flat)](https://developer.apple.com/swift/)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
 
@@ -8,6 +8,8 @@
 Insanely easy-to-use, extremely powerful swift object (+model mapper), that will make the creation of your data models a breeze. 
 
 > Too tired to read? That is understandable. That is why I made this example. You will find it a little bit different from what you usually see - [check it out](https://github.com/JiriTrecak/Warp/tree/master/Example). Just download and run in XCode.
+> 
+> Warp now supports Swift 3.0 and higher. Looking for version compatible with Swift 2.2? We have that as well - [switch to 2.2 branch](https://github.com/JiriTrecak/Warp/tree/Swift-2.2).
 
 
 
@@ -185,7 +187,14 @@ Important note: objects are serialized using REMOTE keys, so serialization outpu
 
 ## Installation
 
-For now, please download /source and just append it to your project. I am working on CocoaPods / Carthage / SPM at the moment.
+CocoaPods is preferred way to install Warp:
+
+```
+pod 'Warp'
+```
+If you are not already using [CocoaPods](https://cocoapods.org/ "CocoaPods site"), now is the time. You can also use Swift Package Manager to download it.
+
+Support for Carthage is coming soon.
 
 ## Supported Features
 
@@ -199,9 +208,9 @@ Warp should suit most of the developers, because it covers all the basic stuff. 
 - [ ] Debugging
 - [ ] 100% test coverage
 - [ ] Pre / in / post generation closures
-- [ ] Installators (Cocoapods, Carthage, SPM)
+- [ ] Installers (CocoaPods :white_check_mark:, SPM :white_check_mark:, Carthage)
 - [ ] Protocoled version, so it can be used as mapper for CoreData and Realm
-- [ ] Tool for automatic generation of model, including network requests, from .json file
+- [ ] Tool for automatic generatiogn of model, including network requests, from .json file
 
 ## Contribute
 I will gladly accept Pull Requests (and I encourage you to do so). If you encounter any bug or you have an enhancement that you would like to see, please open an issue. Please make sure you target your PR against Development branch.

@@ -78,7 +78,7 @@ extension NSMutableDictionary {
         // Traverse through path from root to deepest level
         for path : String in pathComponents {
             
-            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : (previousObject?.object(forKey: path) as? AnyObject);
+            let currentObject : AnyObject? = reachedDictionaryLeaf ? nil : previousObject?.object(forKey: path) as AnyObject?;
             
             // Check if object already exists. If not, create new level, if allowed, or end
             if currentObject == nil {

@@ -133,18 +133,35 @@ public struct WRPRelation {
     
     var remoteName : String
     var localName : String
-    var className : WRPObject.Type
-    var inverseName : String
+    var modelClassType : WRPObject.Type?
+    var modelClassTypeKey : String?
+    var modelClassTypeTransformer : ((String) -> WRPObject.Type?)?
+    var inverseName : String?
     var relationshipType : WRPRelationType
-    var inverseRelationshipType : WRPRelationType
+    var inverseRelationshipType : WRPRelationType?
     var optional : Bool = true
     
-    public init(remote : String, bindTo : String, inverseBindTo : String, modelClass : WRPObject.Type, optional : Bool, relationType : WRPRelationType, inverseRelationType : WRPRelationType) {
+    public init(remote : String, bindTo : String, inverseBindTo : String?, modelClass : WRPObject.Type, optional : Bool, relationType : WRPRelationType, inverseRelationType : WRPRelationType?) {
         
         self.remoteName = remote
         self.localName = bindTo
         self.inverseName = inverseBindTo
-        self.className = modelClass
+        self.modelClassType = modelClass
+        self.modelClassTypeTransformer = nil
+        self.relationshipType = relationType
+        self.inverseRelationshipType = inverseRelationType
+        self.optional = optional
+    }
+    
+    
+    public init(remote : String, bindTo : String, inverseBindTo : String?, modelClassTypeKey : String, modelClassTransformer : @escaping ((String) -> WRPObject.Type?), optional : Bool, relationType : WRPRelationType, inverseRelationType : WRPRelationType?) {
+        
+        self.remoteName = remote
+        self.localName = bindTo
+        self.inverseName = inverseBindTo
+        self.modelClassType = nil
+        self.modelClassTypeKey = modelClassTypeKey
+        self.modelClassTypeTransformer = modelClassTransformer
         self.relationshipType = relationType
         self.inverseRelationshipType = inverseRelationType
         self.optional = optional
