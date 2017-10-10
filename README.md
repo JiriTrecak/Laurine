@@ -1,9 +1,9 @@
 > Author's note: Thanks everyone for making Laurine the **TOP trending** Swift repository in the world - this is amazing and very heart-warming! But this is just the beginning. 
 
-> For the last few years, my team and I worked on a tool to **completely change mobile programming** - make it way **faster** and **more fun** for everyone - and we are nearly ready to release it to the world. If you are interested, head over to **[Supernova Website](http://supernova.studio/coming-soon/)** and sign up for private beta. Vive la Revolution.
+> For the last few years, my team and I worked on a tool to **completely change mobile programming** - make it way **faster** and **more fun** for everyone - and we are nearly ready to release it to the world. If you are interested, **[head over to Product Hunt](https://www.producthunt.com/posts/supernova)** and check it out!
 
 
-[![Swift 3.0](https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat)](https://developer.apple.com/swift/)
+[![Swift 3.2](https://img.shields.io/badge/Swift-3.2-orange.svg?style=flat)](https://developer.apple.com/swift/) [![Swift 4.0](https://img.shields.io/badge/Swift-4.0-orange.svg?style=flat)](https://developer.apple.com/swift/)
 [![Platforms OS X | iOS | tvos](https://img.shields.io/badge/Platforms-OS%20X%20%7C%20iOS-green.svg?style=flat)](https://developer.apple.com/swift/)
 [![License](http://img.shields.io/:License-MIT-green.svg)](http://doge.mit-license.org)
 [![Contact Me](http://img.shields.io/:Contact_Me-jiritrecak.com-blue.svg)](http://jiritrecak.com)
@@ -16,9 +16,7 @@
 > Too tired to read? That is understandable. That is why I made this example. You will find it little bit different from what you usually see - [check it out](https://github.com/JiriTrecak/Laurine/tree/master/Example). Just download and run in Xcode.
 
 
-> Laurine now supports Swift 3.0 and higher. Looking for version compatible with Swift 2.2? We have that as well - [switch to 2.2 branch](https://github.com/JiriTrecak/Laurine/tree/Swift-2.2).
-
-
+> Latest version of laurine now supports Swift 3.2 / 4.0 and higher (XCode 9). Looking for version compatible with XCode 8? We have that as well - [switch to S3 branch](https://github.com/JiriTrecak/Laurine/tree/Swift-3.0). Looking for version compatible with Swift 2? Here you go - [switch to S2 branch](https://github.com/JiriTrecak/Laurine/tree/Swift-2.2).
 
 
 ## Do I need it? (Yes, you do)
