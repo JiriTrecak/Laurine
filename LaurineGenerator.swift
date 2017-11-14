@@ -1439,9 +1439,9 @@ class Localization {
         switch char {
             case .String: return language == .Swift ? "String" : "NSString *"
             case .Double: return language == .Swift ? "Double" : "double"
-            case .Int: return language == .Swift ? "Int" : "int"
-            case .Int64: return language == .Swift ? "Int64" : "long"
-            case .UInt: return language == .Swift ? "UInt" : "unsigned int"
+            case .Int: return language == .Swift ? "Int" : "NSInteger"
+            case .Int64: return language == .Swift ? "Int64" : "NSInteger"
+            case .UInt: return language == .Swift ? "UInt" : "NSUInteger"
         }
     }
     
