@@ -239,7 +239,7 @@ open class CommandLine {
                     continue
                 }
                 
-                if _arguments[i].hasPrefix(ShortOptionPrefix) && Int(_arguments[i]) == nil &&
+                if _arguments[i].hasPrefix(ShortOptionPrefix) && _arguments[i] != ShortOptionPrefix && Int(_arguments[i]) == nil &&
                     Double(_arguments[i]) == nil {
                     break
                 }
