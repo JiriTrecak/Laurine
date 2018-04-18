@@ -1151,17 +1151,21 @@ private extension String {
     func isReservedKeyword(lang : Runtime.ExportLanguage) -> Bool {
         
         // Define keywords for each language
-        var keywords : [String] = []
+        var keywords: [String] = []
+
         if lang == .ObjC {
             keywords = ["auto", "break", "case", "char", "const", "continue", "default", "do", "double", "else", "enum", "extern", "float", "for", "goto", "if", "inline", "int", "long",
                         "register", "restrict", "return", "short", "signed", "sizeof", "static", "struct", "swift", "typedef", "union", "unsigned", "void", "volatile", "while",
                         "BOOL", "Class", "bycopy", "byref", "id", "IMP", "in", "inout", "nil", "NO", "NULL", "oneway", "out", "Protocol", "SEL", "self", "super", "YES"]
         } else if lang == .Swift {
-            keywords = ["class", "deinit", "enum", "extension", "func", "import", "init", "inout", "internal", "let", "operator", "private", "protocol", "public", "static", "struct", "subscript", "typealias", "var", "break", "case", "continue", "default", "defer", "do", "else", "fallthrough", "for", "guard", "if", "in", "repeat", "return", "switch", "where", "while", "as", "catch", "dynamicType", "false", "is", "nil", "rethrows", "super", "self", "Self", "throw", "throws", "true", "try", "type", "__COLUMN__", "__FILE__", "__FUNCTION__", "__LINE__"]
+            keywords = ["associatedtype", "class", "deinit", "enum", "extension", "fileprivate", "func", "import", "init", "inout", "internal", "let", "open", "operator", "private",
+                        "protocol", "public", "static", "struct", "subscript", "typealias", "var", "break", "case", "continue", "default", "defer", "do", "else", "fallthrough", "for",
+                        "guard", "if", "in", "repeat", "return", "switch", "where", "while", "as", "Any", "catch", "dynamicType", "false", "is", "nil", "rethrows", "super", "self",
+                        "Self", "throw", "throws", "true", "try", "type"]
         }
         
         // Check if it contains that keyword
-        return keywords.index(of: self) != nil
+        return keywords.contains(self)
     }
 }
 
