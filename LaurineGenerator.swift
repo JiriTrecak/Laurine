@@ -1382,7 +1382,7 @@ class Localization {
     private func methodParamsForString(string : String) -> [SpecialCharacter] {
         
         // Split the string into pieces by %
-        let matches = self.matchesForRegexInText(regex: "%([0-9]*.[0-9]*(d|i|u|f|ld)|(\\d\\$)?@|d|i|u|f|ld)", text: string)
+        let matches = self.matchesForRegexInText(regex: "%([0-9]*.[0-9]*(d|i|u|f|ld|s)|(\\d\\$)?@|d|i|u|f|ld|s)", text: string)
         var characters : [SpecialCharacter] = []
         
         for match in matches {
