@@ -200,13 +200,22 @@ $ git clone https://github.com/JiriTrecak/Laurine.git
 $ sudo cp laurine.swift /usr/local/bin/laurine.swift
 ```
 
+**CocoaPods**
+
+Laurine can be added to your project using CocoaPods by adding the following line to your Podfile:
+
+`pod 'Laurine', :git => 'https://github.com/JiriTrecak/Laurine', :branch => 'master'`
+
+If you use this method, the `LAURINE_PATH` in the build script would be exactly this:  
+`LAURINE_PATH="${PODS_ROOT}/Laurine/LaurineGenerator.swift"`
+
 **Download!**
 
 Yes, you can just download the script itself from this repository, it does not need anything else.
 
 ## Supported Features
 
-Laurine should suit most of developers, because it covers all the basic stuff. That being said, there are still things missing to have full coverage of what localizations have to offer. Here is the full list of features that will Laurine contain once it is complete:
+Laurine should suit most of developers, because it covers all the basic stuff. That being said, there are still things missing to have full coverage of what localizations have to offer. Here is the full list of features that Laurine will contain once it is complete:
 
 - [x] Basic localization strings to variables
 - [x] Complex localization strings to methods
